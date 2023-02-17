@@ -1,0 +1,115 @@
+    {% load static %}
+
+    <!-- Carregar CSS do Owl Carousel -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
+    <!-- Carregar JavaScript do Owl Carousel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.js"></script>
+    <!-- Container principal -->
+
+      <div id="alert_container" style="display: none;">
+            <div id="add_to_cart_alert" class="alert alert-success alert-dismissible fade show" role="alert">
+                Produto adicionado ao carrinho com sucesso!
+            </div>
+        </div>
+
+    <div id="alert-container-stock" style="display: none;">
+        <div id="alert-stock" class="alert alert-danger alert-dismissible fade show" role="alert">
+            Produto sem estoque suficiente. Disponível apenas {{ product.stock }} {% if product.stock > 1%} unidades
+            {% else %} unidade {% endif %} <strong id="available-stock"></strong>.
+        </div>
+    </div>
+    <div class="container my-5">
+      <!-- Título -->
+      <h3 class="text-center mb-3">Produtos mais vendidos</h3>
+      <!-- Carrossel -->
+      <div class="owl-carousel owl-theme">
+
+
+
+        <!-- Loop para exibir cada produto -->
+        {% for product in products %}
+          <!-- Container de cada item -->
+          <div class="p-3">
+            <!-- Container interno -->
+            <div class="text-center">
+              <!-- Imagem do produto -->
+              <a href="products/{{ product.slug }}">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+              </a>
+
+              <!-- Nome e preço do produto -->
+          <div class="mt-3">
+            <h4 class="mb-1">
+              <a href="products/{{ product.slug }}">{{ product.name }}</a>
+            </h4>
+            <p class="mb-1">{{ product.price }}</p>
+
+            <!-- Desconto (se houver) -->
+            {% if product.discount %}
+              <p class="text-danger">-{{ product.discount }}%</p>
+            {% endif %}
+           </div>
+
+          <!-- Input e botão para quantidade -->
+          <div class="d-flex align-items-center">
+           <button type="button" class="btn btn-primary btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}">Adicionar ao carrinho</button>
+            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1">
+
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+      </div>
+    </div>
+
+
+    <script>
+
+    $(document).ready(function () {
+      $('.add-to-cart-button').click(function () {
+        let productId = $(this).data('product-id');
+        let quantity = $(`.quantity-input[data-product-id=${productId}]`).val();
+
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'add_to_cart' %}",
+          data: {
+            'productId': productId,
+            'quantity': quantity,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          dataType: 'json',
+          success: function (data) {
+            if (data.success) {
+              $('#add_to_cart_alert').show();
+              $('#alert_container').show();
+              setTimeout(function() {
+                $('#add_to_cart_alert').hide();
+                $('#alert_container').hide();
+              }, 5000);
+              $(`.quantity-input[data-product-id=${productId}]`).val(1);
+            } else {
+              $('#available-stock').text(data.stock);
+              $('#alert-stock').show();
+              $('#alert-container-stock').show();
+              setTimeout(function() {
+                $('#alert-stock').hide();
+                $('#alert-container-stock').hide();
+              }, 5000);
+              $(`.quantity-input[data-product-id=${productId}]`).val(1);
+            }
+          },
+          error: function (data) {
+            alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
+          }
+        });
+      });
+    });
+    </script>
+
+    <script src="{% static 'js/owl_carousel.js' %}"></script>
+
+
+

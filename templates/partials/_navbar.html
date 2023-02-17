@@ -1,0 +1,230 @@
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">Logo da Empresa</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+      <!-- Menu de categorias -->
+
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% for category in categorias %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ category.name }}
+          </a>
+          <div class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="navbarDropdown">
+            {% for subcategory in category.subcategory_set.all %}
+
+            <a class="dropdown-item" href= "{% url 'produto_por_subcategoria' category.pk subcategory.pk %}">
+              {{ subcategory.name }}
+            </a>
+
+            {% endfor %}
+          </div>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="">teste</a>
+
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+      <!-- Menu de usuário e carrinho -->
+    <ul class="navbar-nav mr-auto">
+      {% if user.is_authenticated %}
+        <li class="nav-item dropdown" id="cart-icon">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="badge badge-danger">{{ total_quantity_cart }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="navbarDropdown">
+    {% for item in cart.cartitem_set.all %}
+        <a class="dropdown-item d-flex justify-content-between align-items-center" href="#">
+          <h6 class="mx-2">{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.name }} {% endif %} - Qtd. {{ item.quantity }} un</h6>
+
+
+
+
+
+            {% csrf_token %}
+            <button href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item"
+                       data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}">x</button>
+        </a>
+    {% endfor %}
+    <div class="dropdown-divider"></div>
+
+            <a href="{% url 'cart:carrinho' %}" class="btn btn-danger btn-block">Ver Carrinho</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Olá, {{ user.username }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </li>
+
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'cadastro' %}">
+            <i class="fas fa-user-plus"></i> Cadastro
+          </a>
+        </li>
+      {% endif %}
+</ul>
+      <!-- Barra de pesquisa -->
+    <form class="d-flex">
+      <input class="form-control " type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-danger mx-2" type="submit">Search</button>
+    </form>
+    </div>
+  </div>
+</nav>
+
+
+
+<!--<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5">-->
+<!--  <a class="navbar-brand" href="{% url 'home' %}">Logo da Empresa</a>-->
+
+<!--  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--    <span class="navbar-toggler-icon"></span>-->
+<!--  </button>-->
+
+<!--  <div class="collapse navbar-collapse" id="navbarSupportedContent">-->
+
+<!--    &lt;!&ndash; Menu de categorias &ndash;&gt;-->
+
+
+<!--      <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
+<!--        {% for category in category %}-->
+<!--        <li class="nav-item dropdown">-->
+<!--          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--            {{ category.name }}-->
+<!--          </a>-->
+<!--          <div class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="navbarDropdown">-->
+<!--            {% for subcategory in category.subcategory_set.all %}-->
+
+<!--            <a class="dropdown-item" href= "{% url 'produto_por_subcategoria' category.pk subcategory.pk %}">-->
+<!--              {{ subcategory.name }}-->
+<!--            </a>-->
+
+<!--            {% endfor %}-->
+<!--          </div>-->
+<!--          <div class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+<!--              <a class="dropdown-item" href="">teste</a>-->
+
+<!--          </div>-->
+<!--        </li>-->
+<!--      {% endfor %}-->
+<!--    </ul>-->
+
+<!--    &lt;!&ndash; Barra de pesquisa &ndash;&gt;-->
+<!--    <form class="d-flex">-->
+<!--      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">-->
+<!--      <button class="btn btn-outline-success" type="submit">Search</button>-->
+<!--    </form>-->
+
+<!--    &lt;!&ndash; Menu de usuário e carrinho &ndash;&gt;-->
+<!--    <ul class="navbar-nav mr-auto">-->
+<!--      {% if user.is_authenticated %}-->
+<!--        <li class="nav-item dropdown" id="cart-icon">-->
+<!--          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--            <i class="fas fa-shopping-cart"></i>-->
+<!--            <span class="badge badge-danger">{{ total_quantity_cart }}</span>-->
+<!--          </a>-->
+<!--          <div class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="navbarDropdown">-->
+<!--            {% for item in cart.cartitem_set.all %}-->
+<!--              <a class="dropdown-item" href="#">{{ item.product.name }} - {{ item.quantity }} <button class="btn btn-danger btn-sm delete-item" data-item-id="{{ item.id }}">x</button></a>-->
+<!--            {% endfor %}-->
+<!--            <div class="dropdown-divider"></div>-->
+<!--            <a href="{% url 'cart:carrinho' %}" class="btn btn-danger btn-block">Ver Carrinho</a>-->
+<!--          </div>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="#">Olá, {{ user.username }}</a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{% url 'logout' %}">-->
+<!--            <i class="fas fa-sign-out-alt"></i> Logout-->
+<!--          </a>-->
+<!--        </li>-->
+
+<!--      {% else %}-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{% url 'login' %}">-->
+<!--            <i class="fas fa-sign-in-alt"></i> Login-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="{% url 'cadastro' %}">-->
+<!--            <i class="fas fa-user-plus"></i> Cadastro-->
+<!--          </a>-->
+<!--        </li>-->
+<!--      {% endif %}-->
+<!--</ul>-->
+
+<!--  </div>-->
+<!--</nav>-->
+<style>
+
+  #cart-icon {
+  display: inline-block;
+  position: relative;
+}
+
+#cart-icon .badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background-color: red;
+  color: white;
+  padding: 3px 5px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+</style>
+
+
+<script>
+  $(document).ready(function() {
+  $('#cart-icon').on('click', '.remove-item', function(e) {
+    e.preventDefault();
+
+    var variationId = $(this).data('variation-id');
+    var productId = $(this).data('product-id');
+    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+    console.log('CARINHOvariationId:', variationId);
+    console.log('CARINHOproductId:', productId);
+
+    $.ajax({
+      url: "{% url 'cart:remove_item' %}",
+      type: 'POST',
+      data: {
+        'variation_id': variationId,
+        'product_id': productId,
+        'csrfmiddlewaretoken': csrfToken
+      },
+      success: function(data) {
+        console.log(data);
+        $('#cart-icon').load(document.URL + ' #cart-icon');
+      },
+      error: function(error) {
+        console.log(error);
+        location.reload(); // recarrega a página quando a requisição falha
+      }
+    });
+  });
+});
+
+</script>

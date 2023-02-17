@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Confirmação de Pedido</h1>
+
+<p>Obrigado por realizar seu pedido!</p>
+
+<p>Número do Pedido: {{ pedido.id }}</p>
+<p>Data do Pedido: {{ pedido.data_pedido }}</p>
+
+<h3>Itens do Pedido</h3>
+{% for item in pedido.itens.all %}
+<p>{{ item.product.name }} x {{ item.quantity }} - R$ {{ item.total_price }}</p>
+{% endfor %}
+
+<p>Total do Pedido: R$ {{ pedido.total_price }}</p>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+<div class="card">
+  <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+  <div class="card-body">
+    <h5 class="text-center card-title">{{ product.name }}</h5>
+    <p class="card-text">{{ product.description }}</p>
+    <form class="form-inline">
+      <input type="number" class="form-control quantity" value="1">
+      <button class="add-to-cart" data-product-id="{{ product.id }}">Adicionar ao carrinho</button>
+
+
+
+    </form>
+    <div class="text-center">
+      <a href="{% url 'product_detail' product.slug %}" class="btn btn-primary">Ver mais</a>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+$(document).ready(function() {
+    // Adiciona a função de clique ao botão "Adicionar ao carrinho"
+    $('.add-to-cart').click(function() {
+        // Obtém o ID do produto a partir do atributo "data-product-id"
+        var productId = $(this).data('product-id');
+        // Faz uma requisição AJAX para adicionar o item ao carrinho
+        $.ajax({
+            url: '/add-to-cart/' + productId + '/',
+            type: 'GET',
+            success: function(data) {
+                // Exibe uma mensagem de sucesso
+                alert('Produto adicionado ao carrinho com sucesso!');
+            },
+            error: function(xhr, status, error) {
+                // Exibe uma mensagem de erro
+                alert('Erro ao adicionar o produto ao carrinho: ' + error);
+            }
+        });
+    });
+});
+</script>

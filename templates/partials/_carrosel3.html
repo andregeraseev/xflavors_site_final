@@ -1,0 +1,223 @@
+{% load static %}
+
+
+<!-- Carregar CSS do Slick Carousel -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
+<!-- Carregar JavaScript do Slick Carousel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<!-- Container principal -->
+
+<div class="container my-5">
+  <!-- Título -->
+  <h3 class="text-center mb-3">Produtos mais vendidos</h3>
+  <!-- Carrossel -->
+  <div class="slick-list">
+    {% for product in products %}
+    <!-- Container de cada item -->
+    <div class="p-3">
+      <!-- Container interno -->
+      <div class="text-center">
+        <!-- Imagem do produto -->
+        <a href="products/{{ product.slug }}">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+        </a>
+
+
+        <!-- Nome e preço do produto -->
+        <div class="mt-3">
+          <h4 class="mb-1">
+            <a href="products/{{ product.slug }}">{{ product.name }}</a>
+          </h4>
+          <p class="mb-1">{{ product.price }}</p>
+
+          <!-- Desconto (se houver) -->
+          {% if product.discount %}
+          <p class="text-danger">-{{ product.discount }}%</p>
+          {% endif %}
+        </div>
+
+        <!-- Input e botão para quantidade -->
+        <div class="d-flex align-items-center add-to-cart-form">
+          <button type="submit" class="btn btn-primary btn-sm w-75 add-to-cart-button"
+                  data-product-id="{{ product.id }}">Adicionar ao carrinho
+          </button>
+          <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
+                 data-product-id="{{ product.id }}" value="1">
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+
+<!-- Estilo CSS para o Slick Carousel -->
+<style>
+  /* Definir largura máxima da lista (container) do carrossel */
+  .slick-list {
+	max-width: 1200px;
+	margin: 0 auto; /* centralizar o container na tela */
+	padding: 30px 0; /* adicionar padding em cima e em baixo */
+  }
+
+  /* Estilo para cada slide do carrossel */
+  .slick-list .slick-slide {
+	font-size: 30px; /* tamanho da fonte */
+	text-align: center; /* centralizar o texto */
+	padding: 40px 20px; /* adicionar padding à esquerda e à direita */
+	line-height: 2; /* altura da linha */
+	font-weight: 700; /* peso da fonte */
+  }
+
+  /* Estilo para slides ímpares */
+  .slick-list .slick-slide:nth-child(odd) {
+
+  }
+
+  /* Estilo para as setas de navegação */
+  .slick-arrow {
+	z-index: 1; /* definir camada */
+	width: 40px; /* largura */
+	height: 40px; /* altura */
+
+  }
+
+  /* Estilo para o ícone dentro das setas */
+  .slick-arrow:before {
+	font-size: 30px; /* tamanho da fonte */
+	color: #ccc; /* cor */
+  }
+
+  /* Posicionamento da seta "próximo" */
+  .slick-next {
+	right: 0; /* posicionar à direita */
+  }
+
+  /* Posicionamento da seta "anterior" */
+  .slick-prev {
+	left: 0; /* posicionar à esquerda */
+  }
+
+
+</style>
+
+
+
+
+<script>
+
+
+
+  $(document).ready(function () {
+    // Verifica o tamanho da tela para definir quantos slides serão exibidos
+    if ($(window).width() < 480) {
+      var slidesToShow = 1;
+    } else if ($(window).width() < 768) {
+      var slidesToShow = 3;
+    } else {
+      var slidesToShow = 4;
+    }
+  // Inicialização da função slick na classe .slick-list
+	$(".slick-list").slick({
+    // Define quantos slides serão exibidos ao mesmo tempo
+		  slidesToShow: slidesToShow,
+    // Define quantos slides serão rolados a cada clique na seta
+		slidesToScroll: 1,
+    // Habilita as setas para navegação do carrossel
+		arrows: true,
+    // Habilita a navegação infinita do carrossel
+		infinite: true,
+    // Desabilita a reprodução automática do carrossel
+		autoplay: false
+	});
+
+  // Ao clicar no botão prev-btn, o carrossel retorna para o slide anterior
+	$(".prev-btn").click(function () {
+		$(".slick-list").slick("slickPrev");
+	});
+
+  // Ao clicar no botão next-btn, o carrossel avança para o próximo slide
+	$(".next-btn").click(function () {
+		$(".slick-list").slick("slickNext");
+	});
+
+  // Adiciona a classe slick-disabled ao botão prev-btn quando o primeiro slide é exibido
+	$(".prev-btn").addClass("slick-disabled");
+
+  // Monitora mudanças na exibição dos slides do carrossel
+	$(".slick-list").on("afterChange", function () {
+    // Verifica se a seta prev-btn está desabilitada e adiciona a classe slick-disabled ao botão prev-btn
+		if ($(".slick-prev").hasClass("slick-disabled")) {
+			$(".prev-btn").addClass("slick-disabled");
+		} else {
+			$(".prev-btn").removeClass("slick-disabled");
+		}
+     // Verifica se a seta next-btn está desabilitada e adiciona a classe slick-disabled ao botão next-btn
+		  if ($(".slick-next").hasClass("slick-disabled")) {
+			  $(".next-btn").addClass("slick-disabled");
+		  } else {
+			  $(".next-btn").removeClass("slick-disabled");
+		  }
+	  });
+
+    // Monitora mudanças no tamanho da tela
+    $(window).resize(function() {
+      // Verifica o tamanho da tela para redefinir quantos slides serão exibidos
+      if ($(window).width() < 576) {
+$(".slick-list").slick("slickSetOption", "slidesToShow", 1, true);
+} else if ($(window).width() < 992) {
+$(".slick-list").slick("slickSetOption", "slidesToShow", 3, true);
+} else {
+$(".slick-list").slick("slickSetOption", "slidesToShow", 4, true);
+}
+});
+});
+$('.add-to-cart-button').click(function() {
+  let productId = $(this).data('product-id');
+  let quantity = $(this).siblings('.quantity-input').val();
+
+$.ajax({
+type: 'POST', // Tipo de requisição AJAX
+url: "{% url 'add_to_cart_carrocel' %}", // URL para onde será enviado a requisição
+data: {
+
+'productId': productId, // ID do produto
+'quantity': quantity, // Quantidade selecionada
+'csrfmiddlewaretoken': '{{ csrf_token }}' // Token de segurança
+},
+dataType: 'json', // Tipo de dados esperados na resposta
+success: function(data) { // Função a ser executada em caso de sucesso na requisição
+  if (data.success) { // Se a requisição foi bem sucedida
+  $('#cart-icon').load(document.URL +  ' #cart-icon');
+    $('#alert_success').show(); // Mostra a mensagem de sucesso
+    $('#alert_container_success').show(); // Mostra o container da mensagem de sucesso
+    $('#alert_success').html( data.produto_adicionado); // Adiciona o nome do produto na mensagem de sucesso
+    setTimeout(function() { // Configura um temporizador
+      $('#alert_success').hide(); // Oculta a mensagem de sucesso após 5 segundos
+      $('#alert_container_success').hide(); // Oculta o container da mensagem de sucesso após 5 segundos
+    }, 5000);
+    $('.quantity-input[data-product-id=' + productId + ']').val(1); // Configura o valor padrão do input de quantidade para 1
+  } else { // Se a requisição não foi bem sucedida
+    $('#available-stock').text(data.stock); // Adiciona a quantidade disponível de estoque na mensagem de erro
+    $('#alert-erro').show(); // Mostra a mensagem de erro
+    $('#alert-container-erro').show(); // Mostra o container da mensagem de erro
+    $('#alert-erro').html( data.error); // Adiciona uma mensagem de estoque insuficiente
+
+    setTimeout(function() { // Configura um temporizador
+      $('#alert-erro').hide(); // Oculta a mensagem de erro após 5 segundos
+      $('#alert-container-erro').hide(); // Oculta o container da mensagem de erro após 5 segundos
+    }, 5000);
+    $('.quantity-input[data-product-id=' + productId + ']').val(1); // Configura o valor padrão do input de quantidade para 1
+  }
+},
+
+error: function (data) { // Função a ser executada em caso de erro na requisição
+alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.'); // Mostra uma mensagem de erro
+}
+});
+});
+</script>
+

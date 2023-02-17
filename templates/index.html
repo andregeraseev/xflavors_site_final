@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include 'partials/_carrosel.html' %}
+{% for categoria in categorias %}
+{{ categoria }}
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<script>
+  function validarCPF(cpf) {
+    var soma = 0;
+    var resto;
+
+    if (cpf === "00000000000") {
+      return false;
+    }
+
+    for (var i = 1; i <= 9; i++) {
+      soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if (resto === 10 || resto === 11) {
+      resto = 0;
+    }
+
+    if (resto !== parseInt(cpf.substring(9, 10))) {
+      return false;
+    }
+
+    soma = 0;
+    for (var i = 1; i <= 10; i++) {
+      soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if (resto === 10 || resto === 11) {
+      resto = 0;
+    }
+
+    if (resto !== parseInt(cpf.substring(10, 11))) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function validarFormulario() {
+    var cpf = document.getElementById("cpf").value;
+
+    if (!validarCPF(cpf)) {
+      alert("CPF inválido!");
+      return false;
+    }
+
+    return true;
+  }
+</script>
+
+
+  <div class="container mt-5">
+    <h1>Cadastro</h1>
+    <form action="#" method="post" onsubmit="return validarFormulario()">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+      </div>
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="telefone">Telefone</label>
+        <input type="tel" class="form-control" id="telefone" name="telefone" required>
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" class="form-control" id="senha" name="senha" required>
+      </div>
+      <div class="form-group">
+        <label for="confirmar_senha">Confirmar Senha</label>
+        <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+  </div>
+
+
+<script>
+// Adicionar máscara para o campo de telefone
+var input = document.getElementById("telefone");
+input.addEventListener("input", function(event) {
+  if (input.value.length >= 15) {
+    input.value = input.value.slice(0, 15);
+  } else {
+    input.value = input.value
+      .replace(/\D/g, "")
+      .replace(/^(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d)(\d{4})$/, "$1-$2");
+  }
+});
+</script>
+
+{% endblock %}
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+  function validarCPF(cpf) {
+    var soma = 0;
+    var resto;
+
+    if (cpf === "00000000000") {
+      return false;
+    }
+
+    for (var i = 1; i <= 9; i++) {
+      soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if (resto === 10 || resto === 11) {
+      resto = 0;
+    }
+
+    if (resto !== parseInt(cpf.substring(9, 10))) {
+      return false;
+    }
+
+    soma = 0;
+    for (var i = 1; i <= 10; i++) {
+      soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if (resto === 10 || resto === 11) {
+      resto = 0;
+    }
+
+    if (resto !== parseInt(cpf.substring(10, 11))) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function validarFormulario() {
+    var cpf = document.getElementById("cpf").value;
+
+    if (!validarCPF(cpf)) {
+      alert("CPF inválido!");
+      return false;
+    }
+
+    return true;
+  }
+</script>
+  <div class="container mt-5">
+    <h1>Cadastro</h1>
+    <form action="#" method="post" onsubmit="return validarFormulario()">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+      </div>
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="telefone">Telefone</label>
+        <input type="tel" class="form-control" id="telefone" name="telefone" required>
+      </div>
+      <div class="form-group">
+        <label for="cpf">CPF</label>
+        <input type="text" class="form-control" id="cpf" name="cpf" required>
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" class="form-control" id="senha" name="senha" required>
+      </div>
+      <div class="form-group">
+        <label for="confirmar_senha">Confirmar Senha</label>
+        <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
+      </div>
+      <div class="form-group">
+        <label for="cpf">CPF</label>
+        <input type="text" class="form-control" id="cpf" name="cpf" required>
+      </div>
+      <div class="form-group">
+        <label for="endereco">Endereço</label>
+        <input type="text" class="form-control" id="endereco" name="endereco" required>
+      </div>
+      <div class="form-group">
+        <label for="cidade">Cidade</label>
+        <input type="text" class="form-control" id="cidade" name="cidade" required>
+      </div>
+      <div class="form-group">
+        <label for="estado">Estado</label>
+        <input type="text" class="form-control" id="estado" name="estado" required>
+      </div>
+      </form>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+</body>
+</html>
+
+</form>
+{% endblock %}

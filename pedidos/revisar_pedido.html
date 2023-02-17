@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Revisar Pedido</h1>
+  <h2>Itens no Carrinho</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Produto</th>
+        <th>Variação</th>
+        <th>Preço Unitário</th>
+        <th>Quantidade</th>
+        <th>Preço Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart %}
+        <tr>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.variation.name }}</td>
+          <td>{{ item.variation.price|floatformat:2 }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.total_price|floatformat:2 }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Endereço de Entrega</h2>
+  <p>{{ endereco.rua }}, {{ endereco.numero }}, {{ endereco.bairro }}, {{ endereco.cidade }} - {{ endereco.estado }} {{ endereco.cep }}</p>
+
+  <h2>Total</h2>
+  <p>{{ cart.get_total_price|floatformat:2 }}</p>
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-primary" value="Confirmar Pedido">
+  </form>
+{% endblock %}
