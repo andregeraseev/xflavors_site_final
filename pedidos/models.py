@@ -18,6 +18,10 @@ class Pedido(models.Model):
         ('Entregue', 'Entregue'),
         ('Cancelado', 'Cancelado'),
     )
+    FRETE_CHOICES = (
+        ('Sedex', 'Sedex'),
+        ('PAC', 'PAC'),
+                        )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     endereco_entrega = models.ForeignKey(EnderecoEntrega, on_delete=models.CASCADE)
@@ -25,7 +29,7 @@ class Pedido(models.Model):
     data_pedido = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
     itens = models.ManyToManyField(CartItem)
-
+    frete = models.CharField(max_length=20, choices=FRETE_CHOICES, default='Frete nao selecionado')
     class Meta:
         ordering = ('-data_pedido',)
 

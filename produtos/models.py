@@ -36,7 +36,7 @@ class Variation(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField()
-
+    peso = models.DecimalField(max_digits=10, decimal_places=2,default=0.04)
     def __str__(self):
         return self.name
 
@@ -53,7 +53,7 @@ class Produto(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, blank=True, null=True)
     variations = models.ManyToManyField(Variation,blank=True, null=True)
-
+    peso = models.DecimalField(max_digits=10, decimal_places=2, default=0.04)
     def save(self, *args, **kwargs):
         """
         Sobrescreve o método de salvar para atribuir o valor ao campo slug

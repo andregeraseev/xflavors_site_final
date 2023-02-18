@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Pagamento</h2>
+  <p>Por favor, confirme os detalhes do seu pedido e escolha um método de pagamento.</p>
+
+  <h3>Detalhes do Pedido</h3>
+  <table>
+    <tr>
+      <td>Subtotal:</td>
+      <td>{{ subtotal }}</td>
+    </tr>
+    <tr>
+      <td>Frete:</td>
+      <td>{{ frete }}</td>
+    </tr>
+    <tr>
+      <td>Total:</td>
+      <td>{{ total }}</td>
+    </tr>
+  </table>
+
+  <h3>Método de Pagamento</h3>
+  <form action="{% url 'processar_pagamento' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="pedido_id" value="{{ pedido_id }}">
+    <input type="hidden" name="metodo_pagamento" value="{{ metodo_pagamento }}">
+    <input type="hidden" name="frete_selecionado" value="{{ frete_selecionado }}">
+    <div class="form-check">
+      <input type="radio" name="metodo_pagamento_escolhido" id="pagamento-cartao" value="cartao" class="form-check-input" checked>
+      <label for="pagamento-cartao" class="form-check-label">Cartão de Crédito</label>
+    </div>
+    <div class="form-check">
+      <input type="radio" name="metodo_pagamento_escolhido" id="pagamento-pix" value="pix" class="form-check-input">
+      <label for="pagamento-pix" class="form-check-label">PIX</label>
+    </div>
+    <div class="form-check">
+      <input type="radio" name="metodo_pagamento_escolhido" id="pagamento-boleto" value="boleto" class="form-check-input">
+      <label for="pagamento-boleto" class="form-check-label">Boleto Bancário</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Pagar Agora</button>
+  </form>
+{% endblock %}

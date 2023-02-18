@@ -1,6 +1,9 @@
+import os
+
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView
 from produtos.models import Produto
 from .forms import EnderecoEntregaForm
@@ -11,6 +14,10 @@ from clientes.models import Cliente
 
 from django.shortcuts import render, redirect
 from clientes.models import EnderecoEntrega
+
+
+
+
 
 from django.shortcuts import get_object_or_404
 def checkout(request):
@@ -42,68 +49,68 @@ from django.contrib import messages
 from clientes.models import EnderecoEntrega
 from pedidos.models import Pedido
 
-
-@login_required
-def processar_pagamento(request):
-    # Obtém o carrinho e o endereço de entrega do usuário
-    cart = Cart(request)
-    endereco = request.user.cliente.enderecoentrega if hasattr(request.user, 'cliente') else None
-
-    # Obtém o método de pagamento escolhido pelo cliente
-    metodo_pagamento = request.POST.get('metodo_pagamento', None)
-
-    if metodo_pagamento == 'cartao':
-        # Processa o pagamento via cartão de crédito
-        # Aqui você poderia adicionar a lógica para processar o pagamento via cartão de crédito
-        # ...
-
-        # Cria um novo pedido com as informações do carrinho e do endereço de entrega
-        pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
-
-        # Limpa o carrinho do usuário
-        cart.clear()
-
-        # Redireciona o usuário para a página de confirmação do pedido
-        messages.success(request, 'Seu pedido foi realizado com sucesso.')
-        return redirect('pedido_confirmado', pedido_id=pedido.id)
-
-    elif metodo_pagamento == 'pix':
-        # Processa o pagamento via PIX
-        # Aqui você poderia adicionar a lógica para processar o pagamento via PIX
-        # ...
-
-        # Cria um novo pedido com as informações do carrinho e do endereço de entrega
-        pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
-
-        # Limpa o carrinho do usuário
-        cart.clear()
-
-        # Redireciona o usuário para a página de confirmação do pedido
-        messages.success(request, 'Seu pedido foi realizado com sucesso.')
-        return redirect('pedido_confirmado', pedido_id=pedido.id)
-
-    elif metodo_pagamento == 'deposito':
-        # Processa o pagamento via depósito bancário
-        # Aqui você poderia adicionar a lógica para processar o pagamento via depósito bancário
-        # ...
-
-        # Cria um novo pedido com as informações do carrinho e do endereço de entrega
-        pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
-
-        # Limpa o carrinho do usuário
-        cart.clear()
-
-        # Redireciona o usuário para a página de confirmação do pedido
-
-        return redirect('confirmacao_pedido', pedido_id=pedido.id)
-    else:
-        form = EnderecoEntregaForm()
-
-    context = {
-        'cart': cart,
-        'form': form,
-    }
-    return render(request, 'pedidos/checkout.html', context)
+#
+# @login_required
+# def processar_pagamento(request):
+#     # Obtém o carrinho e o endereço de entrega do usuário
+#     cart = Cart(request)
+#     endereco = request.user.cliente.enderecoentrega if hasattr(request.user, 'cliente') else None
+#
+#     # Obtém o método de pagamento escolhido pelo cliente
+#     metodo_pagamento = request.POST.get('metodo_pagamento', None)
+#
+#     if metodo_pagamento == 'cartao':
+#         # Processa o pagamento via cartão de crédito
+#         # Aqui você poderia adicionar a lógica para processar o pagamento via cartão de crédito
+#         # ...
+#
+#         # Cria um novo pedido com as informações do carrinho e do endereço de entrega
+#         pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
+#
+#         # Limpa o carrinho do usuário
+#         cart.clear()
+#
+#         # Redireciona o usuário para a página de confirmação do pedido
+#         messages.success(request, 'Seu pedido foi realizado com sucesso.')
+#         return redirect('pedido_confirmado', pedido_id=pedido.id)
+#
+#     elif metodo_pagamento == 'pix':
+#         # Processa o pagamento via PIX
+#         # Aqui você poderia adicionar a lógica para processar o pagamento via PIX
+#         # ...
+#
+#         # Cria um novo pedido com as informações do carrinho e do endereço de entrega
+#         pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
+#
+#         # Limpa o carrinho do usuário
+#         cart.clear()
+#
+#         # Redireciona o usuário para a página de confirmação do pedido
+#         messages.success(request, 'Seu pedido foi realizado com sucesso.')
+#         return redirect('pedido_confirmado', pedido_id=pedido.id)
+#
+#     elif metodo_pagamento == 'deposito':
+#         # Processa o pagamento via depósito bancário
+#         # Aqui você poderia adicionar a lógica para processar o pagamento via depósito bancário
+#         # ...
+#
+#         # Cria um novo pedido com as informações do carrinho e do endereço de entrega
+#         pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
+#
+#         # Limpa o carrinho do usuário
+#         cart.clear()
+#
+#         # Redireciona o usuário para a página de confirmação do pedido
+#
+#         return redirect('confirmacao_pedido', pedido_id=pedido.id)
+#     else:
+#         form = EnderecoEntregaForm()
+#
+#     context = {
+#         'cart': cart,
+#         'form': form,
+#     }
+#     return render(request, 'pedidos/checkout.html', context)
 
 
 @login_required
@@ -161,9 +168,225 @@ def atualizar_endereco_entrega(request):
         return JsonResponse({'success': False, 'message': 'Método inválido.'})
 
 
+import requests
+import xml.etree.ElementTree as ET
+import re
+
+
+def cotacao_frete_correios2(endereco):
+    cep = endereco.cep
+    peso = 0.1  # 100 gramas
+    comprimento = 20  # cm
+    largura = 20  # cm
+    altura = 20  # cm
+    valor_declarado = 0
+    servico = '40010,41106'  # SEDEX e SEDEX a Cobrar
+
+    dados = f"""
+    <servicos>
+        <cServico>
+            <nCdEmpresa></nCdEmpresa>
+            <sDsSenha></sDsSenha>
+            <nCdServico>{servico}</nCdServico>
+            <sCepOrigem>01010-001</sCepOrigem>
+            <sCepDestino>{cep}</sCepDestino>
+            <nVlPeso>{peso}</nVlPeso>
+            <nCdFormato>1</nCdFormato>
+            <nVlComprimento>{comprimento}</nVlComprimento>
+            <nVlAltura>{altura}</nVlAltura>
+            <nVlLargura>{largura}</nVlLargura>
+            <nVlValorDeclarado>{valor_declarado}</nVlValorDeclarado>
+            <sCdMaoPropria>N</sCdMaoPropria>
+            <nVlDiametro>0</nVlDiametro>
+            <sCdAvisoRecebimento>N</sCdAvisoRecebimento>
+        </cServico>
+    </servicos>
+    """
+
+    headers = {
+        'Content-Type': 'application/xml',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept': '*/*',
+        'Connection': 'keep-alive'
+    }
+
+    try:
+        # envia a requisição SOAP e trata a resposta
+        response = requests.post('http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx',
+                                 headers=headers,
+                                 data=dados.encode('utf-8'))
+
+        if response.status_code == 200:
+            # parsing do XML retornado
+            tree = ET.ElementTree(ET.fromstring(response.content))
+            root = tree.getroot()
+
+            servicos = root.findall('.//cServico')
+
+            results = []
+
+            for servico in servicos:
+                code = servico.find('Codigo').text
+                if code == '0':
+                    continue  # erro no serviço
+
+                name = servico.find('Nome').text
+                price = float(servico.find('Valor').text.replace(',', '.'))
+                days = int(servico.find('PrazoEntrega').text)
+                delivery_time = f'{days} dias úteis'
+
+                results.append({
+                    'servico': name,
+                    'valor': price,
+                    'prazo': delivery_time
+                })
+
+            return results
+
+        else:
+            return None
+
+    except Exception as e:
+        return None
+
+
+
+import requests
+import xml.etree.ElementTree as ET
+
+def cotacao_frete_correios(request):
+    user = request.user
+    cart = Cart.get_or_create_cart(user)
+    itens = cart.cartitem_set.all()
+
+    total = 0
+    for item in itens:
+        if item.variation:
+            peso = item.variation.peso
+        else:
+            peso = item.product.peso
+        total += item.quantity * peso
+
+    senha= os.getenv('senha_correios')
+    codigo_empresa= os.getenv('usuario_correios')
+    cep_origem = 12233-400
+    cep = request.POST.get('cep')
+    peso = total
+    print('PESO',total)
+    comprimento = 20  # cm
+    largura = 20  # cm
+    altura = 20  # cm
+    valor_declarado = 0
+    servico = '40010'  # SEDEX e SEDEX a Cobrar
+
+
+    try:
+
+        # envia a requisição SOAP e trata a resposta
+        response = requests.post(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino={cep}&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=03220,03298&nVlDiametro=0&StrRetorno=xml")
+        print(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino=12245500&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=40010,41106&nVlDiametro=0&StrRetorno=xml")
+        if response.status_code == 200:
+
+            # parsing do XML retornado
+            tree = ET.ElementTree(ET.fromstring(response.content))
+
+            root = tree.getroot()
+
+            servicos = root.findall('.//cServico')
+            results = []
+
+
+
+            for servico in servicos:
+                code = servico.find('Codigo').text
+                if code == '0':
+                    continue  # erro no serviço
+                print('servicovalor', servico.find('Valor').text)
+                preco = float(servico.find('Valor').text.replace(',', '.'))
+                days = int(servico.find('PrazoEntrega').text)
+
+                prazo_entrega = f"{days} {'dia útil' if days == 1 else 'dias úteis'}"
+
+                results.append({
+                    'codigo': code,
+                    'valor': preco,
+                    'prazodeentrega': prazo_entrega
+                })
+                print(results, 'results')
+            print('Cotação de frete realizada com sucesso.')
+            return JsonResponse({'results': results})
+
+        else:
+            print(f'Resposta da requisição inválida: {response.status_code}')
+            return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
+
+    except Exception as e:
+        print(f'Erro na requisição: {e}')
+        return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
+
+
+
+
+@require_POST
+def criar_pedido(request):
+    user = request.user
+    cliente = user.cliente
+    endereco = EnderecoEntrega.objects.get(cliente=cliente, primario=True)
+    print(endereco)
+    itens_do_carrinho = []
+
+    for item in request.session['carrinho']:
+        produto = item['produto']
+        quantidade = item['quantidade']
+        preco_unitario = produto.price
+        preco_total = quantidade * preco_unitario
+        itens_do_carrinho.append({
+            'produto': produto,
+            'quantidade': quantidade,
+            'preco_unitario': preco_unitario,
+            'preco_total': preco_total,
+        })
+    subtotal = float(request.POST['subtotal'])
+    frete = float(request.POST['frete'])
+    total = float(request.POST['total'])
+    metodo_pagamento = request.POST['metodo_pagamento']
+    frete_selecionado = request.POST['frete_selecionado']
+    pedido = Pedido.objects.create(
+        user=user,
+        endereco_entrega= endereco,
+        status=Pedido.AGUARDANDO_PAGAMENTO,
+        itens= itens_do_carrinho,
+        frete = frete_selecionado,
+        total=total,
+        metodo_pagamento=metodo_pagamento,
+    )
+    print(pedido)
+    return JsonResponse({'pedido_id': pedido.id})
+
+
 from django.shortcuts import render
 
 from .models import Pedido
+
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Pedido
+
+def pagina_pagamento(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    context = {
+        'pedido_id': pedido.id,
+        'subtotal': pedido.subtotal,
+        'frete': pedido.frete,
+        'total': pedido.total,
+        'metodo_pagamento': request.GET.get('metodo_pagamento'),
+        'frete_selecionado': request.GET.get('frete_selecionado'),
+    }
+    return render(request, 'pagina_pagamento.html', context)
+
+
+
 
 def confirmacao_pedido(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)

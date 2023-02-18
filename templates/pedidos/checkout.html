@@ -25,8 +25,16 @@
       </tbody>
       <tfoot>
         <tr>
-          <th colspan="3">Total</th>
+          <th colspan="3">Subtotal:</th>
           <td>R$ {{ total }}</td>
+        </tr>
+      <tr>
+          <th colspan="3">Frete:</th>
+          <td id="frete">R$ 0.00</td>
+        </tr>
+        <tr>
+          <th colspan="3">Total:</th>
+          <td id="total-com-frete">R$ {{ total }}</td>
         </tr>
       </tfoot>
     </table>
@@ -49,8 +57,34 @@
     <a href="">Adicionar Endereço</a>#criar endereco de entrega
     {% endif %}
 
+<h2>Cotação de Frete</h2>
+<div class="card mb-3">
+  <div class="card-header">Selecione uma opção de frete:</div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <input type="radio" name="frete" id="frete-sedex" value="sedex" class="form-check-input">
+      <label for="frete-sedex" class="form-check-label font-weight-bold">SEDEX</label>
+      <span class="badge badge-primary badge-pill text-dark" id="valor-sedex"></span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <input type="radio" name="frete" id="frete-pac" value="pac" class="form-check-input">
+      <label for="frete-pac" class="form-check-label font-weight-bold">PAC</label>
+      <span class="badge badge-primary badge-pill text-dark" id="valor-pac"></span>
+    </li>
+  </ul>
+</div>
+
+
+
+
+
     <h2>Formas de Pagamento</h2>
-    <form action="{% url 'processar_pagamento' %}" method="POST">
+
+
+
+
+
+    <form action="" method="POST">
       {% csrf_token %}
       <div class="form-check">
         <input type="radio" name="metodo_pagamento" id="pagamento-cartao" value="cartao" class="form-check-input" checked>
@@ -64,10 +98,11 @@
         <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="deposito" class="form-check-input">
         <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
       </div>
-      <button type="submit" class="btn btn-primary">Finalizar Pedido</button>
-    </form>
+<button id="ir-para-meios-de-pagamento">Ir para Meios de Pagamento</button>    </form>
   </div>
 </div>
+
+
 
 
 
@@ -112,6 +147,99 @@ $(document).ready(function() {
     });
   });
 });
+
+
+$(document).ready(function () {
+    var cep = '{{ endereco_primario.cep }}'; // coloque aqui o CEP a ser cotado
+    $.ajax({
+        url: '{% url "cotacao_frete_correios" %}',
+        type: 'POST',
+        data: {
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            'cep': cep,
+        },
+        dataType: 'json',
+        success: function (data) {
+            if (data.results) {
+                for (var i = 0; i < data.results.length; i++) {
+                    var result = data.results[i];
+                    if (result.codigo == '03220') {
+                        $('#valor-sedex').text('R$' + result.valor +  ' - ' +result.prazodeentrega);
+                    } else if (result.codigo == '03298') {
+                        $('#valor-pac').text('R$' + result.valor + ' - ' +result.prazodeentrega);
+                    }
+                }
+            } else {
+                alert('Erro ao obter os valores de frete.');
+            }
+        },
+        error: function () {
+            alert('Erro ao obter os valores de frete ERROR.');
+        }
+    });
+});
+
+
+$(document).ready(function () {
+  // ...
+
+  $('input[type=radio][name=frete]').on('change', function() {
+    var valorFrete = 0;
+    if (this.value === 'sedex') {
+      valorFrete = parseFloat($('#valor-sedex').text().match(/\d+\.\d+/)[0]);
+    } else if (this.value === 'pac') {
+      valorFrete = parseFloat($('#valor-pac').text().match(/\d+\.\d+/)[0]);
+    }
+    $('#frete').text('R$ ' + valorFrete.toFixed(2));
+    var totalComFrete = parseFloat('{{ total }}') + valorFrete;
+    $('#total-com-frete').text('R$ ' + totalComFrete.toFixed(2));
+  });
+});
+
+
+$(document).ready(function() {
+  // Adiciona um evento de clique no botão "Ir para meios de pagamento"
+  $('#ir-para-meios-de-pagamento').on('click', function() {
+    // Obtém o valor do subtotal
+    var subtotal = parseFloat($('#subtotal').text().replace('R$ ', ''));
+
+    // Obtém o valor do frete
+    var frete = parseFloat($('#frete').text().replace('R$ ', ''));
+
+    // Obtém o valor total com o frete
+    var total = parseFloat($('#total-com-frete').text().replace('R$ ', ''));
+
+    // Obtém o método de pagamento selecionado
+    var metodoPagamento = $('input[name=metodo_pagamento]:checked').val();
+
+    // Obtém o método de frete selecionado
+    var freteSelecionado = $('input[name=frete]:checked').val();
+
+    // Envia uma requisição AJAX para criar o pedido com o status "aguardando pagamento"
+    $.ajax({
+      url: '{% url "criar_pedido" %}',
+      type: 'POST',
+      data: {
+        'subtotal': subtotal,
+        'frete': frete,
+        'total': total,
+        'metodo_pagamento': metodoPagamento,
+        'frete_selecionado': freteSelecionado,
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(response) {
+        // Redireciona o usuário para a página de pagamento com as informações relevantes na URL
+        window.location.href = '{% url "pagina_pagamento" %}?pedido_id=' + response.pedido_id + '&subtotal=' + subtotal + '&frete=' + frete + '&total=' + total + '&metodo_pagamento=' + metodoPagamento + '&frete_selecionado=' + freteSelecionado;
+      },
+      error: function(response) {
+        alert('Erro ao criar o pedido.');
+      }
+    });
+  });
+});
+
+
+
 </script>
 
 

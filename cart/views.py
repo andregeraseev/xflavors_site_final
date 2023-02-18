@@ -69,16 +69,29 @@ def add_to_cart_carrocel(request):
     cart = Cart.get_or_create_cart(user)
     quantity = int(request.POST.get('quantity', 1))
 
+
     if quantity > product.stock:
         return JsonResponse({'success': False,
                              'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis.'})
 
     try:
+
         item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
             variation=variation
         )
+
+        # Verificar se já existe um item no carrinho com o mesmo produto e variação
+        existing_items = CartItem.objects.filter(cart=cart, product=product, variation=variation)
+        if existing_items.exists():
+            quantidade_no_carrinho = existing_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+            total_quantity = quantity + quantidade_no_carrinho
+            if total_quantity > product.stock:
+                return JsonResponse({'success': False,
+                                     'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis e tem {quantidade_no_carrinho} unidades no seu carrinho.'})
+            item = existing_items.first()
+
         if not created:
             item.quantity += quantity
         else:
@@ -123,6 +136,17 @@ def add_to_cart(request, product_id):
             product=product,
             variation=variation
         )
+
+        # Verificar se já existe um item no carrinho com o mesmo produto e variação
+        existing_items = CartItem.objects.filter(cart=cart, product=product, variation=variation)
+        if existing_items.exists():
+            quantidade_no_carrinho = existing_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+            total_quantity = quantity + quantidade_no_carrinho
+            if total_quantity > product.stock:
+                return JsonResponse({'success': False,
+                                     'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis e tem {quantidade_no_carrinho} unidades no seu carrinho.'})
+            item = existing_items.first()
+
         if not created:
             item.quantity += quantity
         else:
