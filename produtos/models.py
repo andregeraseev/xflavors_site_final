@@ -52,7 +52,7 @@ class Produto(models.Model):
     stock = models.PositiveIntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, blank=True, null=True)
-    variations = models.ManyToManyField(Variation,blank=True, null=True)
+    variations = models.ManyToManyField(Variation,blank=True)
     peso = models.DecimalField(max_digits=10, decimal_places=2, default=0.04)
     def save(self, *args, **kwargs):
         """

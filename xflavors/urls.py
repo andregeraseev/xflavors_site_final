@@ -29,7 +29,7 @@ urlpatterns = [
     path('editar_endereco/', editar_endereco, name='editar_endereco'),
     path('cotacao_frete_correios/', cotacao_frete_correios, name='cotacao_frete_correios'),
     path('criar_pedido/', criar_pedido, name='criar_pedido'),
-    path('pagina_pagamento/', pagina_pagamento, name='pagina_pagamento'),
+    path('pagina_pagamento/<int:pedido_id>', pagina_pagamento, name='pagina_pagamento'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -55,8 +55,13 @@
     {% endfor %}
     <div class="dropdown-divider"></div>
 
-            <a href="{% url 'cart:carrinho' %}" class="btn btn-danger btn-block">Ver Carrinho</a>
+            <a href="{% url 'cart:carrinho' %}" class="btn btn-success btn-block">Ver Carrinho</a>
+
+
+
+            <a href="{% url 'checkout' %}" class="btn btn-danger btn-block my-2">Finalizar Pedido</a>
           </div>
+
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Olá, {{ user.username }}</a>

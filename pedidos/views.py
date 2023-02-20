@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView
 from produtos.models import Produto
 from .forms import EnderecoEntregaForm
-from .models import Order
+from .models import Order, PedidoItem
 from cart.models import CartItem, Cart
 from clientes.models import EnderecoEntrega
 from clientes.models import Cliente
@@ -272,7 +272,6 @@ def cotacao_frete_correios(request):
     cep_origem = 12233-400
     cep = request.POST.get('cep')
     peso = total
-    print('PESO',total)
     comprimento = 20  # cm
     largura = 20  # cm
     altura = 20  # cm
@@ -301,7 +300,6 @@ def cotacao_frete_correios(request):
                 code = servico.find('Codigo').text
                 if code == '0':
                     continue  # erro no serviço
-                print('servicovalor', servico.find('Valor').text)
                 preco = float(servico.find('Valor').text.replace(',', '.'))
                 days = int(servico.find('PrazoEntrega').text)
 
@@ -325,44 +323,66 @@ def cotacao_frete_correios(request):
         return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
 
 
-
-
 @require_POST
+@login_required
 def criar_pedido(request):
+    # Obter informações do formulário
     user = request.user
-    cliente = user.cliente
-    endereco = EnderecoEntrega.objects.get(cliente=cliente, primario=True)
-    print(endereco)
-    itens_do_carrinho = []
-
-    for item in request.session['carrinho']:
-        produto = item['produto']
-        quantidade = item['quantidade']
-        preco_unitario = produto.price
-        preco_total = quantidade * preco_unitario
-        itens_do_carrinho.append({
-            'produto': produto,
-            'quantidade': quantidade,
-            'preco_unitario': preco_unitario,
-            'preco_total': preco_total,
-        })
     subtotal = float(request.POST['subtotal'])
     frete = float(request.POST['frete'])
     total = float(request.POST['total'])
-    metodo_pagamento = request.POST['metodo_pagamento']
     frete_selecionado = request.POST['frete_selecionado']
-    pedido = Pedido.objects.create(
-        user=user,
-        endereco_entrega= endereco,
-        status=Pedido.AGUARDANDO_PAGAMENTO,
-        itens= itens_do_carrinho,
-        frete = frete_selecionado,
-        total=total,
-        metodo_pagamento=metodo_pagamento,
-    )
-    print(pedido)
-    return JsonResponse({'pedido_id': pedido.id})
+    metodo_pagamento = request.POST['metodo_pagamento']
+    print(metodo_pagamento, 'AQUIIIIII')
+    # endereco_de_entrega_id = request.POST['endereco_de_entrega']
+    # endereco_de_entrega = EnderecoEntrega.objects.get(id=endereco_de_entrega_id)
+    endereco_entrega = EnderecoEntrega.objects.filter(cliente=user.cliente, primario=True).first()
+    # Obter o carrinho atual do usuário
+    cart = Cart.objects.get(user=request.user)
+    print('SUBTOTAL',subtotal)
 
+
+
+
+    # Criar uma nova instância de Pedido
+    pedido = Pedido.objects.create(
+        user=request.user,
+        endereco_entrega=endereco_entrega,
+        status='Aguardando_pagamento',
+        frete=frete_selecionado,
+        subtotal=subtotal,
+        valor_frete=frete,
+        total=total,
+        metodo_de_pagamento=metodo_pagamento
+    )
+
+
+
+
+    for item in cart.cartitem_set.all():
+        print(item)
+        pedido_item = PedidoItem.objects.create(
+            product=item.product,
+            variation=item.variation,
+            quantity=item.quantity
+        )
+        pedido_item.save()
+        pedido.itens.add(pedido_item)
+    pedido.save()
+
+
+    # Adicionar os itens do carrinho ao pedido
+    # print(cart, 'CARINHOO')
+    # for item in cart.cartitem_set.all():
+    #     print(item)
+    #     pedido.itens.add(item)
+    # pedido.save()
+
+    # Limpar o carrinho
+    cart.cartitem_set.all().delete()
+    print(pedido.id, 'PEDIDO ID')
+    # Redirecionar para a página de detalhes do pedido
+    return JsonResponse({'pedido_id': pedido.id})
 
 from django.shortcuts import render
 
@@ -375,13 +395,25 @@ from .models import Pedido
 
 def pagina_pagamento(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    itens = PedidoItem.objects.filter(pedido=pedido)
+    print(itens)
+    for item in itens:
+        print(item.quantity)
+        print(item.variation)
+        print(item.product)
+        print(pedido.metodo_de_pagamento)
+
+
     context = {
+        'itens': itens,
         'pedido_id': pedido.id,
         'subtotal': pedido.subtotal,
-        'frete': pedido.frete,
+        'tipo_frete': pedido.frete,
+        'valor_frete': pedido.valor_frete,
         'total': pedido.total,
-        'metodo_pagamento': request.GET.get('metodo_pagamento'),
         'frete_selecionado': request.GET.get('frete_selecionado'),
+        'metodo_de_pagamento': pedido.metodo_de_pagamento,
     }
     return render(request, 'pagina_pagamento.html', context)
 
