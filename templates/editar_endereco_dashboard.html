@@ -1,0 +1,96 @@
+<h2>Editar Endereço de Entrega</h2>
+<form action="{% url 'editar_endereco_dashboard' %}" method="post">
+  {% csrf_token %}
+  <input type="hidden" name="endereco_id" value="{{ endereco.id }}">
+  <div class="form-group">
+    <label for="cep">CEP</label>
+
+    <input type="text" id="cep" name="cep" class="form-control" value="{{ endereco.cep }}">
+    <span class="error-message"></span>
+  </div>
+  <div class="form-group">
+    <label for="rua" id="id_rua">Rua</label>
+    <input type="text" name="rua" id="rua" class="form-control" value="{{ endereco.rua }}">
+  </div>
+  <div class="form-group">
+    <label for="numero">Número</label>
+    <input type="text" name="numero" id="numero" class="form-control" value="{{ endereco.numero }}">
+  </div>
+  <div class="form-group">
+    <label for="complemento">Complemento</label>
+    <input type="text" name="complemento" id="complemento" class="form-control" value="{{ endereco.complemento }}">
+  </div>
+  <div class="form-group">
+    <label for="bairro">Bairro</label>
+    <input type="text" name="bairro" id="bairro" class="form-control" value="{{ endereco.bairro }}">
+  </div>
+  <div class="form-group">
+    <label for="cidade">Cidade</label>
+    <input type="text" name="cidade" id="cidade" class="form-control" value="{{ endereco.cidade }}">
+  </div>
+  <div class="form-group">
+    <label for="estado">Estado</label>
+    <input type="text" name="estado" id="estado" class="form-control" value="{{ endereco.estado }}">
+  </div>
+
+  <button type="submit" class="btn btn-primary my-2">Salvar</button>
+  <button id="fechar-editar-endereco" type="submit" class="btn btn-primary my-2">Fechar</button>
+
+
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  $("#cep").blur(function() {
+    var cep = $(this).val().replace(/\D/g, "");
+
+    if (cep != "") {
+      var validacep = /^[0-9]{8}$/;
+
+      if (validacep.test(cep)) {
+        $("#rua").val("...");
+        $("#bairro").val("...");
+        $("#estado").val("...");
+        $("#cidade").val("...");
+
+        $.ajax({
+          url: "https://viacep.com.br/ws/" + cep + "/json/",
+          type: "GET",
+          dataType: "json",
+          success: function(dados) {
+            if (!("erro" in dados)) {
+              $("#rua").val(dados.logradouro);
+              $("#bairro").val(dados.bairro);
+              $("#estado").val(dados.uf);
+              $("#cidade").val(dados.localidade);
+              $(".error-message").text("");
+            } else {
+              $("#cep").val("");
+              $("#rua").val("");
+              $("#bairro").val("");
+              $("#estado").val("");
+              $("#cidade").val("");
+              $(".error-message").text("CEP não encontrado.").css("color", "red");
+            }
+          }
+        });
+      } else {
+        $("#cep").val("");
+        $("#rua").val("");
+        $("#bairro").val("");
+        $("#estado").val("");
+        $("#cidade").val("");
+        $(".error-message").text("Formato de CEP inválido.").css("color", "red");
+      }
+    } else {
+      $("#rua").val("");
+      $("#bairro").val("");
+      $("#estado").val("");
+      $("#cidade").val("");
+      $(".error-message").text("");
+    }
+  });
+});
+
+</script>

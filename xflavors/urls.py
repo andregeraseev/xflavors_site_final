@@ -32,6 +32,10 @@ urlpatterns = [
     path('pagina_pagamento/<int:pedido_id>', pagina_pagamento, name='pagina_pagamento'),
     path('visualizar_pedidos', visualizar_pedidos, name='visualizar_pedidos'),
     path('detalhes_pedido/<int:pedido_id>', detalhes_pedido, name='detalhes_pedido'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('alterar_celular/', views.alterar_celular, name='alterar_celular'),
+    path('adicionar_endereco_dashboard', views.adicionar_endereco_dashboard, name='adicionar_endereco_dashboard'),
+    path('editar_endereco_dashboard/', views.editar_endereco_dashboard, name='editar_endereco_dashboard'),
 
 
 

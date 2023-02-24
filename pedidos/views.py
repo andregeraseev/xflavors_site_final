@@ -39,7 +39,8 @@ def detalhes_pedido(request, pedido_id):
 @login_required
 def visualizar_pedidos(request):
     pedidos = Pedido.objects.filter(user=request.user)
-    return render(request, 'visualizar_pedidos.html', {'pedidos': pedidos})
+    context = {'pedidos': pedidos}
+    return render(request, 'visualizar_pedidos.html', context)
 
 from django.shortcuts import get_object_or_404
 @login_required
@@ -137,6 +138,10 @@ from pedidos.models import Pedido
 
 
 @login_required
+
+
+
+
 
 def editar_endereco(request):
     if request.method == 'POST':

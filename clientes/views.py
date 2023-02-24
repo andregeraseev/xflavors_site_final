@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from cart.models import Cart
+from pedidos.models import Pedido
 from .models import Cliente, EnderecoEntrega
 from django.contrib.auth.models import User
 from produtos.models import Produto
@@ -67,3 +68,89 @@ def cadastro(request):
 
     return render(request, 'cadastro.html')
 
+
+def dashboard(request):
+    cliente = Cliente.objects.get(user=request.user)
+    enderecos = EnderecoEntrega.objects.filter(cliente=cliente)
+    pedidos = Pedido.objects.filter(user=request.user)
+    context = {'cliente': cliente, 'enderecos': enderecos, 'pedidos':pedidos}
+    return render(request, 'dashboard.html', context)
+
+
+from django.shortcuts import render, redirect
+from pedidos.forms import EnderecoEntregaForm
+
+def adicionar_endereco_dashboard(request):
+    if request.method == 'POST':
+        cliente = Cliente.objects.get(user=request.user)
+        rua = request.POST.get('rua')
+        numero = request.POST.get('numero')
+        complemento = request.POST.get('complemento')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+        cep = request.POST.get('cep')
+
+        endereco = EnderecoEntrega.objects.create(
+            cliente=cliente,
+            rua=rua,
+            numero=numero,
+            complemento=complemento,
+            bairro=bairro,
+            cidade=cidade,
+            estado=estado,
+            cep=cep
+        )
+        endereco.save()
+
+        return redirect('dashboard')
+
+    return render(request, 'adicionar_endereco_dashboard.html')
+
+
+from django.http import JsonResponse
+
+def alterar_celular(request):
+    if request.method == 'POST':
+        celular = request.POST.get('celular')
+        cliente = Cliente.objects.get(user=request.user)
+        cliente.celular = celular
+        cliente.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False})
+
+
+
+def editar_endereco_dashboard(request):
+    if request.method == 'POST':
+        endereco_id = request.POST.get('endereco_id')
+        rua = request.POST.get('rua')
+        numero = request.POST.get('numero')
+        complemento = request.POST.get('complemento')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+        cep = request.POST.get('cep')
+
+        try:
+            endereco = EnderecoEntrega.objects.get(id=endereco_id)
+            endereco.rua = rua
+            endereco.numero = numero
+            endereco.complemento = complemento
+            endereco.bairro = bairro
+            endereco.cidade = cidade
+            endereco.estado = estado
+            endereco.cep = cep
+            endereco.save()
+            # messages.success(request, 'Endereço atualizado com sucesso!')
+            return redirect('dashboard')
+        except EnderecoEntrega.DoesNotExist:
+            # messages.error(request, 'Endereço não encontrado.')
+            return redirect('dashboard')
+
+
+
+    endereco_id = request.GET.get('endereco_id')
+    endereco = get_object_or_404(EnderecoEntrega, pk=endereco_id, cliente=request.user.cliente)
+    return render(request, 'editar_endereco_dashboard.html', {'endereco': endereco})

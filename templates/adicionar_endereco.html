@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col">
+    <h2>Adicionar Endereço de Entrega</h2>
+    <form action="{% url 'adicionar_endereco' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="cep">CEP</label>
+        <input type="text" id="cep" name="cep" class="form-control">
+        <span class="error-message"></span>
+      </div>
+      <div class="form-group">
+        <label for="rua">Rua</label>
+        <input type="text" name="rua" id="rua" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="numero">Número</label>
+        <input type="text" name="numero" id="numero" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="complemento">Complemento</label>
+        <input type="text" name="complemento" id="complemento" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="bairro">Bairro</label>
+        <input type="text" name="bairro" id="bairro" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="cidade">Cidade</label>
+        <input type="text" name="cidade" id="cidade" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="estado">Estado</label>
+        <input type="text" name="estado" id="estado" class="form-control">
+      </div>
+
+      <button type="submit" class="btn btn-primary my-2">Salvar</button>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  // Adiciona um listener para o evento submit do formulário
+  $("#formulario").submit(function(event) {
+    // Previne o comportamento padrão do formulário
+    event.preventDefault();
+
+    // Obtém os dados do formulário
+    var formData = $(this).serialize();
+
+    // Envia os dados para a URL de destino
+    $.ajax({
+      type: "POST",
+      url: "/url/de/destino/",
+      data: formData,
+      success: function(data) {
+        // Exibe uma mensagem de sucesso
+        alert("Endereço salvo com sucesso!");
+
+        // Atualiza a lista de endereços na página
+        $("#lista-enderecos").load("/url/de/atualizacao/da/lista/");
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        // Exibe uma mensagem de erro
+        alert("Ocorreu um erro ao salvar o endereço: " + errorThrown);
+      }
+    });
+  });
+});
+</script>

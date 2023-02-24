@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">Dashboard do Cliente</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mt-4">
+                <div class="card-header">
+                    Informações do Cliente
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ cliente }}</h5>
+                    <p class="card-text"><strong>Email:</strong> {{ cliente.user.email }}</p>
+                    <form method="POST" id="form-celular">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="input-celular" class="form-label">Celular:</label>
+                            <input type="text" class="form-control" name="celular" value="{{ cliente.celular }}"
+                                   id="input-celular" disabled>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btn-edit-celular">Editar</button>
+                        <button type="submit" class="btn btn-primary d-none" id="btn-save-celular">Salvar</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+      <div class="col-md-8">
+    <div class="card mt-4">
+        <div class="card-header">
+            Endereços de Entrega
+        </div>
+        <div class="card-body" id="card-body">
+            <h5 class="card-title">Endereços</h5>
+            <ul class="list-group">
+                {% for endereco in enderecos %}
+                <li class="list-group-item">{{ endereco.rua }} - {{ endereco.numero }}, {{ endereco.bairro }} -
+                    {{ endereco.cidade }} - {{ endereco.estado }} - {{ endereco.cep }}
+                    <div class="d-inline float-end">
+                        <button id="editar-endereco" data-endereco-id="{{ endereco.id }}" class="btn btn-primary me-2">Editar</button>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="list-group-item">Nenhum endereço cadastrado.</li>
+                {% endfor %}
+            </ul>
+            <div id="editar-endereco-container" data-endereco-id="{{ endereco.id }}"></div>
+        </div>
+    </div>
+</div>
+
+    </div>
+
+
+
+    <div class="row mt-4">
+            <button id="adicionar_endereco" data-endereco-id="{{ endereco.id }}" class="btn btn-primary mt-3">Adicionar Endereço</button>
+            <div id="adicionar_endereco_container"></div>
+
+        <div class="col-md-12">
+            {% include 'visualizar_pedidos.html' %}
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#btn-edit-celular').click(function() {
+      $('#input-celular').prop('disabled', false);
+      $('#btn-save-celular').removeClass('d-none');
+      $(this).addClass('d-none');
+    });
+  });
+</script>
+
+
+<script>
+  $(document).ready(function() {
+    $('#form-celular').submit(function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: '{% url "alterar_celular" %}',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(data) {
+          window.location.reload();
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+        }
+      });
+    });
+  });
+
+
+
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+
+$(document).ready(function() {
+  $('.card-body').on('click', '#editar-endereco', function(e) {
+    e.preventDefault();
+    var enderecoId = $(this).data('endereco-id');
+    $.ajax({
+      url: '{% url "editar_endereco_dashboard" %}',
+      type: 'GET',
+      data: {
+        'endereco_id': enderecoId,
+      },
+      success: function(response) {
+        $('#editar-endereco-container').html(response);
+        $('#fechar-editar-endereco').on('click', function() {
+          $('#editar-endereco-container').empty();
+        });
+        $('#form-editar-endereco').submit(function(e) {
+          e.preventDefault();
+          $.ajax({
+            url: '{% url "editar_endereco_dashboard" %}',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(data) {
+              if (data.success) {
+                $('#editar-endereco-container').empty();
+                $('#mensagem').removeClass('alert-danger').addClass('alert-success').text(data.message).show();
+              } else {
+                $('#mensagem').removeClass('alert-success').addClass('alert-danger').text(data.message).show();
+              }
+            },
+            error: function(xhr, status, error) {
+              console.error(error);
+            }
+          });
+        });
+      }
+    });
+  });
+});
+
+
+</script>
+
+
+
+
+<script>
+  $(document).ready(function() {
+    $('#adicionar_endereco').on('click', function(e) {
+      var enderecoId = $(this).data('endereco-id');
+      e.preventDefault();
+      $.ajax({
+        url: '{% url "adicionar_endereco_dashboard" %}',
+        type: 'GET',
+        data: {
+          'endereco_id': enderecoId,
+        },
+        success: function(response) {
+          $('#adicionar_endereco_container').html(response);
+          $('#fechar-editar-endereco').on('click', function() {
+            $('#adicionar_endereco_container').empty();
+          });
+
+          $('#form-editar-endereco').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+              url: '{% url "editar_endereco_dashboard" %}',
+              method: 'POST',
+              data: $(this).serialize(),
+              success: function(data) {
+                if (data.success) {
+                  $('#editar-endereco-container').empty();
+                  $('#mensagem').removeClass('alert-danger').addClass('alert-success').text(data.message).show();
+                } else {
+                  $('#mensagem').removeClass('alert-success').addClass('alert-danger').text(data.message).show();
+                }
+              },
+              error: function(xhr, status, error) {
+                console.error(error);
+              }
+            });
+          });
+        }
+      });
+    });
+  });
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+    $('#abrir-modal-adicionar-endereco').on('click', function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: '{% url "adicionar_endereco_dashboard" %}',
+        type: 'GET',
+        success: function(response) {
+          $('#adicionar-endereco-container').html(response);
+          $('#modal-adicionar-endereco').modal('show');
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+        }
+      });
+    });
+  });
+</script>
+
+
+{% endblock %}
