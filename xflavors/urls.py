@@ -7,7 +7,7 @@ from produtos.views import product_detail, produto_por_subcategoria
 from .views import index
 from cart.views import add_to_cart_carrocel
 from cart.views import add_to_cart
-from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento
+from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento, visualizar_pedidos,detalhes_pedido
 
 urlpatterns = [
 
@@ -30,6 +30,10 @@ urlpatterns = [
     path('cotacao_frete_correios/', cotacao_frete_correios, name='cotacao_frete_correios'),
     path('criar_pedido/', criar_pedido, name='criar_pedido'),
     path('pagina_pagamento/<int:pedido_id>', pagina_pagamento, name='pagina_pagamento'),
+    path('visualizar_pedidos', visualizar_pedidos, name='visualizar_pedidos'),
+    path('detalhes_pedido/<int:pedido_id>', detalhes_pedido, name='detalhes_pedido'),
+
+
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

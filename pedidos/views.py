@@ -9,6 +9,7 @@ from produtos.models import Produto
 from .forms import EnderecoEntregaForm
 from .models import Order, PedidoItem
 from cart.models import CartItem, Cart
+from django.contrib.auth.decorators import login_required
 from clientes.models import EnderecoEntrega
 from clientes.models import Cliente
 
@@ -17,9 +18,31 @@ from clientes.models import EnderecoEntrega
 
 
 
+@login_required
+def detalhes_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, user=request.user)
 
+    total = 0
+
+    itens = pedido.itens.all()
+
+    for item in itens:
+        if item.variation:
+            preco = item.variation.price
+        else:
+            preco = item.product.price
+        total += item.quantity * preco
+    context = {'pedido': pedido, 'total':total}
+
+    return render(request, 'detalhes_pedido.html', context)
+
+@login_required
+def visualizar_pedidos(request):
+    pedidos = Pedido.objects.filter(user=request.user)
+    return render(request, 'visualizar_pedidos.html', {'pedidos': pedidos})
 
 from django.shortcuts import get_object_or_404
+@login_required
 def checkout(request):
     user = request.user
     cart = Cart.get_or_create_cart(user)
