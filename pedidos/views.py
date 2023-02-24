@@ -1,5 +1,7 @@
 import os
 
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render, redirect
@@ -138,11 +140,6 @@ from pedidos.models import Pedido
 
 
 @login_required
-
-
-
-
-
 def editar_endereco(request):
     if request.method == 'POST':
         endereco_id = request.POST.get('endereco_id')
@@ -177,7 +174,7 @@ def editar_endereco(request):
     return render(request, 'editar_endereco.html', {'endereco': endereco})
 
 
-
+@login_required
 def atualizar_endereco_entrega(request):
     if request.method == 'POST':
         endereco_id = request.POST.get('endereco_id')
@@ -200,7 +197,7 @@ import requests
 import xml.etree.ElementTree as ET
 import re
 
-
+@login_required
 def cotacao_frete_correios2(endereco):
     cep = endereco.cep
     peso = 0.1  # 100 gramas
@@ -282,6 +279,8 @@ def cotacao_frete_correios2(endereco):
 import requests
 import xml.etree.ElementTree as ET
 
+
+@login_required
 def cotacao_frete_correios(request):
     user = request.user
     cart = Cart.get_or_create_cart(user)
@@ -452,3 +451,37 @@ def confirmacao_pedido(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)
 
     return render(request, 'pedidos/confirmacao_pedido.html', {'pedido': pedido})
+
+
+def paga_pix(request):
+    if request.method == 'POST':
+        pedido_id = request.POST.get('pedido_id')
+        comprovante = request.FILES.get('comprovante')
+        pedido = Pedido.objects.get(id=pedido_id)
+
+        # Salvar o arquivo de imagem em um local apropriado
+        path = default_storage.save(f'comprovantes/{pedido_id}-{comprovante.name}', ContentFile(comprovante.read()))
+
+        # Atualizar o pedido com o caminho para o comprovante de pagamento
+        pedido.comprovante = path
+        pedido.save()
+
+        # Redirecionar o cliente de volta para a página de pagamento com uma mensagem de sucesso
+        return redirect('payment_success', pedido_id=pedido_id)
+
+    # Se o método HTTP não for POST, exibir a página de pagamento com o formulário de envio do comprovante
+    pedido_id = request.GET.get('pedido_id')
+    pedido = Pedido.objects.get(id=pedido_id)
+    metodo_de_pagamento = pedido.metodo_de_pagamento
+
+    return render(request, 'pagamento_pix.html', {
+        'pedido_id': pedido_id,
+        'metodo_de_pagamento': metodo_de_pagamento,
+    })
+
+def payment_success(request, pedido_id):
+    pedido = Pedido.objects.get(id=pedido_id)
+
+    return render(request, 'pagamento_sucesso.html', {
+        'pedido': pedido,
+    })

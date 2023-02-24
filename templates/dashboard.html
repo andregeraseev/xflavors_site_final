@@ -26,37 +26,40 @@
                 </div>
             </div>
         </div>
-      <div class="col-md-8">
-    <div class="card mt-4">
-        <div class="card-header">
-            Endereços de Entrega
+        <div class="col-md-8">
+            <div class="card mt-4">
+                <div class="card-header">
+                    Endereços de Entrega
+                </div>
+                <div class="card-body" id="card-body">
+                    <h5 class="card-title">Endereços</h5>
+                    <ul class="list-group">
+                        {% for endereco in enderecos %}
+                        <li class="list-group-item">{{ endereco.rua }} - {{ endereco.numero }}, {{ endereco.bairro }} -
+                            {{ endereco.cidade }} - {{ endereco.estado }} - {{ endereco.cep }}
+                            <div class="d-inline float-end">
+                                <button id="editar-endereco" data-endereco-id="{{ endereco.id }}"
+                                        class="btn btn-primary me-2">Editar
+                                </button>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">Nenhum endereço cadastrado.</li>
+                        {% endfor %}
+                    </ul>
+                    <div id="editar-endereco-container" data-endereco-id="{{ endereco.id }}"></div>
+                </div>
+            </div>
         </div>
-        <div class="card-body" id="card-body">
-            <h5 class="card-title">Endereços</h5>
-            <ul class="list-group">
-                {% for endereco in enderecos %}
-                <li class="list-group-item">{{ endereco.rua }} - {{ endereco.numero }}, {{ endereco.bairro }} -
-                    {{ endereco.cidade }} - {{ endereco.estado }} - {{ endereco.cep }}
-                    <div class="d-inline float-end">
-                        <button id="editar-endereco" data-endereco-id="{{ endereco.id }}" class="btn btn-primary me-2">Editar</button>
-                    </div>
-                </li>
-                {% empty %}
-                <li class="list-group-item">Nenhum endereço cadastrado.</li>
-                {% endfor %}
-            </ul>
-            <div id="editar-endereco-container" data-endereco-id="{{ endereco.id }}"></div>
-        </div>
-    </div>
-</div>
 
     </div>
-
 
 
     <div class="row mt-4">
-            <button id="adicionar_endereco" data-endereco-id="{{ endereco.id }}" class="btn btn-primary mt-3">Adicionar Endereço</button>
-            <div id="adicionar_endereco_container"></div>
+        <button id="adicionar_endereco" data-endereco-id="{{ endereco.id }}" class="btn btn-primary mt-3">Adicionar
+            Endereço
+        </button>
+        <div id="adicionar_endereco_container"></div>
 
         <div class="col-md-12">
             {% include 'visualizar_pedidos.html' %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h1 class="card-title">Pagamento Confirmado!</h1>
+            <p class="card-text">O seu pedido número {{ pedido.id }} foi confirmado com sucesso.</p>
+            <p class="card-text">Valor total pago: R$ {{ pedido.total }}</p>
+            <p class="card-text">Método de pagamento: {{ pedido.metodo_de_pagamento }}</p>
+            <a href="{% url 'detalhes_pedido' pedido.id %}" class="btn btn-primary">Ver Detalhes do Pedido</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

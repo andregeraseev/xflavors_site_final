@@ -3,27 +3,39 @@
   <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
     <table class="table">
       <thead>
-        <tr>
-          <th scope="col">N</th>
-          <th scope="col">Data</th>
-          <th scope="col">Valor</th>
-          <th scope="col">Status</th>
-          <th scope="col">Pedido</th>
-          <th scope="col">Rastreio</th>
-        </tr>
+      <tr>
+        <th scope="col">N</th>
+        <th scope="col">Data</th>
+        <th scope="col">Valor</th>
+        <th scope="col">Status</th>
+        <th scope="col">Comprovante</th>
+        <th scope="col">Pedido</th>
+
+        <th scope="col">Rastreio</th>
+      </tr>
       </thead>
       <tbody>
-        {% for pedido in pedidos %}
-        <tr>
-          <td>{{ pedido.id }}</td>
-          <td>{{ pedido.data_pedido|date:"d/m/Y" }}</td>
-          <td>R${{ pedido.total|floatformat:2 }}</td>
-          <td class="pedido-status" data-status="{{ pedido.status }}"></td>
-          <td><a href="{% url 'detalhes_pedido' pedido.id %}"><i class="far fa-eye"></i></a></td>
-          <td><a href=""><i class="fas fa-truck"></i></a></td>
+      {% for pedido in pedidos %}
+      <tr>
+        <td>{{ pedido.id }}</td>
+        <td>{{ pedido.data_pedido|date:"d/m/Y" }}</td>
+        <td>R${{ pedido.total|floatformat:2 }}</td>
+        <td class="pedido-status" data-status="{{ pedido.status }}"></td>
+        {% if pedido.metodo_de_pagamento == "pix" %}
+        {% if pedido.comprovante %}
+        <td><a href="{{ pedido.comprovante.url }}"><i class="far fa-eye"></i></a></td>
+        {% else %}
+        <td>Nenhum comprovante enviado</td>
+        {% endif %}
+        {% else %}
+        <td>Seu pedido nao precisa de comprovante</td>
 
-        </tr>
-        {% endfor %}
+        {% endif %}
+        <td><a href="{% url 'detalhes_pedido' pedido.id %}"><i class="far fa-eye"></i></a></td>
+        <td><a href=""><i class="fas fa-truck"></i></a></td>
+
+      </tr>
+      {% endfor %}
       </tbody>
     </table>
   </div>

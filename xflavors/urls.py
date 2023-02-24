@@ -7,7 +7,7 @@ from produtos.views import product_detail, produto_por_subcategoria
 from .views import index
 from cart.views import add_to_cart_carrocel
 from cart.views import add_to_cart
-from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento, visualizar_pedidos,detalhes_pedido
+from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success
 
 urlpatterns = [
 
@@ -36,6 +36,8 @@ urlpatterns = [
     path('alterar_celular/', views.alterar_celular, name='alterar_celular'),
     path('adicionar_endereco_dashboard', views.adicionar_endereco_dashboard, name='adicionar_endereco_dashboard'),
     path('editar_endereco_dashboard/', views.editar_endereco_dashboard, name='editar_endereco_dashboard'),
+    path('paga_pix/', paga_pix, name='paga_pix'),
+    path('pagamento/sucesso/<int:pedido_id>', payment_success, name='payment_success'),
 
 
 
