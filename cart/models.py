@@ -19,6 +19,7 @@ class Cart(models.Model):
     # Produtos contidos no carrinho
     cart_items = models.ManyToManyField(Produto, through='CartItem')
     # variassoes contidos no carrinho
+    # todo
     variations = models.ManyToManyField(Variation, related_name='carts', blank=True)
     # Método que retorna ou cria o carrinho de um determinado usuário
     @classmethod

@@ -2,6 +2,23 @@ from cart.models import Cart
 from django.shortcuts import render, get_object_or_404
 from .models import Category, Subcategory, Produto
 from django.core.paginator import Paginator
+from django.http import HttpResponse
+from django.shortcuts import redirect
+
+from tiny_erp.tiny_api import import_products
+
+
+from tiny_erp.tiny_api import import_products
+
+def import_products_view(request):
+    if request.method == 'GET':
+        import_products()
+        return HttpResponse('Produtos importados com sucesso!')
+
+# def import_products_view(request):
+#     import_products()
+#     return redirect('admin:produtos_produto_changelist')
+
 
 def produto_por_subcategoria(request, category_id, subcategory_id):
     category = Category.objects.all()

@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-
+TINY_ERP_API_KEY = 'SUA_CHAVE_DE_API_AQUI'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +46,13 @@ INSTALLED_APPS = [
     'clientes',
     'cart',
     'pedidos',
+    # 'tiny_erp',
+    # "tiny_erp.apps.locations",
+    # "tiny_erp.apps.products",
+    # "tiny_erp.apps.purchases",
+    # "small_small_hr",
+    # 'model_reviews',
+    # 'django_comments',
 ]
 
 MIDDLEWARE = [

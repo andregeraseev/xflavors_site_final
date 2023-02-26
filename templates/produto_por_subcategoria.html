@@ -19,13 +19,13 @@
 
             <a href="{% url 'product_detail' product.slug %}"><h5 class="card-title">{{ product.name }}</h5></a>
 
-            {% if product.variations.exists %}
+            {% if product.variation_set.exists %}
               <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}" >
-                {% for variation in product.variations.all %}
+                {% for variation in product.variation_set.all %}
                   <option value="{{ variation.id }}">{{ variation.name }} - R$ {{ variation.price }}</option>
                 {% endfor %}
               </select>
-              <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variations.first.price }}</p>
+              <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
             {% else %}
               <p class="mb-1">{{ product.price }}</p>
             {% endif %}

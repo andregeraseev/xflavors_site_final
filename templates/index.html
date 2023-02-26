@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<a href="{% url 'import_products' %}">Importar Produtos</a>
 
 {% include 'partials/_carrosel.html' %}
 {% for categoria in categorias %}

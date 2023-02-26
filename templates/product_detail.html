@@ -12,14 +12,14 @@
         <div class="col-6">
             <h4>Descrição:</h4>
             <h5>{{ product.description }}</h5>
-            {% if product.variations.exists %}
+            {% if product.variation_set.exists %}
                 <h4>Selecione uma variação:</h4>
                 <select name="variation" id="variation">
-                    {% for variation in product.variations.all %}
+                    {% for variation in product.variation_set.all %}
                         <option value="{{ variation.id }}">{{ variation.name }} - R$ {{ variation.price }}</option>
                     {% endfor %}
                 </select>
-                <h5 id="price">R$ {{ product.variations.first.price }}</h5>
+                <h5 id="price">R$ {{ product.variation_set.first.price }}</h5>
             {% else %}
                 <h5 id="price">R$ {{ product.price }}</h5>
             {% endif %}

@@ -49,6 +49,7 @@ def add_to_cart_carrocel(request):
     print("product_id",product_id)
     quantity = request.POST.get('quantity')
     print("quantidade",quantity)
+
     variation_id = request.POST.get('variation_id')
     print('variacao', variation_id)
     user = request.user
@@ -58,9 +59,11 @@ def add_to_cart_carrocel(request):
     print("quantidade",quantity)
     quantity = int(quantity)
     product_name = product.name
+
     if variation_id:
         variation = get_object_or_404(Variation, id=variation_id)
-        if variation not in product.variations.all():
+        # Verificar se a variação pertence ao produto atual
+        if variation.produto_pai != product:
             return JsonResponse({'success': False,
                                  'error': 'Desculpe, essa variação não está disponível para esse produto.'})
     else:
@@ -117,7 +120,8 @@ def add_to_cart(request, product_id):
 
     if variation_id:
         variation = get_object_or_404(Variation, id=variation_id)
-        if variation not in product.variations.all():
+        # Verificar se a variação pertence ao produto atual
+        if variation.produto_pai != product:
             return JsonResponse({'success': False,
                                  'error': 'Desculpe, essa variação não está disponível para esse produto.'})
     else:

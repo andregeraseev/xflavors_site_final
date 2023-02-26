@@ -3,17 +3,18 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
 from clientes import views
-from produtos.views import product_detail, produto_por_subcategoria
+from produtos.views import product_detail, produto_por_subcategoria, import_products_view
 from .views import index
 from cart.views import add_to_cart_carrocel
 from cart.views import add_to_cart
 from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success
 
 urlpatterns = [
-
+    path('admin/', admin.site.urls),
     path('cart/', include('cart.urls', namespace='cart')),
     path('pedidos/', include('pedidos.urls', namespace='pedidos')),
     path('', index, name='home'),
+    path('import_products/', import_products_view, name='import_products'),
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
@@ -38,6 +39,7 @@ urlpatterns = [
     path('editar_endereco_dashboard/', views.editar_endereco_dashboard, name='editar_endereco_dashboard'),
     path('paga_pix/', paga_pix, name='paga_pix'),
     path('pagamento/sucesso/<int:pedido_id>', payment_success, name='payment_success'),
+    path('import_products/', import_products_view, name='import_products'),
 
 
 
