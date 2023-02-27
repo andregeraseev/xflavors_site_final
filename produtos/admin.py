@@ -29,4 +29,8 @@ admin.site.register(Category, CategoryAdmin)
 
 admin.site.register(Subcategory)
 
-admin.site.register(Variation)
+
+class VariantionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'stock')
+
+admin.site.register(Variation,VariantionAdmin)

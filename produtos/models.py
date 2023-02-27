@@ -44,6 +44,7 @@ class Produto(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, blank=True, null=True)
     peso = models.DecimalField(max_digits=10, decimal_places=2, default=0.04)
+    marca = models.CharField(max_length=50, blank=True, null=True)
     def save(self, *args, **kwargs):
         """
         Sobrescreve o método de salvar para atribuir o valor ao campo slug
