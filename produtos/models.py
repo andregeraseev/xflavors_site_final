@@ -28,7 +28,15 @@ class Subcategory(models.Model):
 
 
 
+class MateriaPrima(models.Model):
+    """
+    Model de variação de produtos
+    """
+    name = models.CharField(max_length=100)
+    stock = models.PositiveIntegerField()
 
+    def __str__(self):
+        return self.name
 
 
 class Produto(models.Model):
@@ -74,6 +82,9 @@ class Variation(models.Model):
     stock = models.PositiveIntegerField()
     peso = models.DecimalField(max_digits=10, decimal_places=2,default=0.04)
     produto_pai = models.ForeignKey(Produto,on_delete=models.CASCADE, blank=True, null=True)
+    materia_prima = models.ForeignKey(MateriaPrima,on_delete=models.CASCADE, blank=True, null=True)
+    gasto = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return self.name
+

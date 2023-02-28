@@ -3,15 +3,17 @@ from urllib.parse import urlparse
 
 import requests
 from pedidos.models import Produto
-from produtos.models import Category, Subcategory, Variation
+from produtos.models import Category, Subcategory, Variation,MateriaPrima
 from django.shortcuts import  get_object_or_404
 import time
+from PIL import Image
+from io import BytesIO
 token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
 
 def import_products():
 
     products = pesquisar_produtos()
-    delay = 60 / 40  # 30 requests per minute
+    delay = 60 / 50  # 30 requests per minute
 
     for product in products:
         product_id = int(product['produto']['id'])
@@ -23,19 +25,24 @@ def import_products():
         produto = response.json()['retorno']
 
         if produto['produto']['classe_produto'] in ['M', 'O']:
+            salvar_ou_atualizar_materia_prima(produto,estoque,product_id)
             continue
 
         produtopai = produto['produto']['idProdutoPai']
         descricao = produto['produto']['descricao_complementar']
+        marca = produto['produto']['marca']
+
         categoria_completa = produto['produto']['categoria']
 
         category,subcategoria = pegar_category_e_subcategory(categoria_completa)
 
         if produtopai == '0':
             image_path = pegar_imagem(produto)
-            salvar_ou_atualizar_produto(produto, product_id, category, subcategoria, estoque, image_path,descricao)
+            salvar_ou_atualizar_produto(produto, product_id, category, subcategoria, estoque, image_path,descricao, marca)
         else:
-            salvar_ou_atualizar_variacao(produtopai, produto, estoque)
+            nome_simplificado = produto['produto']['grade']
+            gasto = produto['produto']['kit']
+            salvar_ou_atualizar_variacao(produtopai, produto, estoque,nome_simplificado,gasto)
 
         time.sleep(delay)
 
@@ -54,7 +61,7 @@ def pegar_category_e_subcategory(categoria_completa):
 def pesquisar_produtos():
     url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
     token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
-    params = {'token': token, 'formato': 'json', 'pagina': '1'}
+    params = {'token': token, 'formato': 'json', 'pagina': '2'}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:
@@ -102,8 +109,11 @@ def obter_info_estoque_produto(product_id):
         error_descricao = response_estoque.json()['retorno']['erros'][0]['erro']
         print(f'Erro ao obter informações do estoque do produto{error_descricao}')
 def pegar_imagem(produto):
-    url_imagem = produto['produto']['imagens_externas'][0]['imagem_externa']['url']
-    print(url_imagem)
+    tamanho_padrao = (800, 800)
+    try:
+        url_imagem = produto['produto']['imagens_externas'][0]['imagem_externa']['url']
+    except:
+        url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
 
     if url_imagem:
         # Faz uma nova requisição para baixar a imagem
@@ -113,15 +123,25 @@ def pegar_imagem(produto):
             url_parts = urlparse(url_imagem)
             filename = os.path.basename(url_parts.path)
 
-            # Salva a imagem na pasta "media" do projeto
-            with open(os.path.join('media/products', filename), 'wb') as f:
-                f.write(response.content)
-            image_path = os.path.join('products', filename)
-            return image_path
+            # Redimensiona a imagem
+            with Image.open(BytesIO(response.content)) as img:
+                width, height = img.size
+                if width < tamanho_padrao[0] or height < tamanho_padrao[1]:
+                    # Caso a imagem seja menor que o tamanho padrão, redimensiona sem manter a proporção
+                    img = img.resize(tamanho_padrao)
+                else:
+                    # Caso contrário, redimensiona mantendo a proporção
+                    img.thumbnail(tamanho_padrao)
+
+                # Salva a imagem na pasta "media" do projeto
+                with open(os.path.join('media/products', filename), 'wb') as f:
+                    img.save(f)
+                image_path = os.path.join('products', filename)
+                return image_path
     else:
         print("ERRO ao pegar imagem")
 
-def salvar_ou_atualizar_produto(produto,product_id,category,subcategoria,estoque,image_path,descricao):
+def salvar_ou_atualizar_produto(produto,product_id,category,subcategoria,estoque,image_path,descricao,marca):
      obj, created = Produto.objects.update_or_create(
                             name=produto['produto']['nome'],
                             defaults={
@@ -132,16 +152,40 @@ def salvar_ou_atualizar_produto(produto,product_id,category,subcategoria,estoque
                                 'subcategory': subcategoria,
                                 'stock': estoque,
                                 'image': image_path,
+                                'marca': marca
                             }
                         )
      print(obj,created)
 
-def salvar_ou_atualizar_variacao(produtopai,produto,estoque):
+def salvar_ou_atualizar_variacao(produtopai,produto,estoque,nome_simplificado,gasto):
+    dicionario = nome_simplificado
+    nome_simplificado = ' '.join([str(chave) + ' ' + str(valor) for chave, valor in dicionario.items()])
+    materia_prima = gasto[0]['item']['id_produto']
+    print('Materia Prima',materia_prima)
+    gasto= gasto[0]['item']['quantidade']
+    print(gasto)
+
+
     pai = Produto.objects.get(id=produtopai)
     Variation.objects.update_or_create(
         id=produto['produto']['id'],
         produto_pai=pai,
         defaults={'name': produto['produto']['nome'],
                   'price': produto['produto']['preco'],
-                  'stock': estoque}
+                  'stock': estoque,
+                  'nome_simplificado': nome_simplificado,
+                  'gasto':gasto
+                        }
     )
+
+def salvar_ou_atualizar_materia_prima(produto,estoque,product_id):
+
+
+    MateriaPrima.objects.update_or_create(
+        id=produto['produto']['id'],
+
+        defaults={'id': product_id,
+                    'name': produto['produto']['nome'],
+                  'stock': estoque,
+                                        }
+                                            )

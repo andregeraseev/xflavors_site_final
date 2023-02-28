@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Produto, Category, Subcategory,Variation
+from .models import Produto, Category, Subcategory,Variation, MateriaPrima
 
 
 class VariationCategoryInline(admin.TabularInline):
@@ -21,6 +21,11 @@ class ProdutoAdmin(admin.ModelAdmin):
 
 admin.site.register(Produto, ProdutoAdmin)
 
+class MateriaPrimaAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+admin.site.register(MateriaPrima, MateriaPrimaAdmin)
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
@@ -31,6 +36,7 @@ admin.site.register(Subcategory)
 
 
 class VariantionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'stock')
+    list_display = ('name', 'price', 'stock', 'materia_prima', 'gasto')
+    list_editable = ('materia_prima',)
 
 admin.site.register(Variation,VariantionAdmin)
