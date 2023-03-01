@@ -1,6 +1,7 @@
 {% extends 'base_pagamento.html' %}
 
 {% block content %}
+
 <div class="row">
     <div class="col-6">
 
@@ -74,10 +75,26 @@
 
 
     <div class="col-6">
+    {% for item in itens %}
+<div id="alert-container-erro-{{ item.id }}" style="display: none;">
+  <div id="alert-erro-{{ item.id }}" class="alert alert-danger alert-dismissible fade show" role="alert">
 
+
+  </div>
+
+</div>
+
+<script>
+function fecharAlerta(id) {
+  $('#alert-container-erro-' + id).hide();
+}
+</script>
+
+{% endfor %}
 
         <h3>Detalhes do Pedido</h3>
         <table class="table">
+
             <thead>
             <tr>
                 <th>Produto</th>
@@ -240,24 +257,66 @@ $(document).ready(function() {
       }
 
 
-   {% for item in itens %}
-  var quantidadeDesejada{{ item.id }} = {{ item.quantity }};
-  var quantidadeDisponivel{{ item.id }} = {% if item.variation %}{{ item.variation.stock }}{% else %}{{ item.product.stock }}{% endif %};
-  if (quantidadeDesejada{{ item.id }} > quantidadeDisponivel{{ item.id }}) {
-    var alertContainer = $('#alert-container-erro');
-    $('#alert-container-erro').show();    alertContainer.show();
-    $('#alert-erro').html('Estoque insuficiente para o item {{ item.product.name }}. Temos apenas ' + quantidadeDisponivel{{ item.id }} + ' em estoque.');
-    // Adiciona a classe CSS "linha-estoque-insuficiente" à linha da tabela correspondente
-      $('#linha-{{ item.id }}').addClass('linha-estoque-insuficiente');
 
-    // Oculta a mensagem de erro após 5 segundos
+<!--TESTE INICIO-->
+
+var estoqueInsuficiente = false;
+{% for item in itens %}
+  {% if item.variation %}
+    var item = {{ item.id }};
+
+
+
+$.ajax({
+    type: 'POST',
+    url: '{% url "verifica_carrinho" %}',
+    data: {
+
+      'item': item,
+
+      'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: 'json',
+    success: function(data) {
+      if (data.success) {
+
+      } else {
+      estoqueInsuficiente = true;
+      $('#linha-{{ item.id }}' ).addClass('linha-estoque-insuficiente');
+ // Exibe uma mensagem de erro
+
+        $('#alert-erro-{{ item.id }}').show();
+        $('#alert-container-erro-{{ item.id }}').show();
+        $('#alert-erro-{{ item.id }}').html(data.error + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(\'{{ item.id }}\')">' +
+  '<span aria-hidden="true">&times;</span>' +
+'</button>');
+
+        // Oculta a mensagem de erro após 5 segundos
         setTimeout(function() {
-          $('#alert-erro').hide();
-          $('#alert-container-erro').hide();
-        }, 5000);
-    return false;
-  }
+          $('#alert-erro-{{ item.id }}').hide();
+          $('#alert-container-erro-{{ item.id }}').hide();
+        }, 20000);
+
+      }
+    },
+    error: function(data) {
+
+    }
+  });
+
+{% endif %}
+
 {% endfor %}
+console.log('estoqueInsuficiente:', estoqueInsuficiente);
+if (estoqueInsuficiente) {
+console.log('estoqueInsuficiente:', estoqueInsuficiente);
+    return false;}
+else { console.log('estoqueInsuficiente:', estoqueInsuficiente); };
+
+<!--TESTE FIM-->
+
+
+
     // Obtém o valor do subtotal
     var subtotal = parseFloat($('#subtotal').text().replace('R$ ', ''));
 

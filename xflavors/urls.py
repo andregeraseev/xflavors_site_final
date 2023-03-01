@@ -5,9 +5,9 @@ from django.urls import path,include
 from clientes import views
 from produtos.views import product_detail, produto_por_subcategoria, import_products_view
 from .views import index
-from cart.views import add_to_cart_carrocel
-from cart.views import add_to_cart
-from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success
+from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
+# from cart.views import add_to_cart
+from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -21,7 +21,7 @@ urlpatterns = [
     path('cadastro/', views.cadastro, name='cadastro'),
     # path('carrinho/', views.carrinho, name='carrinho'),
     path('add_to_cart_carrocel/', add_to_cart_carrocel, name='add_to_cart_carrocel'),
-    path('add_to_cart/', add_to_cart, name='add_to_cart'),
+    # path('add_to_cart/', add_to_cart, name='add_to_cart'),
     path('products/<slug:slug>/', product_detail, name='product_detail'),
     path('categoria/<int:category_id>/subcategoria/<int:subcategory_id>/', produto_por_subcategoria, name='produto_por_subcategoria'),
     path('checkout/', checkout, name='checkout'),
@@ -40,6 +40,8 @@ urlpatterns = [
     path('paga_pix/', paga_pix, name='paga_pix'),
     path('pagamento/sucesso/<int:pedido_id>', payment_success, name='payment_success'),
     path('import_products/', import_products_view, name='import_products'),
+    path('verificar_quantidade_carrinho/', verifica_qunatidade_carrinho_varivel, name='verificar_quantidade_carrinho'),
+    path('verifica_carrinho/', verifica_carrinho, name='verifica_carrinho'),
 
 
 

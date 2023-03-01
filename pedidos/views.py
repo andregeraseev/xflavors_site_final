@@ -1,4 +1,11 @@
 import os
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+from cart.views import verifica_qunatidade_carrinho_varivel
+from clientes.models import EnderecoEntrega
+from pedidos.models import Pedido
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -68,12 +75,36 @@ def checkout(request):
     return render(request, 'pedidos/checkout.html', {'cart': cart, 'total': total, 'endereco': enderecos, 'endereco_primario': endereco_primario, 'itens': itens})
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 
-from clientes.models import EnderecoEntrega
-from pedidos.models import Pedido
+def verifica_carrinho(request):
+    print('VERIFICANDO CARRINHO')
+    cart = Cart.objects.get(user=request.user)
+    if request.method == 'POST':
+        item_id = int(request.POST.get('item'))
+        print('item_id', item_id)
+        try:
+            print('tentativa')
+            item = CartItem.objects.get(id=item_id, cart=cart)
+            variation =item.variation
+            quantity= item.quantity
+            print(quantity,'quantidade')
+            quantidade_materia_prima = item.variation.materia_prima.stock
+            print(quantidade_materia_prima,'quantidade_materiaprima')
+            materia_prima_id = item.variation.materia_prima.id
+            product = item.product
+            print(item.variation, 'ITEMMSSSSSSSS')
+            fechamento = 2
+            try:
+                verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+                                                     materia_prima_id, product,fechamento)
+            except ValueError as e:
+                print(e)
+                return JsonResponse({'success': False, 'error': str(e)})
+            return JsonResponse({'success': True})
+        except CartItem.DoesNotExist:
+            print('erro')
+            return JsonResponse({'success': False})
+
 
 #
 # @login_required
@@ -360,7 +391,7 @@ def criar_pedido(request):
     total = float(request.POST['total'])
     frete_selecionado = request.POST['frete_selecionado']
     metodo_pagamento = request.POST['metodo_pagamento']
-    print(metodo_pagamento, 'AQUIIIIII')
+    print(metodo_pagamento, 'CRIAR PEDIDO')
     # endereco_de_entrega_id = request.POST['endereco_de_entrega']
     # endereco_de_entrega = EnderecoEntrega.objects.get(id=endereco_de_entrega_id)
     endereco_entrega = EnderecoEntrega.objects.filter(cliente=user.cliente, primario=True).first()

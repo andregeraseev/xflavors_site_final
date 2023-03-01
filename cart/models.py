@@ -110,7 +110,10 @@ class CartItem(models.Model):
 
     # Representação em string do item no carrinho, no formato: quantidade x nome do produto no carrinho username do usuário
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} no carrinho {self.cart.user.username}"
+        if self.variation:
+            return f" {self.variation.name}"
+        else:
+            return f"{self.quantity} x {self.product.name} no carrinho {self.cart.user.username}"
 
 
 

@@ -4,6 +4,7 @@
 <div class="container my-5">
     <h1 class="text-center">Carrinho</h1>
     <div id="container_carrinho">
+
         <table class="table table-striped">
             <thead>
             <tr>
@@ -14,7 +15,7 @@
                 <th></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="carrinho-tbody">
             {% for item in itens %}
             <tr>
                 <td>{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.name }} {% endif %}</td>
@@ -27,7 +28,7 @@
                             <input type="number" class="form-control form-control-sm  quantity"
                                    value="{{ item.quantity }}">
                             <a href="#" class="btn btn-primary btn-sm update-item"
-                               data-product-id="{{ item.product.id }}" data-toggle="tooltip" title="Atualizar item">
+                               data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}" data-toggle="tooltip" title="Atualizar item">
                                 <i class="fas fa-sync-alt"></i>
                             </a>
                         </div>
@@ -94,36 +95,75 @@
 
 
 <script>
-  $(document).ready(function() {
-    $('.update-item').click(function(e) {
-      e.preventDefault();
+$(document).ready(function() {
+  $('.update-item').click(function(e) {
+    e.preventDefault();
+    var variationId = $(this).data('variation-id');
+    var productId = $(this).data('product-id');
+    var quantity = $(this).parent().parent().find('.quantity').val();
+    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
-      var variationId = $(this).data('variation-id');
-      var productId = $(this).data('product-id');
-      var quantity = $(this).parent().parent().find('.quantity').val();
-      var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-
-      $.ajax({
-        url: "{% url 'cart:update_item' %}",
-        type: 'POST',
-        data: {
-          'variation_id': variationId,
-          'product_id': productId,
-          'quantity': quantity,
-          'csrfmiddlewaretoken': csrfToken
-        },
-        success: function(data) {
-          console.log(data);
+    $.ajax({
+      url: "{% url 'cart:update_item' %}",
+      type: 'POST',
+      data: {
+        'variation_id': variationId,
+        'product_id': productId,
+        'quantity': quantity,
+        'csrfmiddlewaretoken': csrfToken
+      },
+      success: function(data) {
+        console.log(data);
+        if (data.success) {
           location.reload(); // recarrega a página quando a requisição é bem sucedida
-        },
-        error: function(error) {
-          console.log(error);
-          location.reload(); // recarrega a página quando a requisição falha
+          // Exibe uma mensagem de sucesso
+
+        $('#alert_success').show();
+        $('#alert_container_success').show();
+        $('#alert_success').html(data.mensagem);
+
+        // Oculta a mensagem de sucesso após 5 segundos
+        setTimeout(function() {
+          $('#alert_success').hide();
+          $('#alert_container_success').hide();
+        }, 5000);
+        } else {
+          // Exibe uma mensagem de erro
+          location.reload(); // recarrega a página quando a requisição é bem sucedida
+          $('#available-stock').text(data.stock);
+          $('#alert-erro').show();
+          $('#alert-container-erro').show();
+          $('#alert-erro').html(data.error);
+
+
+          // Oculta a mensagem de erro após 5 segundos
+          setTimeout(function() {
+            $('#alert-erro').hide();
+            $('#alert-container-erro').hide();
+          }, 5000);
         }
-      });
+      },
+      error: function(error) {
+        console.log(error);
+        // Exibe uma mensagem de erro
+        $('#available-stock').text(data.stock);
+        $('#alert-erro').show();
+        $('#alert-container-erro').show();
+        $('#alert-erro').html(data.error);
+
+        // Oculta a mensagem de erro após 5 segundos
+        setTimeout(function() {
+          $('#alert-erro').hide();
+          $('#alert-container-erro').hide();
+        }, 5000);
+      }
     });
   });
+});
+
+
 </script>
+
 
 
 {% endblock %}

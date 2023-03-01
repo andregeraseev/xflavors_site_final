@@ -24,7 +24,8 @@
                 <h5 id="price">R$ {{ product.price }}</h5>
             {% endif %}
             <input type="number" id="quantity" name="quantity" value="1">
-            <button type="button" class="btn btn-primary" id="add_to_cart_button">Adicionar ao carrinho</button>
+            <button type="submit" class="btn btn-primary btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar ao carrinho</button>
+
         </div>
     </div>
 </div>
@@ -42,44 +43,93 @@
 
 
 <script>
-    $(document).ready(function () {
-        $('#add_to_cart_button').click(function () {
-            let quantity = $('#quantity').val();
-            let variation = $('#variation').val();
-            let url = '{% url 'cart:add_to_cart' product.id %}';
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: {'quantity': quantity, 'variation': variation, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                dataType: 'json',
-                success: function (data) {
-                    if (data.success) {
-                        $('#cart-icon').load(document.URL +  ' #cart-icon');
-                        $('#alert_success').show(); // Mostra a mensagem de sucesso
-                        $('#alert_container_success').show(); // Mostra o container da mensagem de sucesso
-                        $('#alert_success').html( data.produto_adicionado); // Adiciona o nome do produto e da variação na mensagem de sucesso
-                        setTimeout(function() { // Configura um temporizador
-                            $('#alert_success').hide(); // Oculta a mensagem de sucesso após 5 segundos
-                            $('#alert_container_success').hide(); // Oculta o container da mensagem de sucesso após 5 segundos
-                        }, 5000);
-                    } else {
-                        $('#alert-erro').show(); // Mostra a mensagem de erro
-                        $('#alert-container-erro').show(); // Mostra o container da mensagem de erro
-                        $('#alert-erro').html( data.error); // Adiciona uma mensagem de estoque insuficiente
+   $(document).ready(function() {
+  // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
+  $('.variation-select').change(function() {
+    let productId = $(this).data('product-id');
+    let quantity = $('#quantity').val();
+    let selectedVariationId = $('#variation').val();
+    let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
 
-                        setTimeout(function() { // Configura um temporizador
-                            $('#alert-erro').hide(); // Oculta a mensagem de erro após 5 segundos
-                            $('#alert-container-erro').hide(); // Oculta o container da mensagem de erro após 5 segundos
-                        }, 5000);
-                    }
-                },
-                error: function (data) {
-                    alert(' Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde. + data.error');
-                }
-            });
-        });
-    });
+    console.log('productId:', productId);
+    console.log('selectedVariationId:', selectedVariationId);
+    console.log('selectedVariationPrice:', selectedVariationPrice);
+
+    // Atualiza o preço exibido
+    $('#price'+productId).text('R$ ' + selectedVariationPrice);
+
+    // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
+    $('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
+  }).trigger('change'); // Dispara o evento 'change' após a página ser carregada
+});
+
+
+// Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
+$('.add-to-cart-button').click(function() {
+  let productId = $(this).data('product-id');
+  let variationId = $('#variation').val();
+  let quantity = $('#quantity').val();
+
+  console.log('productId:', productId);
+  console.log('variationId:', variationId);
+  console.log('quantity:', quantity);
+
+  // Envia uma requisição AJAX para adicionar o produto ao carrinho
+  $.ajax({
+    type: 'POST',
+    url: '{% url "add_to_cart_carrocel" %}',
+    data: {
+      'productId': productId,
+      'variation_id': variationId,
+      'quantity': quantity,
+      'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: 'json',
+    success: function(data) {
+      if (data.success) {
+        // Recarrega o ícone do carrinho
+        $('#cart-icon').load(document.URL + ' #cart-icon');
+
+        // Exibe uma mensagem de sucesso
+        $('#alert_success').show();
+        $('#alert_container_success').show();
+        $('#alert_success').html(data.produto_adicionado);
+
+        // Oculta a mensagem de sucesso após 5 segundos
+        setTimeout(function() {
+          $('#alert_success').hide();
+          $('#alert_container_success').hide();
+        }, 5000);
+
+        // Define o valor do input de quantidade para 1
+        $('.quantity-input[data-product-id=' + productId + ']').val(1);
+      } else {
+        // Exibe uma mensagem de erro
+        $('#available-stock').text(data.stock);
+        $('#alert-erro').show();
+        $('#alert-container-erro').show();
+        $('#alert-erro').html(data.error);
+
+        // Oculta a mensagem de erro após 5 segundos
+        setTimeout(function() {
+          $('#alert-erro').hide();
+          $('#alert-container-erro').hide();
+        }, 5000);
+
+        // Define o valor do input de quantidade para 1
+        $('.quantity-input[data-product-id=' + productId + ']').val(1);
+      }
+    },
+    error: function(data) {
+      alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
+    }
+  });
+});
+
 </script>
+
+
+
 
 
 

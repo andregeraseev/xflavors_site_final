@@ -34,6 +34,7 @@ class MateriaPrima(models.Model):
     """
     name = models.CharField(max_length=100)
     stock = models.PositiveIntegerField()
+    unidade = models.CharField(max_length=100, default='mls')
 
     def __str__(self):
         return self.name
@@ -84,6 +85,7 @@ class Variation(models.Model):
     produto_pai = models.ForeignKey(Produto,on_delete=models.CASCADE, blank=True, null=True)
     materia_prima = models.ForeignKey(MateriaPrima,on_delete=models.CASCADE, blank=True, null=True)
     gasto = models.PositiveIntegerField(default=1)
+    unidade= models.CharField(max_length=100, default='unidade')
 
     def __str__(self):
         return self.name

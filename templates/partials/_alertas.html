@@ -1,8 +1,23 @@
-<div id="alert_container_success" style="display: none;">
+<style>
+.alert-container {
+  position: fixed;
+  top: 20;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 9999;
+  width: 100%;
+}
+
+.alert {
+  margin-top: 5px;
+}
+</style>
+
+<div id="alert_container_success" class="alert-container text-center" style="display: none;">
   <div id="alert_success" class="alert alert-success alert-dismissible fade show" role="alert">
   </div>
 </div>
-<div id="alert-container-erro" style="display: none;">
+<div id="alert-container-erro" class="alert-container" style="display: none;">
   <div id="alert-erro" class="alert alert-danger alert-dismissible fade show" role="alert">
 
   </div>

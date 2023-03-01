@@ -31,6 +31,7 @@ def import_products():
         produtopai = produto['produto']['idProdutoPai']
         descricao = produto['produto']['descricao_complementar']
         marca = produto['produto']['marca']
+        unidade = produto['produto']['unidade']
 
         categoria_completa = produto['produto']['categoria']
 
@@ -41,8 +42,11 @@ def import_products():
             salvar_ou_atualizar_produto(produto, product_id, category, subcategoria, estoque, image_path,descricao, marca)
         else:
             nome_simplificado = produto['produto']['grade']
-            gasto = produto['produto']['kit']
-            salvar_ou_atualizar_variacao(produtopai, produto, estoque,nome_simplificado,gasto)
+            try:
+                gasto = produto['produto']['kit']
+            except:
+                gasto = 1
+            salvar_ou_atualizar_variacao(produtopai, produto, estoque,nome_simplificado,gasto,unidade)
 
         time.sleep(delay)
 
@@ -157,12 +161,23 @@ def salvar_ou_atualizar_produto(produto,product_id,category,subcategoria,estoque
                         )
      print(obj,created)
 
-def salvar_ou_atualizar_variacao(produtopai,produto,estoque,nome_simplificado,gasto):
+def salvar_ou_atualizar_variacao(produtopai,produto,estoque,nome_simplificado,gasto,unidade):
     dicionario = nome_simplificado
     nome_simplificado = ' '.join([str(chave) + ' ' + str(valor) for chave, valor in dicionario.items()])
-    materia_prima = gasto[0]['item']['id_produto']
+
+    # Aqui você pode obter o objeto MateriaPrima correspondente ao ID da matéria-prima
+    try:
+        materia_prima = gasto[0]['item']['id_produto']
+        materia_prima = MateriaPrima.objects.get(id=materia_prima)
+        print(materia_prima)
+    except:
+        materia_prima = None
+
     print('Materia Prima',materia_prima)
-    gasto= gasto[0]['item']['quantidade']
+    try:
+        gasto= gasto[0]['item']['quantidade']
+    except:
+        gasto = 1
     print(gasto)
 
 
@@ -174,7 +189,9 @@ def salvar_ou_atualizar_variacao(produtopai,produto,estoque,nome_simplificado,ga
                   'price': produto['produto']['preco'],
                   'stock': estoque,
                   'nome_simplificado': nome_simplificado,
-                  'gasto':gasto
+                  'gasto':gasto,
+                  'materia_prima':materia_prima,
+                  'unidade':unidade
                         }
     )
 

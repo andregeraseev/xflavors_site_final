@@ -22,7 +22,8 @@ class ProdutoAdmin(admin.ModelAdmin):
 admin.site.register(Produto, ProdutoAdmin)
 
 class MateriaPrimaAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','stock')
+    list_editable = ('stock',)
 
 
 admin.site.register(MateriaPrima, MateriaPrimaAdmin)

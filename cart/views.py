@@ -46,26 +46,19 @@ from django.contrib.auth.decorators import login_required
 def add_to_cart_carrocel(request):
 
     product_id = request.POST.get('productId')
-    print("product_id",product_id)
-    quantity = request.POST.get('quantity')
-    print("quantidade",quantity)
 
     variation_id = request.POST.get('variation_id')
-    print('variacao', variation_id)
     user = request.user
-    print("usuario",user)
     product = get_object_or_404(Produto, id=product_id)
     cart = Cart.get_or_create_cart(user)
-    print("quantidade",quantity)
-    quantity = int(quantity)
-    product_name = product.name
     quantity = int(request.POST.get('quantity', 1))
     if variation_id:
+
         variation = get_object_or_404(Variation, id=variation_id)
         quantidade_materia_prima = variation.materia_prima.stock
         materia_prima_id= variation.materia_prima.id
         quantity = int(quantity)
-        print(quantity, quantidade_materia_prima, 'TESEEEEEEE')
+        # print(quantity, quantidade_materia_prima, 'TESEEEEEEE')
         # Verificar se a variação pertence ao produto atual
         if variation.produto_pai != product:
             return JsonResponse({'success': False,
@@ -73,114 +66,156 @@ def add_to_cart_carrocel(request):
     else:
         variation = None
 
-    cart = Cart.get_or_create_cart(user)
-
-
     if variation:
-        if quantity > quantidade_materia_prima:
-            print('quantity','quantidade_materia_prima','TESEEEEEEE')
-            return JsonResponse({'success': False,
-                                 'error': f'Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} unidades disponíveis.'})
+        try:
+            verifica_qunatidade_carrinho_varivel(quantity,quantidade_materia_prima,variation,cart,materia_prima_id,product)
+        except ValueError as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+        success, message = cria_item_carrinho(cart, product, variation, quantity)
+        if success:
+            return JsonResponse({'success': True, 'produto_adicionado': message})
+        else:
+            return JsonResponse({'success': False, 'error': message})
+
+
     else:
         if quantity > product.stock:
             return JsonResponse({'success': False,
                                  'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis.'})
 
+#        IMPLEMENTAR PARA PRODUTO SEM VARIACAO
+
+
+
+def verifica_qunatidade_carrinho_varivel(quantity,quantidade_materia_prima,variation,cart,materia_prima_id,product,fechamento=1):
+    print('passou por aqui')
+    if quantity > quantidade_materia_prima:
+        print('passou por aqui 1')
+        raise ValueError(
+            f'Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} unidades disponíveis.')
     existing_items = CartItem.objects.filter(cart=cart, variation__materia_prima_id=materia_prima_id)
 
     # Multiplicar a quantidade pelo gasto e somar as quantidades de todas as CartItems encontradas
     quantidade_no_carrinho = sum(
         existing_item.quantity * existing_item.variation.gasto for existing_item in existing_items)
-    print(quantidade_no_carrinho, 'quantidade no carrinho')
-    total_quantity = quantity * variation.gasto + quantidade_no_carrinho
-    print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
-    if total_quantity > quantidade_materia_prima:
-        return JsonResponse({'success': False,
-                             'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {variation.materia_prima.stock} mls disponíveis e tem {quantidade_no_carrinho} mls no seu carrinho.'})
+    # print(quantidade_no_carrinho, 'quantidade no carrinho')
+    if fechamento == 2:
+        total_quantity = quantidade_no_carrinho
+        # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
+        print(quantidade_no_carrinho, 'quantidade_no_carrinho')
+        print(total_quantity, 'total_quantity')
+    else:
+        total_quantity = quantity * variation.gasto + quantidade_no_carrinho
+        # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
+        print(quantidade_no_carrinho, 'quantidade_no_carrinho')
+        print(total_quantity, 'total_quantity')
 
+    if total_quantity > quantidade_materia_prima:
+        print('passou por aqui 2')
+        raise ValueError(
+            f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis e tem {quantidade_no_carrinho} mls no seu carrinho.')
+
+
+
+def cria_item_carrinho(cart,product,variation,quantity):
     try:
         item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
             variation=variation,
         )
-
         if not created:
             item.quantity += quantity
         else:
             item.quantity = quantity
         item.save()
 
-
-
         message = f'{quantity} unidade' if quantity == 1 else f'{quantity} unidades'
         if variation:
-            return JsonResponse({'success': True,
-                                 'produto_adicionado': f'{message} da variação {variation.name} adicionado ao carrinho com sucesso',
-                                 'variacao_adicionada': variation.name})
+            success_msg = f'{message} da variação {variation.name} adicionado ao carrinho com sucesso'
         else:
-            return JsonResponse({'success': True,
-                                 'produto_adicionado': f'{message} do produto {product.name} adicionado ao carrinho com sucesso'})
+            success_msg = f'{message} do produto {product.name} adicionado ao carrinho com sucesso'
+
+        return (True, success_msg)
+
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
+        error_msg = str(e)
+        return (False, error_msg)
 
 
-def add_to_cart(request, product_id):
-
-    user = request.user
-    product = get_object_or_404(Produto, id=product_id)
-    variation_id = request.POST.get('variation')
-
-    if variation_id:
-        variation = get_object_or_404(Variation, id=variation_id)
-        # Verificar se a variação pertence ao produto atual
-        if variation.produto_pai != product:
-            return JsonResponse({'success': False,
-                                 'error': 'Desculpe, essa variação não está disponível para esse produto.'})
-    else:
-        variation = None
-
-    cart = Cart.get_or_create_cart(user)
-    quantity = int(request.POST.get('quantity', 1))
-
-    if quantity > product.stock:
-        return JsonResponse({'success': False,
-                             'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis.'})
-
-    try:
-        item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            product=product,
-            variation=variation
-        )
-
-        # Verificar se já existe um item no carrinho com o mesmo produto e variação
-        existing_items = CartItem.objects.filter(cart=cart, product=product, variation=variation)
-        if existing_items.exists():
-            quantidade_no_carrinho = existing_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
-            total_quantity = int(quantity * variation.materia_prima.gasto) + quantidade_no_carrinho
-            if total_quantity > product.stock:
-                return JsonResponse({'success': False,
-                                     'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis e tem {quantidade_no_carrinho} unidades no seu carrinho.'})
-            item = existing_items.first()
-
-        if not created:
-            item.quantity += quantity
-        else:
-            item.quantity = quantity
-        item.save()
-        message = f'{quantity} unidade' if quantity == 1 else f'{quantity} unidades'
-        if variation:
-            return JsonResponse({'success': True,
-                                 'produto_adicionado': f'{message} da variação {variation.name} adicionado ao carrinho com sucesso',
-                                 'variacao_adicionada': variation.name})
-        else:
-            return JsonResponse({'success': True,
-                                 'produto_adicionado': f'{message} do produto {product.name} adicionado ao carrinho com sucesso'})
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
-
-
+# RETIRADO PARA USAR APENAS O ADD_TO_CARD_CARROSEL
+# def add_to_cart(request, product_id):
+#
+#     user = request.user
+#     product = get_object_or_404(Produto, id=product_id)
+#     variation_id = request.POST.get('variation')
+#     cart = Cart.get_or_create_cart(user)
+#     quantity = int(request.POST.get('quantity', 1))
+#
+#     if variation_id:
+#
+#         variation = get_object_or_404(Variation, id=variation_id)
+#         quantidade_materia_prima = variation.materia_prima.stock
+#         materia_prima_id = variation.materia_prima.id
+#         quantity = int(quantity)
+#         print(quantity, quantidade_materia_prima, 'TESEEEEEEE')
+#         # Verificar se a variação pertence ao produto atual
+#         if variation.produto_pai != product:
+#             return JsonResponse({'success': False,
+#                                  'error': 'Desculpe, essa variação não está disponível para esse produto.'})
+#     else:
+#         variation = None
+#
+#     cart = Cart.get_or_create_cart(user)
+#
+#     if variation:
+#         if quantity > quantidade_materia_prima:
+#             print('quantity', 'quantidade_materia_prima', 'TESEEEEEEE')
+#             return JsonResponse({'success': False,
+#                                  'error': f'Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis.'})
+#         existing_items = CartItem.objects.filter(cart=cart, variation__materia_prima_id=materia_prima_id)
+#
+#         # Multiplicar a quantidade pelo gasto e somar as quantidades de todas as CartItems encontradas
+#         quantidade_no_carrinho = sum(
+#             existing_item.quantity * existing_item.variation.gasto for existing_item in existing_items)
+#         print(quantidade_no_carrinho, 'quantidade no carrinho')
+#         total_quantity = quantity * variation.gasto + quantidade_no_carrinho
+#         print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
+#         if total_quantity > quantidade_materia_prima:
+#             return JsonResponse({'success': False,
+#                                  'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis e tem {quantidade_no_carrinho} mls no seu carrinho.'})
+#
+#         try:
+#             item, created = CartItem.objects.get_or_create(
+#                 cart=cart,
+#                 product=product,
+#                 variation=variation,
+#
+#             )
+#             if not created:
+#                 item.quantity += quantity
+#             else:
+#                 item.quantity = quantity
+#             item.save()
+#
+#             message = f'{quantity} unidade' if quantity == 1 else f'{quantity} unidades'
+#             if variation:
+#                 return JsonResponse({'success': True,
+#                                      'produto_adicionado': f'{message} da variação {variation.name} adicionado ao carrinho com sucesso',
+#                                      'variacao_adicionada': variation.name})
+#             else:
+#                 return JsonResponse({'success': True,
+#                                      'produto_adicionado': f'{message} do produto {product.name} adicionado ao carrinho com sucesso'})
+#         except Exception as e:
+#             return JsonResponse({'success': False, 'error': str(e)})
+#
+#
+#     else:
+#         if quantity > product.stock:
+#             return JsonResponse({'success': False,
+#                                  'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis.'})
+#
 
 # def add_to_cart(request, product_id):
 #   user = request.user
@@ -201,16 +236,32 @@ def add_to_cart(request, product_id):
 #     return JsonResponse({'success': False})
 
 def update_item(request):
+    print('UPDATE_ITEM')
     cart = get_object_or_404(Cart, user=request.user)
     product_id = request.POST.get('product_id', None)
     variation_id = request.POST.get('variation_id', None)
     quantity = request.POST.get('quantity', None)
     if cart and product_id and quantity:
+
         try:
             if variation_id:
+
+                product = get_object_or_404(Produto, id=product_id)
+                variation = get_object_or_404(Variation, id=variation_id)
+                quantidade_materia_prima = variation.materia_prima.stock
+                materia_prima_id = variation.materia_prima.id
+                quantity = int(quantity)
+                try:
+                    verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+                                                         materia_prima_id, product)
+                except ValueError as e:
+                    return JsonResponse({'success': False, 'error': str(e)})
+
                 item = CartItem.objects.get(cart=cart, product__id=product_id, variation__id=variation_id)
                 item.quantity = quantity
                 item.save()
+                return JsonResponse({'success': True, 'mensagem': 'item atualizado'})
+
             else:
                 item = CartItem.objects.get(cart=cart, product__id=product_id)
                 item.quantity = quantity
