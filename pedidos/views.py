@@ -405,8 +405,9 @@ def verifica_carrinho_2(item_id, user):
             verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
                                                  materia_prima_id, product,fechamento)
 
-        except ValueError:
-            raise ValueError
+        except ValueError as e:
+            raise ValueError(str(e))
+
 
     except CartItem.DoesNotExist:
         print('erro')
@@ -436,16 +437,17 @@ def criar_pedido(request):
     items = cart.cartitem_set.all()
     if items:
         print("TEM ITEMS")
-        for item_id in items:
+        errors = []
+        for item in items:
             try:
-                item_id=item_id.id
-                print( 'Passou aqui')
-                verifica_carrinho_2(item_id, user)
-
+                verifica_carrinho_2(item.id, user)
             except ValueError as e:
-                print(e,'NAOOO DEU CERTOOOOO')
-                data={'success': False, 'error': str(e),'item_id':item_id}
-                return JsonResponse(data)
+                print(e)
+                errors.append({'item_id': item.id, 'message': str(e)})
+
+        if errors:
+            data = {'success': False, 'errors': errors}
+            return JsonResponse(data)
 
 
 

@@ -379,21 +379,20 @@ $(document).ready(function() {
               }
 
   else {
-            alert( data.item_id );
-         $('#linha-'+data.item_id ).addClass('linha-estoque-insuficiente');
- // Exibe uma mensagem de erro
-
-        $('#alert-erro-'+data.item_id).show();
-        $('#alert-container-erro-'+data.item_id).show();
-        $('#alert-erro-'+data.item_id).html(data.error + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(' + data.item_id + ')">' +
+    // Adiciona a classe CSS "linha-estoque-insuficiente" na linha do item com estoque insuficiente
+    for (var i = 0; i < data.errors.length; i++) {
+        var itemId = data.errors[i].item_id;
+        $('#linha-'+itemId).addClass('linha-estoque-insuficiente');
+        // Exibe uma mensagem de erro
+        $('#alert-erro-'+itemId).show();
+        $('#alert-container-erro-'+itemId).show();
+        $('#alert-erro-'+itemId).html(data.errors[i].message + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(' + itemId + ')">' +
   '<span aria-hidden="true">&times;</span>' +
 '</button>');
-
-        alert('Erro ao criar o pedido.');
-        console.log('ERRO:', data.error + 'erro aqui');
-        alert( 'erro com o item' + data.item_id );
-
-      }
+    }
+    alert('Erro ao criar o pedido.');
+    console.log('ERROS:', data.errors);
+}
     },
       error: function(response) {
         alert('Erro ao criar o pedido.');

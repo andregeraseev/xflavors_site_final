@@ -13,7 +13,7 @@ token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
 def import_products():
 
     products = pesquisar_produtos()
-    delay = 60 / 40  # 30 requests per minute
+    delay = 60 / 20  # 30 requests per minute
 
     for product in products:
         product_id = int(product['produto']['id'])
