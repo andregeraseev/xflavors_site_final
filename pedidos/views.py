@@ -97,10 +97,11 @@ def verifica_carrinho(request):
             try:
                 verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
                                                      materia_prima_id, product,fechamento)
+                return JsonResponse({'success': True})
             except ValueError as e:
                 print(e)
                 return JsonResponse({'success': False, 'error': str(e)})
-            return JsonResponse({'success': True})
+
         except CartItem.DoesNotExist:
             print('erro')
             return JsonResponse({'success': False})
@@ -341,7 +342,7 @@ def cotacao_frete_correios(request):
 
         # envia a requisição SOAP e trata a resposta
         response = requests.post(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino={cep}&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=03220,03298&nVlDiametro=0&StrRetorno=xml")
-        print(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino=12245500&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=40010,41106&nVlDiametro=0&StrRetorno=xml")
+        # print(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino=12245500&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=40010,41106&nVlDiametro=0&StrRetorno=xml")
         if response.status_code == 200:
 
             # parsing do XML retornado
@@ -368,17 +369,50 @@ def cotacao_frete_correios(request):
                     'valor': preco,
                     'prazodeentrega': prazo_entrega
                 })
-                print(results, 'results')
-            print('Cotação de frete realizada com sucesso.')
+            #     print(results, 'results')
+            # print('Cotação de frete realizada com sucesso.')
             return JsonResponse({'results': results})
 
         else:
-            print(f'Resposta da requisição inválida: {response.status_code}')
+            # print(f'Resposta da requisição inválida: {response.status_code}')
             return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
 
     except Exception as e:
-        print(f'Erro na requisição: {e}')
+        # print(f'Erro na requisição: {e}')
         return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
+
+
+
+def verifica_carrinho_2(item_id, user):
+    print('VERIFICANDO CARRINHO')
+    cart = Cart.objects.get(user=user)
+
+    item_id = int(item_id)
+    print('item_id', item_id)
+    try:
+        print('tentativa')
+        item = CartItem.objects.get(id=item_id, cart=cart)
+        variation =item.variation
+        quantity= item.quantity
+        print(quantity,'quantidade')
+        quantidade_materia_prima = item.variation.materia_prima.stock
+        print(quantidade_materia_prima,'quantidade_materiaprima')
+        materia_prima_id = item.variation.materia_prima.id
+        product = item.product
+        print(item.variation, 'ITEMMSSSSSSSS')
+        fechamento = 2
+        try:
+            verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+                                                 materia_prima_id, product,fechamento)
+
+        except ValueError:
+            raise ValueError
+
+    except CartItem.DoesNotExist:
+        print('erro')
+        raise ValueError
+
+
 
 
 @require_POST
@@ -399,34 +433,71 @@ def criar_pedido(request):
     cart = Cart.objects.get(user=request.user)
     print('SUBTOTAL',subtotal)
 
+    items = cart.cartitem_set.all()
+    if items:
+        print("TEM ITEMS")
+        for item_id in items:
+            try:
+                item_id=item_id.id
+                print( 'Passou aqui')
+                verifica_carrinho_2(item_id, user)
+
+            except ValueError as e:
+                print(e,'NAOOO DEU CERTOOOOO')
+                data={'success': False, 'error': str(e),'item_id':item_id}
+                return JsonResponse(data)
 
 
 
-    # Criar uma nova instância de Pedido
-    pedido = Pedido.objects.create(
-        user=request.user,
-        endereco_entrega=endereco_entrega,
-        status='Aguardando_pagamento',
-        frete=frete_selecionado,
-        subtotal=subtotal,
-        valor_frete=frete,
-        total=total,
-        metodo_de_pagamento=metodo_pagamento
-    )
 
-
-
-
-    for item in cart.cartitem_set.all():
-        print(item)
-        pedido_item = PedidoItem.objects.create(
-            product=item.product,
-            variation=item.variation,
-            quantity=item.quantity
+        # Criar uma nova instância de Pedido
+        print('CRIANDO PEDIDO')
+        pedido = Pedido.objects.create(
+            user=request.user,
+            endereco_entrega=endereco_entrega,
+            status='Aguardando pagamento',
+            frete=frete_selecionado,
+            subtotal=subtotal,
+            valor_frete=frete,
+            total=total,
+            metodo_de_pagamento=metodo_pagamento
         )
-        pedido_item.save()
-        pedido.itens.add(pedido_item)
-    pedido.save()
+
+        print(pedido.metodo_de_pagamento, "METODO DE PAGAMENTO")
+
+
+
+        print(items)
+        print('itenerando items')
+        for item in items:
+            print('COLOCANDO ITEM NO CARRINHO')
+            print(item)
+            try:
+                pedido_item = PedidoItem.objects.create(
+                    product=item.product,
+                    variation=item.variation,
+                    quantity=item.quantity
+                )
+                pedido_item.save()
+                pedido.itens.add(pedido_item)
+            except:
+                e= 'erro ao adicionar item ao carrinho', item
+                print(e)
+                data = {'success': False, 'error': str(e)}
+                return JsonResponse(data)
+            pedido.save()
+
+        # Limpar o carrinho
+        print('deletando carrinho')
+        cart.cartitem_set.all().delete()
+        print(pedido.id, 'PEDIDO ID')
+
+        data = {'success': True, 'pedido_id': pedido.id}
+        return JsonResponse(data)
+
+    else:
+        e='Nao foram encontrados items no carrinho'
+        return JsonResponse({'success': False, 'error': str(e)})
 
 
     # Adicionar os itens do carrinho ao pedido
@@ -436,11 +507,7 @@ def criar_pedido(request):
     #     pedido.itens.add(item)
     # pedido.save()
 
-    # Limpar o carrinho
-    cart.cartitem_set.all().delete()
-    print(pedido.id, 'PEDIDO ID')
-    # Redirecionar para a página de detalhes do pedido
-    return JsonResponse({'pedido_id': pedido.id})
+
 
 from django.shortcuts import render
 

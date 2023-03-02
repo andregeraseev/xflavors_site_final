@@ -33,7 +33,7 @@
 <!--    <button type="submit" class="btn btn-primary">Pagar Agora</button>-->
 <!--  </form>-->
 
-    {% if metodo_de_pagamento == 'pix' %}
+    {% if metodo_de_pagamento == 'Pix' %}
   <h3>Enviar Comprovante de Pagamento</h3>
   <p>Por favor, envie o comprovante de pagamento para que possamos confirmar o seu pedido.</p>
   <form action="{% url 'paga_pix' %}" method="post" enctype="multipart/form-data">

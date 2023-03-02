@@ -52,16 +52,16 @@
         <form action="" method="POST">
             {% csrf_token %}
             <div class="form-check">
-                <input type="radio" name="metodo_pagamento" id="pagamento-cartao" value="cartao"
+                <input type="radio" name="metodo_pagamento" id="pagamento-cartao" value="Cartao"
                        class="form-check-input">
                 <label for="pagamento-cartao" class="form-check-label">Cartão de crédito</label>
             </div>
             <div class="form-check">
-                <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="pix" class="form-check-input">
+                <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="Pix" class="form-check-input">
                 <label for="pagamento-pix" class="form-check-label">Pix</label>
             </div>
             <div class="form-check">
-                <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="deposito"
+                <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="Deposito"
                        class="form-check-input">
                 <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
             </div>
@@ -241,10 +241,11 @@ $(document).ready(function () {
 });
 
 
+
 $(document).ready(function() {
   // Adiciona um evento de clique no botão "Ir para meios de pagamento"
   $('#ir-para-meios-de-pagamento').on('click', function() {
-
+    event.preventDefault();
     if (!$('input[name=frete]:checked').val()) {
       alert('Selecione uma opção de frete.');
       return false;
@@ -258,65 +259,78 @@ $(document).ready(function() {
 
 
 
-<!--TESTE INICIO-->
+<!--&lt;!&ndash;TESTE INICIO&ndash;&gt;-->
 
-var estoqueInsuficiente = false;
-{% for item in itens %}
-  {% if item.variation %}
-    var item = {{ item.id }};
+<!--var estoqueInsuficiente = false;-->
 
 
+<!--{% for item in itens %}-->
+<!--  {% if item.variation %}-->
+<!--    var item = {{ item.id }};-->
 
-$.ajax({
-    type: 'POST',
-    url: '{% url "verifica_carrinho" %}',
-    data: {
+<!--$.ajax({-->
+<!--    type: 'POST',-->
+<!--    url: '{% url "verifica_carrinho" %}',-->
+<!--    data: {-->
 
-      'item': item,
+<!--      'item': item,-->
 
-      'csrfmiddlewaretoken': '{{ csrf_token }}'
-    },
-    dataType: 'json',
-    success: function(data) {
-      if (data.success) {
+<!--      'csrfmiddlewaretoken': '{{ csrf_token }}'-->
+<!--    },-->
+<!--    dataType: 'json',-->
+<!--    success: function(data) {-->
+<!--      if (data.success) {-->
+<!--      alert('estoque Suficiente.');-->
 
-      } else {
-      estoqueInsuficiente = true;
-      $('#linha-{{ item.id }}' ).addClass('linha-estoque-insuficiente');
- // Exibe uma mensagem de erro
+<!--      } else {-->
+<!--      alert('estoque insuficiente.');-->
+<!--      estoqueInsuficiente = true;-->
 
-        $('#alert-erro-{{ item.id }}').show();
-        $('#alert-container-erro-{{ item.id }}').show();
-        $('#alert-erro-{{ item.id }}').html(data.error + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(\'{{ item.id }}\')">' +
-  '<span aria-hidden="true">&times;</span>' +
-'</button>');
+<!--      console.log('estoqueInsuficiente:', estoqueInsuficiente)-->
+<!--      $('#linha-{{ item.id }}' ).addClass('linha-estoque-insuficiente');-->
+<!--      return false ;-->
+<!-- // Exibe uma mensagem de erro-->
 
-        // Oculta a mensagem de erro após 5 segundos
-        setTimeout(function() {
-          $('#alert-erro-{{ item.id }}').hide();
-          $('#alert-container-erro-{{ item.id }}').hide();
-        }, 20000);
+<!--        $('#alert-erro-{{ item.id }}').show();-->
+<!--        $('#alert-container-erro-{{ item.id }}').show();-->
+<!--        $('#alert-erro-{{ item.id }}').html(data.error + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(\'{{ item.id }}\')">' +-->
+<!--  '<span aria-hidden="true">&times;</span>' +-->
+<!--'</button>');-->
 
-      }
-    },
-    error: function(data) {
+<!--        // Oculta a mensagem de erro após 5 segundos-->
+<!--        setTimeout(function() {-->
+<!--          $('#alert-erro-{{ item.id }}').hide();-->
+<!--          $('#alert-container-erro-{{ item.id }}').hide();-->
+<!--        }, 20000);-->
 
-    }
-  });
+<!--      }-->
+<!--    },-->
+<!--    error: function(data) {-->
 
-{% endif %}
+<!--    }-->
+<!--  });-->
+<!--{% endif %}-->
+<!--console.log('estoqueInsuficiente final repeticao:', estoqueInsuficiente);-->
+<!--if (estoqueInsuficiente) {-->
+<!--alert('estoque insuficiente final.');-->
+<!--console.log('estoqueInsuficiente final:', estoqueInsuficiente);-->
+<!--    return false ;-->
+<!--    }-->
+<!--{% endfor %}-->
 
-{% endfor %}
-console.log('estoqueInsuficiente:', estoqueInsuficiente);
-if (estoqueInsuficiente) {
-console.log('estoqueInsuficiente:', estoqueInsuficiente);
-    return false;}
-else { console.log('estoqueInsuficiente:', estoqueInsuficiente); };
 
-<!--TESTE FIM-->
+<!--if (estoqueInsuficiente) {-->
+<!--alert('estoque insuficiente final.');-->
+<!--console.log('estoqueInsuficiente final:', estoqueInsuficiente);-->
+<!--    return false ;-->
+<!--    }-->
+<!--else { alert('estoque suficiente final.');-->
+<!-- console.log('estoqueInsuficiente:', estoqueInsuficiente); };-->
 
 
 
+
+    alert('CRIANDO PEDIDO.');
     // Obtém o valor do subtotal
     var subtotal = parseFloat($('#subtotal').text().replace('R$ ', ''));
 
@@ -344,19 +358,43 @@ else { console.log('estoqueInsuficiente:', estoqueInsuficiente); };
         'frete_selecionado': freteSelecionado,
         'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
       },
-      success: function(response) {
-var pedido_id = response.pedido_id;
-console.log('pedido_id:', pedido_id);
-
-// Constrói a URL de redirecionamento
-var url_pagamento = `/pagina_pagamento/${pedido_id}`;
+      dataType: 'json',
+      success: function(data) {
+      alert('sucesso?.');
 
 
-console.log('URL de pagamento:', url_pagamento);
+      if (data.success) {
+      alert('Pedido criado.');
+      var pedido_id = data.pedido_id;
+      console.log('pedido_id:', pedido_id);
 
-// Redireciona o usuário para a página de pagamento
-window.location.href = url_pagamento;
-  },
+        // Constrói a URL de redirecionamento
+        alert('criando url');
+        var url_pagamento = `/pagina_pagamento/`+pedido_id;
+        console.log('URL de pagamento:', url_pagamento);
+        alert('redirecionando');
+        // Redireciona o usuário para a página de pagamento
+        window.location.href = url_pagamento;
+
+              }
+
+  else {
+            alert( data.item_id );
+         $('#linha-'+data.item_id ).addClass('linha-estoque-insuficiente');
+ // Exibe uma mensagem de erro
+
+        $('#alert-erro-'+data.item_id).show();
+        $('#alert-container-erro-'+data.item_id).show();
+        $('#alert-erro-'+data.item_id).html(data.error + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(' + data.item_id + ')">' +
+  '<span aria-hidden="true">&times;</span>' +
+'</button>');
+
+        alert('Erro ao criar o pedido.');
+        console.log('ERRO:', data.error + 'erro aqui');
+        alert( 'erro com o item' + data.item_id );
+
+      }
+    },
       error: function(response) {
         alert('Erro ao criar o pedido.');
       }

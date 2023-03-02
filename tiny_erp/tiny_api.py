@@ -13,7 +13,7 @@ token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
 def import_products():
 
     products = pesquisar_produtos()
-    delay = 60 / 50  # 30 requests per minute
+    delay = 60 / 40  # 30 requests per minute
 
     for product in products:
         product_id = int(product['produto']['id'])
@@ -65,7 +65,7 @@ def pegar_category_e_subcategory(categoria_completa):
 def pesquisar_produtos():
     url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
     token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
-    params = {'token': token, 'formato': 'json', 'pagina': '2'}
+    params = {'token': token, 'formato': 'json', 'pagina': '3'}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:
