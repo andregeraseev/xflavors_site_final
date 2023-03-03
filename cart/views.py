@@ -106,7 +106,7 @@ def add_to_cart_carrocel(request):
 
 
 
-def verifica_qunatidade_carrinho_varivel(quantity,quantidade_materia_prima,variation,cart,materia_prima_id,product,fechamento=1):
+def verifica_qunatidade_carrinho_varivel(quantity,quantidade_materia_prima,variation,cart,materia_prima_id,product,fechamento=1, update=False):
     if variation:
         print('passou por aqui')
         if quantity > quantidade_materia_prima:
@@ -158,10 +158,13 @@ def verifica_qunatidade_carrinho_varivel(quantity,quantidade_materia_prima,varia
             print(quantidade_no_carrinho, 'quantidade_no_carrinho')
             print(total_quantity, 'total_quantity')
 
-        if total_quantity > quantidade_materia_prima:
-            print('passou por aqui 2')
-            raise ValueError(
-                f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis e tem {quantidade_no_carrinho} mls no seu carrinho.')
+        if update:
+            pass
+        else:
+            if total_quantity > quantidade_materia_prima:
+                print('passou por aqui 2 produto')
+                raise ValueError(
+                    f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis e tem {quantidade_no_carrinho} unidades no seu carrinho.')
 
 
 def cria_item_carrinho(cart,product,variation,quantity):
@@ -297,9 +300,10 @@ def update_item(request):
                 quantidade_materia_prima = variation.materia_prima.stock
                 materia_prima_id = variation.materia_prima.id
                 quantity = int(quantity)
+                fechamento = 2
                 try:
                     verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
-                                                         materia_prima_id, product)
+                                                         materia_prima_id, product, fechamento, update=True)
                 except ValueError as e:
                     return JsonResponse({'success': False, 'error': str(e)})
 
@@ -309,6 +313,20 @@ def update_item(request):
                 return JsonResponse({'success': True, 'mensagem': 'item atualizado'})
 
             else:
+
+                product = get_object_or_404(Produto, id=product_id)
+                quantity = int(quantity)
+                variation = None
+                quantidade_materia_prima = product.stock
+                materia_prima_id = product.id
+                fechamento = 2
+                try:
+                    verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+                                                         materia_prima_id, product, fechamento, update=True)
+                except ValueError as e:
+                    return JsonResponse({'success': False, 'error': str(e)})
+
+
                 item = CartItem.objects.get(cart=cart, product__id=product_id)
                 item.quantity = quantity
                 item.save()

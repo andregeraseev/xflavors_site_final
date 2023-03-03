@@ -21,7 +21,7 @@
         <td>{{ pedido.data_pedido|date:"d/m/Y" }}</td>
         <td>R${{ pedido.total|floatformat:2 }}</td>
         <td class="pedido-status" data-status="{{ pedido.status }}"></td>
-        {% if pedido.metodo_de_pagamento == "pix" %}
+        {% if pedido.metodo_de_pagamento == "Pix" %}
         {% if pedido.comprovante %}
         <td><a href="{{ pedido.comprovante.url }}"><i class="far fa-eye"></i></a></td>
         {% else %}
@@ -49,7 +49,7 @@
 $(document).ready(function() {
   $('.pedido-status').each(function() {
     var status = $(this).data('status');
-    if (status === 'Aguardando_pagamento') {
+    if (status === 'Aguardando pagamento') {
       $(this).html('<i class="fas fa-exclamation-triangle text-warning" title="Aguardando pagamento"></i>');
     } else if (status === 'Em Processamento') {
       $(this).html('<i class="fas fa-cog fa-spin text-info" title="Em processamento"></i>');

@@ -34,6 +34,7 @@ admin.site.register(Produto, ProdutoAdmin)
 class MateriaPrimaAdmin(admin.ModelAdmin):
     list_display = ('name','stock')
     list_editable = ('stock',)
+    search_fields = ('name',)
 
 
 admin.site.register(MateriaPrima, MateriaPrimaAdmin)
@@ -49,5 +50,6 @@ admin.site.register(Subcategory)
 class VariantionAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'stock', 'materia_prima', 'gasto')
     list_editable = ('materia_prima',)
+    search_fields = ('name',)
 
 admin.site.register(Variation,VariantionAdmin)
