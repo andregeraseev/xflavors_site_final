@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load custom_filters %}
 {% block content %}
 <div class="container my-5">
     <h1 class="text-center">Carrinho</h1>
@@ -34,7 +34,7 @@
                         </div>
                     </form>
                 </td>
-
+                <td>R$ {%if item.variation %} {{ item.quantity|multiplicar:item.variation.price }} {% else %} {{ item.quantity|multiplicar:item.product.price }} {% endif %}</td>
 
 
                 <td>

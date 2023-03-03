@@ -35,7 +35,10 @@ def carrinho(request):
             preco = item.product.price
         total += item.quantity * preco
 
-    return render(request, 'carrinho.html', {'itens': itens, 'total': total, 'total_quantity_cart':total_quantity_cart})
+
+    total_do_item = item.quantity * item.product.price
+
+    return render(request, 'carrinho.html', {'itens': itens, 'total': total, 'total_quantity_cart':total_quantity_cart, 'total_do_item':total_do_item})
 
 
 # views.py
@@ -65,6 +68,8 @@ def add_to_cart_carrocel(request):
                                  'error': 'Desculpe, essa variação não está disponível para esse produto.'})
     else:
         variation = None
+        quantidade_materia_prima = product.stock
+        materia_prima_id = product.id
 
     if variation:
         try:
@@ -84,38 +89,79 @@ def add_to_cart_carrocel(request):
             return JsonResponse({'success': False,
                                  'error': f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis.'})
 
+        else:
+            try:
+                verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+                                                     materia_prima_id, product)
+            except ValueError as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+            success, message = cria_item_carrinho(cart, product, variation, quantity)
+            if success:
+                return JsonResponse({'success': True, 'produto_adicionado': message})
+            else:
+                return JsonResponse({'success': False, 'error': message})
+
+
 #        IMPLEMENTAR PARA PRODUTO SEM VARIACAO
 
 
 
 def verifica_qunatidade_carrinho_varivel(quantity,quantidade_materia_prima,variation,cart,materia_prima_id,product,fechamento=1):
-    print('passou por aqui')
-    if quantity > quantidade_materia_prima:
-        print('passou por aqui 1')
-        raise ValueError(
-            f'Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} unidades disponíveis.')
-    existing_items = CartItem.objects.filter(cart=cart, variation__materia_prima_id=materia_prima_id)
+    if variation:
+        print('passou por aqui')
+        if quantity > quantidade_materia_prima:
+            print('passou por aqui 1')
+            raise ValueError(
+                f'Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} unidades disponíveis.')
+        existing_items = CartItem.objects.filter(cart=cart, variation__materia_prima_id=materia_prima_id)
 
-    # Multiplicar a quantidade pelo gasto e somar as quantidades de todas as CartItems encontradas
-    quantidade_no_carrinho = sum(
-        existing_item.quantity * existing_item.variation.gasto for existing_item in existing_items)
-    # print(quantidade_no_carrinho, 'quantidade no carrinho')
-    if fechamento == 2:
-        total_quantity = quantidade_no_carrinho
-        # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
-        print(quantidade_no_carrinho, 'quantidade_no_carrinho')
-        print(total_quantity, 'total_quantity')
+        # Multiplicar a quantidade pelo gasto e somar as quantidades de todas as CartItems encontradas
+        quantidade_no_carrinho = sum(
+            existing_item.quantity * existing_item.variation.gasto for existing_item in existing_items)
+        # print(quantidade_no_carrinho, 'quantidade no carrinho')
+        if fechamento == 2:
+            total_quantity = quantidade_no_carrinho
+            # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
+            print(quantidade_no_carrinho, 'quantidade_no_carrinho')
+            print(total_quantity, 'total_quantity')
+        else:
+            total_quantity = quantity * variation.gasto + quantidade_no_carrinho
+            # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
+            print(quantidade_no_carrinho, 'quantidade_no_carrinho')
+            print(total_quantity, 'total_quantity')
+
+        if total_quantity > quantidade_materia_prima:
+            print('passou por aqui 2')
+            raise ValueError(
+                f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis e tem {quantidade_no_carrinho} mls no seu carrinho.')
+    # CASO O ITEM NAO TENHA VARIATION
     else:
-        total_quantity = quantity * variation.gasto + quantidade_no_carrinho
-        # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
-        print(quantidade_no_carrinho, 'quantidade_no_carrinho')
-        print(total_quantity, 'total_quantity')
+        print('passou por aqui produto')
+        if quantity > quantidade_materia_prima:
+            print('passou por aqui 1 produto')
+            raise ValueError(
+                f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis.')
+        existing_items = CartItem.objects.filter(cart=cart, product=materia_prima_id)
 
-    if total_quantity > quantidade_materia_prima:
-        print('passou por aqui 2')
-        raise ValueError(
-            f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis e tem {quantidade_no_carrinho} mls no seu carrinho.')
+        # Multiplicar a quantidade pelo gasto e somar as quantidades de todas as CartItems encontradas
+        quantidade_no_carrinho = sum(
+            existing_item.quantity * 1 for existing_item in existing_items)
+        # print(quantidade_no_carrinho, 'quantidade no carrinho')
+        if fechamento == 2:
+            total_quantity = quantidade_no_carrinho
+            # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
+            print(quantidade_no_carrinho, 'quantidade_no_carrinho')
+            print(total_quantity, 'total_quantity')
+        else:
+            total_quantity = quantity + quantidade_no_carrinho
+            # print(total_quantity, 'TQ', quantity, 'Q', quantidade_no_carrinho, 'QnC')
+            print(quantidade_no_carrinho, 'quantidade_no_carrinho')
+            print(total_quantity, 'total_quantity')
 
+        if total_quantity > quantidade_materia_prima:
+            print('passou por aqui 2')
+            raise ValueError(
+                f'Desculpe, não há estoque suficiente do produto {product.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis e tem {quantidade_no_carrinho} mls no seu carrinho.')
 
 
 def cria_item_carrinho(cart,product,variation,quantity):

@@ -52,7 +52,12 @@ def import_products():
 
 def pegar_category_e_subcategory(categoria_completa):
     if '>>' in categoria_completa:
-        category, subcategoria = categoria_completa.split(' >> ')
+        split_values = categoria_completa.split(' >> ')
+        category = split_values[0]
+        if len(split_values) > 2:
+            subcategoria = ' >> '.join(split_values[1:])
+        else:
+            subcategoria = split_values[1]
     else:
         category = categoria_completa
         subcategoria = 'sem_subcategoria'
@@ -65,7 +70,7 @@ def pegar_category_e_subcategory(categoria_completa):
 def pesquisar_produtos():
     url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
     token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
-    params = {'token': token, 'formato': 'json', 'pagina': '3'}
+    params = {'token': token, 'formato': 'json', 'pagina': '6'}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:

@@ -392,14 +392,27 @@ def verifica_carrinho_2(item_id, user):
     try:
         print('tentativa')
         item = CartItem.objects.get(id=item_id, cart=cart)
-        variation =item.variation
+        if item.variation:
+            variation =item.variation
+            quantidade_materia_prima = item.variation.materia_prima.stock
+            print(quantidade_materia_prima, 'quantidade_materiaprima')
+            materia_prima_id = item.variation.materia_prima.id
+
+        else:
+            variation = None
+            quantidade_materia_prima = item.product.stock
+            materia_prima_id = item.product.id
+
+
         quantity= item.quantity
         print(quantity,'quantidade')
-        quantidade_materia_prima = item.variation.materia_prima.stock
-        print(quantidade_materia_prima,'quantidade_materiaprima')
-        materia_prima_id = item.variation.materia_prima.id
+
+
         product = item.product
-        print(item.variation, 'ITEMMSSSSSSSS')
+        if item.variation:
+            print(item.variation, 'ITEMMSSSSSSSS')
+        else:
+            print(item.product, 'ITEMMSSSSSSSS')
         fechamento = 2
         try:
             verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Produto, Category, Subcategory,Variation, MateriaPrima
-
+from django.utils.html import format_html
 
 class VariationCategoryInline(admin.TabularInline):
     model = Variation
@@ -9,8 +9,18 @@ class SubCategoryInline(admin.TabularInline):
     model = Subcategory
 
 class ProdutoAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'stock')
+    list_display = ('name', 'price', 'stock','tem_variation')
+    search_fields = ('name',)
     actions = ['duplicate_product']
+
+    def tem_variation(self, obj):
+        if obj.variation_set.exists():
+            return format_html('<a href="{}">{}</a>', f'/admin/produtos/variation/?produto_pai__id__exact={obj.id}',
+                               'SIM')
+        else:
+            return 'NAO'
+
+    tem_variation.short_description = 'tem Variation'
 
     def duplicate_product(self, request, queryset):
         for obj in queryset:
