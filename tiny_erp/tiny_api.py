@@ -8,12 +8,14 @@ from django.shortcuts import  get_object_or_404
 import time
 from PIL import Image
 from io import BytesIO
-token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
+from xflavors.settings import TINY_ERP_API_KEY
+
+
 
 def import_products():
 
     products = pesquisar_produtos()
-    delay = 60 / 20  # 30 requests per minute
+    delay = 2  # 30 requests per minute
 
     for product in products:
         product_id = int(product['produto']['id'])
@@ -69,8 +71,8 @@ def pegar_category_e_subcategory(categoria_completa):
 
 def pesquisar_produtos():
     url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
-    token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
-    params = {'token': token, 'formato': 'json', 'pagina': '6'}
+    token = TINY_ERP_API_KEY
+    params = {'token': token, 'formato': 'json', 'pagina': '7'}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:
@@ -85,7 +87,7 @@ def pesquisar_produtos():
 
 def obter_info_produto(product_id):
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
-    token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
+    token = TINY_ERP_API_KEY
     params = {
         'token': token,
         'formato': 'json',
@@ -101,7 +103,7 @@ def obter_info_produto(product_id):
 
 def obter_info_estoque_produto(product_id):
     url_estoque = 'https://api.tiny.com.br/api2/produto.obter.estoque.php'
-    token = 'a39bbddfcec2a176fe2cc12fc9fbb1467bf2aa47'
+    token = TINY_ERP_API_KEY
     params_estoque = {'token': token, 'formato': 'json', 'id': product_id}
     response_estoque = requests.get(url_estoque, params=params_estoque)
 

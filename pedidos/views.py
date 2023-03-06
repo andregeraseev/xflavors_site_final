@@ -15,6 +15,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView
 from produtos.models import Produto
+from tiny_erp.envia_pedido import enviar_pedido_para_tiny
 from .forms import EnderecoEntregaForm
 from .models import Order, PedidoItem
 from cart.models import CartItem, Cart
@@ -485,21 +486,35 @@ def criar_pedido(request):
         print(items)
         print('itenerando items')
         for item in items:
+
             print('COLOCANDO ITEM NO CARRINHO')
             print(item)
+            if item.variation:
+                preco = item.variation.price
+            else:
+                preco = item.product.price
             try:
                 pedido_item = PedidoItem.objects.create(
                     product=item.product,
                     variation=item.variation,
-                    quantity=item.quantity
+                    quantity=item.quantity,
+                    price= preco
                 )
                 pedido_item.save()
                 pedido.itens.add(pedido_item)
+
+
             except:
                 e= 'erro ao adicionar item ao carrinho', item
                 print(e)
                 data = {'success': False, 'error': str(e)}
                 return JsonResponse(data)
+
+            try:
+                atualizar_estoque(item)
+            except ValueError as e:
+                print(e)
+                errors.append({'item_id': item.id, 'message': str(e)})
             pedido.save()
 
         # Limpar o carrinho
@@ -513,6 +528,26 @@ def criar_pedido(request):
     else:
         e='Nao foram encontrados items no carrinho'
         return JsonResponse({'success': False, 'error': str(e)})
+
+def atualizar_estoque(item):
+    produto = item.product
+    variacao = item.variation
+    quantidade = item.quantity
+    print('TIRANDOOOOOO')
+    if variacao:
+        estoque = variacao.materia_prima.stock
+        if estoque < quantidade:
+            raise ValueError('Estoque insuficiente para %s.' % variacao.name)
+        item.variation.materia_prima.stock = estoque - quantidade * item.variation.gasto
+        item.variation.materia_prima.save()
+    else:
+        estoque = produto.stock
+        if estoque < quantidade:
+            raise ValueError('Estoque insuficiente para %s.' % produto.name)
+        produto.stock = estoque - quantidade
+        produto.save()
+
+
 
 
     # Adicionar os itens do carrinho ao pedido
@@ -543,6 +578,10 @@ def pagina_pagamento(request, pedido_id):
         print(item.variation)
         print(item.product)
         print(pedido.metodo_de_pagamento)
+
+    # ENVIA PEDIDO PARA O Tiny
+    # enviado_para_tiny = enviar_pedido_para_tiny(pedido)
+
 
 
     context = {

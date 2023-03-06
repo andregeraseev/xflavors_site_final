@@ -12,6 +12,7 @@
         <th scope="col">Pedido</th>
 
         <th scope="col">Rastreio</th>
+        <th scope="col">Forma Pagamento</th>
       </tr>
       </thead>
       <tbody>
@@ -33,6 +34,7 @@
         {% endif %}
         <td><a href="{% url 'detalhes_pedido' pedido.id %}"><i class="far fa-eye"></i></a></td>
         <td><a href=""><i class="fas fa-truck"></i></a></td>
+        <td>{{ pedido.metodo_de_pagamento }}</td>
 
       </tr>
       {% endfor %}

@@ -13,6 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('cart/', include('cart.urls', namespace='cart')),
     path('pedidos/', include('pedidos.urls', namespace='pedidos')),
+    path('administracao/', include('administracao.urls', namespace='administracao')),
     path('', index, name='home'),
     path('import_products/', import_products_view, name='import_products'),
     path('admin/', admin.site.urls),

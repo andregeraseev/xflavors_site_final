@@ -11,17 +11,18 @@
 
 
 
+</script>
+<div class="container my-5 ">
 
-<div class="container my-5">
   <!-- Título -->
   <h3 class="text-center mb-3">Produtos mais vendidos</h3>
   <!-- Carrossel -->
   <div class="card-deck  slick-list ">
 {% for product in products %}
 <div class="col mb-4 product-card">
-    <div class="card h-100">
+    <div class="card ">
         <a href="{% url 'product_detail' product.slug %}">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top" style="max-height: 250px">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top" >
         </a>
         <div class="card-body" style="height: 220px;">
             <h5 class="card-title" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
@@ -53,7 +54,6 @@
 
 
   </div>
-
 </div>
 
 
@@ -127,6 +127,19 @@
 
 
 <script>
+
+
+  // Mostra o spinner quando a página começa a ser carregada
+  $(window).on('load', function() {
+    $('#loader').removeClass('d-none');
+  });
+
+  // Esconde o spinner quando a página é totalmente carregada
+  $(document).ready(function() {
+    $('#loader').addClass('d-none');
+  });
+
+
 $(document).ready(function() {
   // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
   $('.variation-select').change(function() {
@@ -134,9 +147,7 @@ $(document).ready(function() {
     let selectedVariationId = $(this).val();
     let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
 
-    console.log('productId:', productId);
-    console.log('selectedVariationId:', selectedVariationId);
-    console.log('selectedVariationPrice:', selectedVariationPrice);
+
 
     // Atualiza o preço exibido
     $('#price'+productId).text('R$ ' + selectedVariationPrice);
@@ -153,9 +164,6 @@ $('.add-to-cart-button').click(function() {
   let variationId = $(this).data('variation-id');
   let quantity = $(this).siblings('.quantity-input').val();
 
-  console.log('productId:', productId);
-  console.log('variationId:', variationId);
-  console.log('quantity:', quantity);
 
   // Envia uma requisição AJAX para adicionar o produto ao carrinho
   $.ajax({
@@ -238,6 +246,7 @@ $('.add-to-cart-button').click(function() {
         }
       }
     ]
+
   });
 
   // Seleciona os elementos com a classe 'prev-btn' e 'next-btn' e adiciona um listener para as ações de clique, que chama os métodos do plugin slick()

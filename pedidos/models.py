@@ -18,7 +18,7 @@ class PedidoItem(models.Model):
     # Método para calcular o preço total do item, multiplicando a quantidade pelo preço unitário do produto
     variation = models.ForeignKey(Variation, on_delete=models.SET_NULL,null=True)
     # Relacionamento com a classe Variation, representando a variacao adicionado ao pedido
-
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
     def valor_total(self):
         if self.variation:
             return self.quantity * self.variation.price
@@ -40,6 +40,7 @@ class Pedido(models.Model):
     STATUS_CHOICES = (
         ('Aguardando pagamento', 'Aguardando pagamento'),
         ('Em processamento', 'Em processamento'),
+        ('Pago', 'Pago'),
         ('Em trânsito', 'Em trânsito'),
         ('Entregue', 'Entregue'),
         ('Cancelado', 'Cancelado'),
@@ -68,9 +69,14 @@ class Pedido(models.Model):
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_de_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, default='Nao selecionado')
     comprovante = models.FileField(upload_to='comprovantes', blank=True, null=True)
+    numero_pedido_tiny = models.IntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ('-data_pedido',)
+
+    def atualizar_status(self, novo_status):
+        self.status = novo_status
+        self.save()
 
     def __str__(self):
         return f"Pedido {self.id}"
