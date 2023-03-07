@@ -70,9 +70,12 @@ class Cart(models.Model):
     # Método que retorna o preço total do carrinho
     def total_price(self):
         total = 0
-        # Percorre todos os itens do carrinho
-        for item in self.cart_items.all():
-            total += item.total_price()
+        # Percorre todos os itens de carrinho
+        for item in self.cartitem_set.all():
+            if item.variation:
+                total += item.quantity * item.variation.price
+            else:
+                total += item.quantity * item.product.price
         return total
 
     def total_quantity(self):

@@ -50,7 +50,7 @@ class Pedido(models.Model):
         ('PAC', 'PAC'),
                         )
     PAGAMENTO_CHOICES = (
-        ('Cartao', 'Cartao'),
+        ('MercadoPago', 'MercadoPago'),
         ('Pix', 'Pix'),
         ('Deposito', 'Deposito'),
         ('Pagseguro', 'Pagseguro'),
@@ -70,6 +70,7 @@ class Pedido(models.Model):
     metodo_de_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, default='Nao selecionado')
     comprovante = models.FileField(upload_to='comprovantes', blank=True, null=True)
     numero_pedido_tiny = models.IntegerField(blank=True, null=True)
+    mercado_pago_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ('-data_pedido',)

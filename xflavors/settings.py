@@ -28,10 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 TINY_ERP_API_KEY = os.getenv('TINY_ERP_API_KEY')
+MERCADO_PAGO_CLIENT_ID = 'TEST-1d90f4bf-b5c5-4f19-934c-a9624a780619'
+MERCADO_PAGO_CLIENT_SECRET = 'TEST-8706125782635153-030613-57f1bae5989eaa33fd181cdbba332e14-609318871'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
     'cart',
     'pedidos',
     'administracao',
+    'mercadopago',
 
 
 

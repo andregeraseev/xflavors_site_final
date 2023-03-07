@@ -106,7 +106,7 @@ def enviar_pedido_para_tiny(pedido):
       "valor_desconto": "0",
       "numero_pedido_ecommerce": id_pedido,
       "situacao": status,
-      "obs": "Observações do Pedido",
+      "obs_internas": "XFLAVORS",
       "forma_envio": "c",
       "forma_frete": forma_frete,
   }

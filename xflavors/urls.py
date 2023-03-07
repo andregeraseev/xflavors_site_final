@@ -7,10 +7,12 @@ from produtos.views import product_detail, produto_por_subcategoria, import_prod
 from .views import index
 from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
 # from cart.views import add_to_cart
-from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho
+from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,\
+    pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('termos/', views.termos, name='termos'),
     path('cart/', include('cart.urls', namespace='cart')),
     path('pedidos/', include('pedidos.urls', namespace='pedidos')),
     path('administracao/', include('administracao.urls', namespace='administracao')),
@@ -43,6 +45,12 @@ urlpatterns = [
     path('import_products/', import_products_view, name='import_products'),
     path('verificar_quantidade_carrinho/', verifica_qunatidade_carrinho_varivel, name='verificar_quantidade_carrinho'),
     path('verifica_carrinho/', verifica_carrinho, name='verifica_carrinho'),
+
+    # MERCADO PAGO
+
+    path('success/', success, name='success'),
+    path('failure/', failure, name='failure'),
+    path('pending/', pending, name='pending'),
 
 
 

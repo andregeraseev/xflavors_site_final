@@ -1,4 +1,9 @@
 import os
+
+import xflavors
+from xflavors.settings import MERCADO_PAGO_CLIENT_SECRET
+from xflavors.settings import MERCADO_PAGO_CLIENT_ID
+import mercadopago
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -9,7 +14,7 @@ from pedidos.models import Pedido
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
@@ -568,10 +573,22 @@ from .models import Pedido
 from django.shortcuts import render, get_object_or_404
 from .models import Pedido
 
+from xflavors.settings import MERCADO_PAGO_CLIENT_ID
+from mercado_livre  import cria_preferencia
+
+
+
 def pagina_pagamento(request, pedido_id):
+
+
+
     pedido = get_object_or_404(Pedido, id=pedido_id)
 
+
     itens = PedidoItem.objects.filter(pedido=pedido)
+
+
+
     print(itens)
     for item in itens:
         print(item.quantity)
@@ -579,12 +596,18 @@ def pagina_pagamento(request, pedido_id):
         print(item.product)
         print(pedido.metodo_de_pagamento)
 
+    mercadolivre_url = cria_preferencia(request, pedido)
+
     # ENVIA PEDIDO PARA O Tiny
     # enviado_para_tiny = enviar_pedido_para_tiny(pedido)
 
-
+    mercadolivre_url = mercadolivre_url
+    print(mercadolivre_url, ' PREFERENCE_IDDDDD')
 
     context = {
+        'mercadolivre_url': mercadolivre_url,
+
+
         'itens': itens,
         'pedido_id': pedido.id,
         'subtotal': pedido.subtotal,
@@ -634,6 +657,76 @@ def paga_pix(request):
 def payment_success(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)
 
+
+
+
+
+
+
     return render(request, 'pagamento_sucesso.html', {
         'pedido': pedido,
     })
+
+# mercado pago
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def notifications(request):
+    mp = mercadopago("MERCADO_PAGO_CLIENT_ID")
+
+    if request.method == 'POST':
+        topic = request.POST.get('topic', '')
+        data_id = request.POST.get('id', '')
+        if topic == 'payment':
+            payment_info = mp.get(f'/v1/payments/{data_id}')
+
+            # Processar informações do pagamento e atualizar seu sistema
+            # ...
+
+        return HttpResponse(status=200)
+
+    return HttpResponse(status=400)
+
+
+@csrf_exempt
+def success(request):
+    payment_id = request.GET.get('payment_id')
+    status = request.GET.get('status')
+    external_reference = request.GET.get('external_reference')
+    print(payment_id, status, external_reference)
+
+    pedido = Pedido.objects.get(id=external_reference)
+    pedido.mercado_pago_id = payment_id
+    pedido.status = "Pago"
+    pedido.save()
+    enviar_pedido_para_tiny(pedido)
+
+    return render(request, 'mercado_pago/success.html', {'payment_id': payment_id, 'status': status})
+
+
+
+@csrf_exempt
+def failure(request):
+    payment_id = request.GET.get('payment_id')
+    status = request.GET.get('status')
+    external_reference = request.GET.get('external_reference')
+    print(payment_id, status, external_reference)
+    # Aqui você pode atualizar o status do pedido
+    # ...
+
+    return render(request, 'mercado_pago/failure.html', {'payment_id': payment_id, 'status': status})
+
+
+
+
+@csrf_exempt
+def pending(request):
+    payment_id = request.GET.get('payment_id')
+    status = request.GET.get('status')
+    external_reference = request.GET.get('external_reference')
+    print(payment_id, status, external_reference)
+    # Aqui você pode atualizar o status do pedido
+    # ...
+
+    return render(request, 'mercado_pago/pending.html', {'payment_id': payment_id, 'status': status})
