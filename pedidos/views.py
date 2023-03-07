@@ -113,69 +113,6 @@ def verifica_carrinho(request):
             return JsonResponse({'success': False})
 
 
-#
-# @login_required
-# def processar_pagamento(request):
-#     # Obtém o carrinho e o endereço de entrega do usuário
-#     cart = Cart(request)
-#     endereco = request.user.cliente.enderecoentrega if hasattr(request.user, 'cliente') else None
-#
-#     # Obtém o método de pagamento escolhido pelo cliente
-#     metodo_pagamento = request.POST.get('metodo_pagamento', None)
-#
-#     if metodo_pagamento == 'cartao':
-#         # Processa o pagamento via cartão de crédito
-#         # Aqui você poderia adicionar a lógica para processar o pagamento via cartão de crédito
-#         # ...
-#
-#         # Cria um novo pedido com as informações do carrinho e do endereço de entrega
-#         pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
-#
-#         # Limpa o carrinho do usuário
-#         cart.clear()
-#
-#         # Redireciona o usuário para a página de confirmação do pedido
-#         messages.success(request, 'Seu pedido foi realizado com sucesso.')
-#         return redirect('pedido_confirmado', pedido_id=pedido.id)
-#
-#     elif metodo_pagamento == 'pix':
-#         # Processa o pagamento via PIX
-#         # Aqui você poderia adicionar a lógica para processar o pagamento via PIX
-#         # ...
-#
-#         # Cria um novo pedido com as informações do carrinho e do endereço de entrega
-#         pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
-#
-#         # Limpa o carrinho do usuário
-#         cart.clear()
-#
-#         # Redireciona o usuário para a página de confirmação do pedido
-#         messages.success(request, 'Seu pedido foi realizado com sucesso.')
-#         return redirect('pedido_confirmado', pedido_id=pedido.id)
-#
-#     elif metodo_pagamento == 'deposito':
-#         # Processa o pagamento via depósito bancário
-#         # Aqui você poderia adicionar a lógica para processar o pagamento via depósito bancário
-#         # ...
-#
-#         # Cria um novo pedido com as informações do carrinho e do endereço de entrega
-#         pedido = Pedido.objects.create(user=request.user, endereco_entrega=endereco, itens=cart)
-#
-#         # Limpa o carrinho do usuário
-#         cart.clear()
-#
-#         # Redireciona o usuário para a página de confirmação do pedido
-#
-#         return redirect('confirmacao_pedido', pedido_id=pedido.id)
-#     else:
-#         form = EnderecoEntregaForm()
-#
-#     context = {
-#         'cart': cart,
-#         'form': form,
-#     }
-#     return render(request, 'pedidos/checkout.html', context)
-
 
 @login_required
 def editar_endereco(request):
@@ -230,10 +167,6 @@ def atualizar_endereco_entrega(request):
     else:
         return JsonResponse({'success': False, 'message': 'Método inválido.'})
 
-
-import requests
-import xml.etree.ElementTree as ET
-import re
 
 @login_required
 def cotacao_frete_correios2(endereco):
