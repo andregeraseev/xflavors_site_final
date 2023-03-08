@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
 from clientes import views
-from produtos.views import product_detail, produto_por_subcategoria, import_products_view
+from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search
 from .views import index
 from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
 # from cart.views import add_to_cart
@@ -52,6 +52,9 @@ urlpatterns = [
     path('failure/', failure, name='failure'),
     path('pending/', pending, name='pending'),
 
+
+# PESQUISA
+    path('search/', search, name='search')
 
 
 

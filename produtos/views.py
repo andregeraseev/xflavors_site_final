@@ -10,6 +10,35 @@ from tiny_erp.tiny_api import import_products
 
 from tiny_erp.tiny_api import import_products
 
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+
+
+
+@require_GET
+def search(request):
+    query = request.GET.get('q')
+    results = []
+    if query:
+        products = Produto.objects.filter(name__icontains=query)[:10]
+        print(products)
+        for product in products:
+
+
+            result = {
+                'name': product.name,
+                'url': product.get_absolute_url(),
+                'image_url': product.image.url,
+
+            }
+            results.append(result)
+    return JsonResponse({'results': results})
+
+
+
+
 def import_products_view(request):
     if request.method == 'GET':
         import_products()

@@ -73,6 +73,12 @@ class Produto(models.Model):
         """
         return self.name
 
+    def get_absolute_url(self):
+        """
+        Retorna a URL para acessar este produto
+        """
+        return reverse('product_detail', args=[str(self.slug)])
+
 class Variation(models.Model):
     """
     Model de variação de produtos

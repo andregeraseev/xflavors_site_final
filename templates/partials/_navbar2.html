@@ -1,0 +1,320 @@
+{% load static %}
+<div class="container-fluid ">
+
+    <div class="text-center m-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <a class="my-2" href="{% url 'home' %}">
+                <img src="{% static 'imagens/18-Logo Xflavors.png' %}" alt="Logo da Empresa" style="max-width: 200px;">
+            </a>
+
+            <div class="my-2 d-flex align-items-center">
+                <form class="form-inline my-2 my-md-0 w-100">
+                <div class="input-group">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-danger" type="submit">Search</button>
+                </div>
+            </form>
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+
+
+            <!--            ----------->
+
+            <div class="my-2 d-flex d-md-none  align-items-center ">
+                {% if user.is_authenticated %}
+
+                <div class="mx-md-2">
+                    <a class="link-no-style text-white mx-2" href="{% url 'dashboard' %}">Olá, {{ user.username }}</a>
+                </div>
+                <div class="mx-md-2">
+                    <a class="link-no-style text-white" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+
+
+                    <div class="dropdown mx-4 " id="cart-icon">
+                        <a class="dropdown-toggle link-no-style text-white cursor-pointer " href="{% url 'cart:carrinho' %}"
+                           id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge badge-danger">{{ total_quantity_cart }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end  text-center " aria-labelledby="navbarDropdown" style="position: absolute;
+    top: 100%;
+    right: auto;
+    left: 0;
+    transform: translateX(-52%);">
+                            {% for item in cart.cartitem_set.all %}
+                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="#">
+                                <div class="cart-item-details">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50"
+                                             height="50" class="mr-2">
+                                        <div>
+                                            <h6 class="mb-0">{% if item.variation %} {{ item.variation.name }} {% else %} {{
+                                                item.product.name }} {% endif %}</h6>
+                                            <p class="mb-0">Quantidade: {{ item.quantity }}
+                                                        {% csrf_token %}
+                                            <button href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item"
+                                                    data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}">
+                                                x
+                                            </button></p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mt-2">
+                                        <div class="mr-2">
+                                            <p class="mb-0">Preço unitário:</p>
+                                            <p class="mb-0">Preço total:</p>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">R${% if item.variation %}{{ item.variation.price }}{% else %}
+                                                {{item.product.price}}{%endif%}</p>
+                                            <p class="mb-0">R${{ item.total_price }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </a>
+                            {% endfor %}
+                            {% if cart.cartitem_set.count > 0 %}
+                            <div class="dropdown-divider"></div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Total:</h6>
+                                <h6 class="mb-0">R${{ cart.total_price }}</h6>
+                            </div>
+                            <a href="{% url 'cart:carrinho' %}" class="btn btn-success btn-block ">Ver Carrinho</a>
+                            <a href="{% url 'checkout' %}" class="btn btn-danger btn-block my-2">Finalizar Pedido</a>
+                            {% else %}
+                            <p class="dropdown-item text-center">Carrinho vazio.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+                    {% else %}
+                    <div class="mx-md-2">
+                        <a class="link-no-style text-white mx-2" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </div>
+                    <div class="mx-md-2">
+                        <a class="link-no-style text-white mx-2" href="{% url 'cadastro' %}">
+                            <i class="fas fa-user-plus"></i> Cadastro
+                        </a>
+                    </div>
+                    {% endif %}
+
+            </div>
+
+
+
+
+
+
+
+
+<!--            -------------->
+
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+                    aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+<!--                LOGIN CARRINHO CELULAR-->
+
+
+
+
+
+
+
+                <!-- Menu de categorias -->
+
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% for category in categorias %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ category.name }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="navbarDropdown">
+                            {% for subcategory in category.subcategory_set.all %}
+
+                            <a class="dropdown-item"
+                               href="{% url 'produto_por_subcategoria' category.pk subcategory.pk %}">
+                                {{ subcategory.name }}
+                            </a>
+
+                            {% endfor %}
+                        </div>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="">teste</a>
+
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+            <div class="my-2 d-md-flex align-items-center d-none d-md-block">
+                {% if user.is_authenticated %}
+
+                <div class="mx-md-2">
+                    <a class="link-no-style text-white mx-2" href="{% url 'dashboard' %}">Olá, {{ user.username }}</a>
+                </div>
+                <div class="mx-md-2">
+                    <a class="link-no-style text-white" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+
+
+                    <div class="dropdown mx-4 " id="cart-icon">
+                        <a class="dropdown-toggle link-no-style text-white cursor-pointer " href="{% url 'cart:carrinho' %}"
+                           id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge badge-danger">{{ total_quantity_cart }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end text-center " aria-labelledby="navbarDropdown">
+                            {% for item in cart.cartitem_set.all %}
+                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="#">
+                                <div class="cart-item-details">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50"
+                                             height="50" class="mr-2">
+                                        <div>
+                                            <h6 class="mb-0">{% if item.variation %} {{ item.variation.name }} {% else %} {{
+                                                item.product.name }} {% endif %}</h6>
+                                            <p class="mb-0">Quantidade: {{ item.quantity }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mt-2">
+                                        <div class="mr-2">
+                                            <p class="mb-0">Preço unitário:</p>
+                                            <p class="mb-0">Preço total:</p>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">R${% if item.variation %}{{ item.variation.price }}{% else %}
+                                                {{item.product.price}}{%endif%}</p>
+                                            <p class="mb-0">R${{ item.total_price }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% csrf_token %}
+                                <button href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item"
+                                        data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}">
+                                    x
+                                </button>
+                            </a>
+                            {% endfor %}
+                            {% if cart.cartitem_set.count > 0 %}
+                            <div class="dropdown-divider"></div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Total:</h6>
+                                <h6 class="mb-0">R${{ cart.total_price }}</h6>
+                            </div>
+                            <a href="{% url 'cart:carrinho' %}" class="btn btn-success btn-block ">Ver Carrinho</a>
+                            <a href="{% url 'checkout' %}" class="btn btn-danger btn-block my-2">Finalizar Pedido</a>
+                            {% else %}
+                            <p class="dropdown-item text-center">Carrinho vazio.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% else %}
+                    <div class="mx-md-2">
+                        <a class="link-no-style text-white mx-2" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </div>
+                    <div class="mx-md-2">
+                        <a class="link-no-style text-white mx-2" href="{% url 'cadastro' %}">
+                            <i class="fas fa-user-plus"></i> Cadastro
+                        </a>
+                    </div>
+                    {% endif %}
+
+            </div>
+
+
+
+        </div>
+
+
+    </nav>
+
+
+    <style>
+
+.link-no-style {
+  text-decoration: none;
+  color: inherit;
+}
+
+  #cart-icon {
+  display: inline-block;
+  position: relative;
+}
+
+#cart-icon .badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background-color: red;
+  color: white;
+  padding: 3px 5px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+
+    </style>
+
+
+    <script>
+  $(document).ready(function() {
+  $('#cart-icon').on('click', '.remove-item', function(e) {
+    e.preventDefault();
+
+    var variationId = $(this).data('variation-id');
+    var productId = $(this).data('product-id');
+    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+    console.log('CARINHOvariationId:', variationId);
+    console.log('CARINHOproductId:', productId);
+
+    $.ajax({
+      url: "{% url 'cart:remove_item' %}",
+      type: 'POST',
+      data: {
+        'variation_id': variationId,
+        'product_id': productId,
+        'csrfmiddlewaretoken': csrfToken
+      },
+      success: function(data) {
+        console.log(data);
+        $('#cart-icon').load(document.URL + ' #cart-icon');
+      },
+      error: function(error) {
+        console.log(error);
+        location.reload(); // recarrega a página quando a requisição falha
+      }
+    });
+  });
+});
+
+
+    </script>

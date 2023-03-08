@@ -10,16 +10,19 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="bg-light">
+<body class="bg-light d-flex flex-column min-vh-100">
 
-{% include 'partials/_navbar.html' %}
 {% include 'partials/_alertas.html' %}
+{% include 'partials/_navbar.html' %}
+
 
   <div class="container">
   {% block content %}{% endblock %}
   </div>
 
-
+<main class="flex-grow-1">
+    <!-- conteúdo do main -->
+  </main>
 <footer class="bg-light pt-3 pb-3">
   <div class="container text-center">
     <span class="align-middle me-2"><i class="far fa-registered"></i></span>
@@ -29,6 +32,27 @@
   </div>
 </footer>
 <style>
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1; /* o conteúdo principal ocupa todo o espaço disponível */
+  padding: 20px;
+}
+
+footer {
+  margin-top: auto; /* empurra o rodapé para o final da página */
+  height: 50px; /* define a altura do seu footer */
+}
+
 footer {
   margin-top: auto;
 }

@@ -4,17 +4,17 @@
 
 {% block content %}
 <div class="container my-5">
-    <div class="row">
-        <h1>{{ product.name }}</h1>
-        <div class="col-6">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 400px;">
+    <div class="row d-flex">
+        <div class="col-md-6 mb-3">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100">
         </div>
-        <div class="col-6">
+        <div class="col-md-6 mb-3">
+            <h1>{{ product.name }}</h1>
             <h4>Descrição:</h4>
-            <h5>{{ product.description }}</h5>
+            <h5>{{ product.description|safe }}</h5>
             {% if product.variation_set.exists %}
                 <h4>Selecione uma variação:</h4>
-                <select name="variation" id="variation">
+                <select name="variation" id="variation" class="w-100 mb-3">
                     {% for variation in product.variation_set.all %}
                         <option value="{{ variation.id }}">{{ variation.name }} - R$ {{ variation.price }}</option>
                     {% endfor %}
@@ -23,12 +23,14 @@
             {% else %}
                 <h5 id="price">R$ {{ product.price }}</h5>
             {% endif %}
-            <input type="number" id="quantity" name="quantity" value="1">
-            <button type="submit" class="btn btn-primary btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar ao carrinho</button>
-
+            <div class="input-group mb-3">
+                <input type="number" id="quantity" name="quantity" class="form-control" value="1">
+                <button type="submit" class="btn btn-primary add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar ao carrinho</button>
+            </div>
         </div>
     </div>
 </div>
+
 <script>
     $(document).ready(function () {
         $('#variation').change(function () {
