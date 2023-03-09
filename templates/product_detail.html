@@ -5,27 +5,32 @@
 {% block content %}
 <div class="container my-5">
     <div class="row d-flex">
-        <div class="col-md-6 mb-3">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100">
+        <div class="col-md-5 mb-3">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100" style="max-width: 400px">
         </div>
         <div class="col-md-6 mb-3">
             <h1>{{ product.name }}</h1>
-            <h4>Descrição:</h4>
-            <h5>{{ product.description|safe }}</h5>
+
+            <h6>{{ product.description|safe }}</h6>
             {% if product.variation_set.exists %}
                 <h4>Selecione uma variação:</h4>
                 <select name="variation" id="variation" class="w-100 mb-3">
                     {% for variation in product.variation_set.all %}
-                        <option value="{{ variation.id }}">{{ variation.name }} - R$ {{ variation.price }}</option>
+                     <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{ variation.nome_simplificado }} - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}</option>
+
                     {% endfor %}
                 </select>
-                <h5 id="price">R$ {{ product.variation_set.first.price }}</h5>
+                <h3 id="price">R$ {{ product.variation_set.first.price }}</h3>
             {% else %}
                 <h5 id="price">R$ {{ product.price }}</h5>
             {% endif %}
             <div class="input-group mb-3">
-                <input type="number" id="quantity" name="quantity" class="form-control" value="1">
-                <button type="submit" class="btn btn-primary add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar ao carrinho</button>
+
+                <button class="btn btn-outline-secondary" type="button" id="button-minus">-</button>
+                <input type="number" id="quantity" name="quantity" class="form-control" value="1" style="max-width: 100px">
+                <button class="btn btn-outline-secondary" type="button" id="button-plus">+</button>
+
+                <button type="submit" class="btn btn-danger add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar ao carrinho</button>
             </div>
         </div>
     </div>
@@ -41,6 +46,23 @@
     });
 </script>
 
+
+
+
+<script>
+$(function() {
+    $('#button-minus').click(function() {
+        var val = parseInt($('#quantity').val());
+        if (val > 1) {
+            $('#quantity').val(val - 1);
+        }
+    });
+    $('#button-plus').click(function() {
+        var val = parseInt($('#quantity').val());
+        $('#quantity').val(val + 1);
+    });
+});
+</script>
 
 
 

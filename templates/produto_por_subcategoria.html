@@ -17,7 +17,8 @@
           </a>
           <div class="card-body">
 
-            <a href="{% url 'product_detail' product.slug %}"><h5 class="card-title">{{ product.name }}</h5></a>
+
+              <h5 class="card-title" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
 
             {% if product.variation_set.exists %}
               <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}" >
@@ -31,7 +32,7 @@
             {% endif %}
 
             <div class="d-flex align-items-center add-to-cart-form">
-              <button type="submit" class="btn btn-primary btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar ao carrinho</button>
+              <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
               <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{{ product.stock_available }}">
             </div>
 

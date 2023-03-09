@@ -1,115 +1,266 @@
-    {% load static %}
+{% load static %}
 
-    <!-- Carregar CSS do Owl Carousel -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
-    <!-- Carregar JavaScript do Owl Carousel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.js"></script>
-    <!-- Container principal -->
 
-      <div id="alert_container" style="display: none;">
-            <div id="add_to_cart_alert" class="alert alert-success alert-dismissible fade show" role="alert">
-                Produto adicionado ao carrinho com sucesso!
-            </div>
-        </div>
-
-    <div id="alert-container-stock" style="display: none;">
-        <div id="alert-stock" class="alert alert-danger alert-dismissible fade show" role="alert">
-            Produto sem estoque suficiente. Disponível apenas {{ product.stock }} {% if product.stock > 1%} unidades
-            {% else %} unidade {% endif %} <strong id="available-stock"></strong>.
-        </div>
-    </div>
-    <div class="container my-5">
-      <!-- Título -->
-      <h3 class="text-center mb-3">Produtos mais vendidos</h3>
-      <!-- Carrossel -->
-      <div class="owl-carousel owl-theme">
+<!-- Carregar CSS do Slick Carousel -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
+<!-- Carregar JavaScript do Slick Carousel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<!-- Container principal -->
 
 
 
-        <!-- Loop para exibir cada produto -->
-        {% for product in products %}
-          <!-- Container de cada item -->
-          <div class="p-3">
-            <!-- Container interno -->
-            <div class="text-center">
-              <!-- Imagem do produto -->
-              <a href="products/{{ product.slug }}">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-              </a>
 
-              <!-- Nome e preço do produto -->
-          <div class="mt-3">
-            <h4 class="mb-1">
-              <a href="products/{{ product.slug }}">{{ product.name }}</a>
-            </h4>
-            <p class="mb-1">{{ product.price }}</p>
-
-            <!-- Desconto (se houver) -->
-            {% if product.discount %}
-              <p class="text-danger">-{{ product.discount }}%</p>
-            {% endif %}
-           </div>
-
-          <!-- Input e botão para quantidade -->
-          <div class="d-flex align-items-center">
-           <button type="button" class="btn btn-primary btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}">Adicionar ao carrinho</button>
-            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1">
-
+<div id="carousel-1" class="container my-5">
+  <!-- Título -->
+  <h3 class="text-center">Carrossel 1</h3>
+  <hr style="border: none; border-top: 1px solid black;">
+  <!-- Carrossel -->
+  <div class="card-deck essencia-list1">
+    {% for product in essencias_mais_vendidos %}
+    <div class="col product-card">
+      <div class="card">
+        <a href="{% url 'product_detail' product.slug %}">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top">
+        </a>
+        <div class="card-body" style="height: 220px;">
+          <h5 class="card-title" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
+          <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small>
+          {% if product.variation_set.exists %}
+          <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}">
+            {% for variation in product.variation_set.all %}
+            <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{ variation.nome_simplificado }} - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}</option>
+            {% endfor %}
+          </select>
+          <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
+          {% else %}
+          <p class="mb-1" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ product.price }}</p>
+          {% endif %}
+          <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
+            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
+            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
           </div>
         </div>
       </div>
-    {% endfor %}
-      </div>
     </div>
+    {% endfor %}
+  </div>
+</div>
 
 
-    <script>
-
-    $(document).ready(function () {
-      $('.add-to-cart-button').click(function () {
-        let productId = $(this).data('product-id');
-        let quantity = $(`.quantity-input[data-product-id=${productId}]`).val();
-
-        $.ajax({
-          type: 'POST',
-          url: "{% url 'add_to_cart' %}",
-          data: {
-            'productId': productId,
-            'quantity': quantity,
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-          },
-          dataType: 'json',
-          success: function (data) {
-            if (data.success) {
-              $('#add_to_cart_alert').show();
-              $('#alert_container').show();
-              setTimeout(function() {
-                $('#add_to_cart_alert').hide();
-                $('#alert_container').hide();
-              }, 5000);
-              $(`.quantity-input[data-product-id=${productId}]`).val(1);
-            } else {
-              $('#available-stock').text(data.stock);
-              $('#alert-stock').show();
-              $('#alert-container-stock').show();
-              setTimeout(function() {
-                $('#alert-stock').hide();
-                $('#alert-container-stock').hide();
-              }, 5000);
-              $(`.quantity-input[data-product-id=${productId}]`).val(1);
-            }
-          },
-          error: function (data) {
-            alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
-          }
-        });
-      });
-    });
-    </script>
-
-    <script src="{% static 'js/owl_carousel.js' %}"></script>
 
 
+<!-- Estilo CSS para o Slick Carousel -->
+<style>
+
+
+  /* Definir largura máxima da lista (container) do carrossel */
+  .essencia-list1 {
+	max-width: 1200px;
+	margin: 0 auto; /* centralizar o container na tela */
+	padding: 5px 20px; /* adicionar padding em cima e em baixo */
+  }
+
+  /* Estilo para cada slide do carrossel */
+  .essencia-list1 .slick-slide {
+	font-size: 20px; /* tamanho da fonte */
+	text-align: center; /* centralizar o texto */
+	padding: 20px 20px; /* adicionar padding à esquerda e à direita */
+	line-height: 2; /* altura da linha */
+	font-weight: 700; /* peso da fonte */
+  }
+
+  /* Estilo para slides ímpares */
+  .essencia-list .slick-slide:nth-child(odd) {
+
+  }
+
+  /* Estilo para as setas de navegação */
+  .slick-arrow {
+	z-index: 1; /* definir camada */
+	width: 69px; /* largura */
+	height: 30px; /* altura */
+
+  }
+
+  /* Estilo para o ícone dentro das setas */
+  .slick-arrow:before {
+	font-size: 50px; /* tamanho da fonte */
+	color: #000000; /* cor */
+
+
+  }
+
+  /* Posicionamento da seta "próximo" */
+  .slick-next {
+	right: -7px; /* posicionar à direita */
+  }
+
+  /* Posicionamento da seta "anterior" */
+  .slick-prev {
+	left: -7px; /* posicionar à esquerda */
+  }
+
+
+@media (max-width: 600px) {
+  .product-card {
+    height: 500px;
+  }
+}
+
+
+</style>
+
+
+
+
+
+
+
+
+<script>
+
+
+  // Mostra o spinner quando a página começa a ser carregada
+  $(window).on('load', function() {
+    $('#loader').removeClass('d-none');
+  });
+
+  // Esconde o spinner quando a página é totalmente carregada
+  $(document).ready(function() {
+    $('#loader').addClass('d-none');
+  });
+
+
+$(document).ready(function() {
+  // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
+  $('.variation-select').change(function() {
+    let productId = $(this).data('product-id');
+    let selectedVariationId = $(this).val();
+    let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+
+
+
+    // Atualiza o preço exibido
+    $('#price'+productId).text('R$ ' + selectedVariationPrice);
+
+    // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
+    $('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
+  }).trigger('change'); // Dispara o evento 'change' após a página ser carregada
+});
+
+
+// Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
+$('.add-to-cart-button').click(function() {
+  let productId = $(this).data('product-id');
+  let variationId = $(this).data('variation-id');
+  let quantity = $(this).siblings('.quantity-input').val();
+
+
+  // Envia uma requisição AJAX para adicionar o produto ao carrinho
+  $.ajax({
+    type: 'POST',
+    url: '{% url "add_to_cart_carrocel" %}',
+    data: {
+      'productId': productId,
+      'variation_id': variationId,
+      'quantity': quantity,
+      'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: 'json',
+    success: function(data) {
+      if (data.success) {
+        // Recarrega o ícone do carrinho
+        $('#cart-icon').load(document.URL + ' #cart-icon');
+
+        // Exibe uma mensagem de sucesso
+        $('#alert_success').show();
+        $('#alert_container_success').show();
+        $('#alert_success').html(data.produto_adicionado);
+
+        // Oculta a mensagem de sucesso após 5 segundos
+        setTimeout(function() {
+          $('#alert_success').hide();
+          $('#alert_container_success').hide();
+        }, 5000);
+
+        // Define o valor do input de quantidade para 1
+        $('.quantity-input[data-product-id=' + productId + ']').val(1);
+      } else {
+        // Exibe uma mensagem de erro
+        $('#available-stock').text(data.stock);
+        $('#alert-erro').show();
+        $('#alert-container-erro').show();
+        $('#alert-erro').html(data.error);
+
+        // Oculta a mensagem de erro após 5 segundos
+        setTimeout(function() {
+          $('#alert-erro').hide();
+          $('#alert-container-erro').hide();
+        }, 5000);
+
+        // Define o valor do input de quantidade para 1
+        $('.quantity-input[data-product-id=' + productId + ']').val(1);
+      }
+    },
+    error: function(data) {
+      alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
+    }
+  });
+});
+
+
+
+
+
+
+
+// Seleciona o elemento com a classe 'essencia-list' e aplica o plugin slick()
+
+  let slickList2 = $('.essencia-list1');
+  slickList2.slick({
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    arrows: true,
+    infinite: true,
+    autoplay: false,
+    // Define a configuração do número de slides exibidos em diferentes tamanhos de tela
+    responsive: [
+      {
+        breakpoint: 992,
+        settings: {
+          slidesToShow: 3
+        }
+      },
+      {
+        breakpoint: 576,
+        settings: {
+          slidesToShow: 1
+        }
+      }
+    ]
+
+  });
+
+  // Seleciona os elementos com a classe 'prev-btn' e 'next-btn' e adiciona um listener para as ações de clique, que chama os métodos do plugin slick()
+  let prevBtn = $('.prev-btn');
+  let nextBtn = $('.next-btn');
+
+  prevBtn.click(function() {
+    slickList2.slick('slickPrev');
+  });
+
+  nextBtn.click(function() {
+    slickList2.slick('slickNext');
+  });
+
+  // Adiciona um listener para o evento 'afterChange' do plugin slick() que define a classe 'slick-disabled' nos botões 'prev-btn' e 'next-btn' com base na posição do slide atual
+  slickList2.on('afterChange', function(event, slick, currentSlide) {
+    prevBtn.toggleClass('slick-disabled', currentSlide === 0);
+    nextBtn.toggleClass('slick-disabled', currentSlide === slick.slideCount - 1);
+  });
+
+
+</script>
 
