@@ -23,7 +23,7 @@
           <p class="mb-1" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ product.price }}</p>
           {% endif %}
           <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
-            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
+            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
             <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
           </div>
         </div>
@@ -46,13 +46,13 @@ $('#carousel-2 .variation-select').change(function() {
   $('#carousel-2 #price'+productId).text('R$ ' + selectedVariationPrice);
 
   // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
-  $('#carousel-2 .add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
+  $('.add-to-cart-button-2[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
 }).trigger('change'); // Dispara o evento 'change' após a página ser carregada
 
 
 
 // Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
-$('.add-to-cart-button').click(function() {
+$('.add-to-cart-button-2').click(function() {
   let productId = $(this).data('product-id');
   let variationId = $(this).data('variation-id');
   let quantity = $(this).siblings('.quantity-input').val();

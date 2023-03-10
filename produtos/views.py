@@ -1,5 +1,9 @@
+from django.db.models import Count
+
 from cart.models import Cart
 from django.shortcuts import render, get_object_or_404
+
+from pedidos.models import PedidoItem, Pedido
 from .models import Category, Subcategory, Produto
 from django.core.paginator import Paginator
 from django.http import HttpResponse
@@ -80,6 +84,25 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
 
 
 def product_detail(request, slug):
+    # Obter o produto
+    produto = get_object_or_404(Produto, slug=slug)
+
+    # Obter o pedido item correspondente
+    pedido_itens = PedidoItem.objects.filter(product=produto)
+
+    # Obtenha todos os pedidos que contêm o item em questão
+    # Obtenha todos os pedidos que contêm o produto em questão
+    orders = Pedido.objects.filter(itens__in=pedido_itens, status="Pago").order_by().values_list('itens', flat=True).distinct()
+
+    # Obtenha todos os outros itens que aparecem nos mesmos pedidos que o item em questão
+    related_item_ids = PedidoItem.objects.filter(pedido__in=orders).exclude(product=produto).annotate(
+        count=Count('product')).order_by('-count')
+
+    related_items = Produto.objects.filter(pedidoitem__in=related_item_ids).distinct()[:4]
+    print(related_items, "RELATED ITENS")
+    # Ordene o dicionário pelos valores em ordem decrescente para obter os itens mais comuns
+
+
     category = Category.objects.all()
     subcategoria = Subcategory.objects.all()
     produto = get_object_or_404(Produto, slug=slug)
@@ -92,6 +115,7 @@ def product_detail(request, slug):
             pass
 
     context = {
+        'related_products': related_items,
         'product': produto,
         'total_quantity_cart': total_quantity_cart,
         'subcategoria': subcategoria,
