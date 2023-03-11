@@ -1,0 +1,180 @@
+<form class="form-inline my-md-2 my-md-0 " style="min-width: 310px">
+    <div class="input-group">
+        <input class="form-control" type="search" placeholder="Busca" aria-label="Search"
+               id="search-input">
+    </div>
+</form>
+<div class="dropdown dropdown-menu-search">
+  <div class="dropdown-menu" id="search-results" style="position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-100%);
+      z-index: 1000;
+      display: none;
+      min-width: 10rem;
+      padding: .5rem 0;
+      margin: .0rem 0 0;
+      font-size: 1rem;
+      color: #212529;
+      text-align: left;
+      list-style: none;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid rgba(0,0,0,.15);
+      border-radius: .25rem;">
+  </div>
+</div>
+
+
+<style>
+
+    .dropdown-item {
+    min-width: 300px;
+    max-width: 500px;
+    white-space: normal;
+}
+
+</style>
+<script>
+
+// Atualiza os atributos data e max do botão e input do carrinho
+$('.variation-select').on('change', function() {
+  var $this = $(this);
+  var selectedVariationId = $this.val();
+  var selectedVariationPrice = $this.find('option:selected').text().split(' - R$ ')[1];
+  var productId = $this.closest('.dropdown-item').find('.add-to-cart-button').data('product-id');
+  var maxStock = $this.find('option:selected').data('stock');
+
+  $this.closest('.dropdown-item').find('.variation-price').text('R$ ' + selectedVariationPrice);
+  $this.closest('.dropdown-item').find('.add-to-cart-button').data('variation-id', selectedVariationId);
+  $this.closest('.dropdown-item').find('.quantity-input').attr('max', maxStock);
+
+  // Define o valor do input de quantidade para 1
+  $this.closest('.dropdown-item').find('.quantity-input').val(1);
+});
+
+
+$(document).ready(function() {
+  $('#search-input').on('input', function() {
+    var query = $(this).val();
+    if (query.length >= 3) {
+      $.ajax({
+        url: '/search/',
+        data: {
+          'q': query
+        },
+        dataType: 'json',
+        success: function(data) {
+          // Atualize a lista de resultados
+          $('#search-results').empty();
+          $.each(data.results, function(i, result) {
+            let html = '<div class="dropdown-item">';
+            html += '<a href="' + result.url + '"><img src="' + result.image_url + '" alt="' + result.name + '" width="50"></a>';
+            html += '<div class="product-info">';
+            html += '<p class="product-name"><a href="' + result.url + '">' + result.name + '</a></p>';
+            if (result.has_variation) {
+              html += '<select class="form-control variation-select">';
+              $.each(result.variations, function(j, variation) {
+                html += '<option value="' + variation.id + '">' + variation.name + ' - R$ ' + variation.price + '</option>';
+              });
+              html += '</select>';
+              html += '<p class="variation-price">R$ ' + result.variations[0].price + '</p>';
+            } else {
+              html += '<p class="product-price">R$ ' + result.price + '</p>';
+            }
+            // Atualiza o preço exibido quando o usuário mudar a seleção na lista de variações
+            $('.variation-select').on('change', function() {
+                var selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+                $(this).closest('.dropdown-item').find('.variation-price').text('R$ ' + selectedVariationPrice);
+            });
+            html += '<button class="btn btn-sm btn-danger add-to-cart-button" data-product-id="' + result.id + '" data-variation-id="' + (result.has_variation ? result.variations[0].id : '') + '">Adicionar</button>';
+            html += '<input type="number" class="form-control form-control-sm quantity-input" value="1" min="1" max="' + (result.has_variation ? result.variations[0].stock : result.stock) + '">';
+            html += '</div></div>';
+            $('#search-results').append(html);
+          });
+          // Mostre a lista de resultados
+          $('#search-results').show();
+        }
+      });
+    } else {
+      // Esconda a lista de resultados
+      $('#search-results').hide();
+    }
+  });
+
+  // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
+$('#search-results').on('change', '.variation-select', function() {
+let productId = $(this).data('product-id');
+let selectedVariationId = $(this).val();
+let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+
+// Atualiza o preço exibido
+$('#search-results #price'+productId).text('R$ ' + selectedVariationPrice);
+
+// Define o ID da variação selecionada no botão "Adicionar ao carrinho"
+$('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
+
+}).trigger('change'); // Dispara o evento 'change' após a página ser carregada
+
+// Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
+$('#search-results').on('click', '.add-to-cart-button', function() {
+let productId = $(this).data('product-id');
+let variationId = $(this).closest('.dropdown-item').find('.variation-select').val();
+let quantity = $(this).siblings('.quantity-input').val();
+
+
+// Envia uma requisição AJAX para adicionar o produto ao carrinho
+$.ajax({
+  type: 'POST',
+  url: '{% url "add_to_cart_carrocel" %}',
+  data: {
+    'productId': productId,
+    'variation_id': variationId,
+    'quantity': quantity,
+    'csrfmiddlewaretoken': '{{ csrf_token }}'
+  },
+  dataType: 'json',
+  success: function(data) {
+    if (data.success) {
+      // Recarrega o ícone do carrinho
+      $('#cart-icon').load(document.URL + ' #cart-icon');
+
+
+      // Exibe uma mensagem de sucesso
+      $('#alert_success').show();
+      $('#alert_container_success').show();
+      $('#alert_success').html(data.produto_adicionado);
+
+      // Oculta a mensagem de sucesso após 5 segundos
+      setTimeout(function() {
+        $('#alert_success').hide();
+        $('#alert_container_success').hide();
+      }, 5000);
+
+      // Define o valor do input de quantidade para 1
+      $('.quantity-input[data-product-id=' + productId + ']').val(1);
+    } else {
+      // Exibe uma mensagem de erro
+      $('#available-stock').text(data.stock);
+      $('#alert-erro').show();
+      $('#alert-container-erro').show();
+      $('#alert-erro').html(data.error);
+
+      // Oculta a mensagem de erro após 5 segundos
+      setTimeout(function() {
+        $('#alert-erro').hide();
+        $('#alert-container-erro').hide();
+      }, 5000);
+
+      // Define o valor do input de quantidade para 1
+      $('.quantity-input[data-product-id=' + productId + ']').val(1);
+    }
+  },
+  error: function(data) {
+    alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
+  }
+});
+
+});
+});
+</script>

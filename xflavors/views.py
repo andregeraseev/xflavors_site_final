@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from cart.models import Cart
-from frontend.models import Banner
+from frontend.models import Banner, BannerMenor
 
 from produtos.models import Produto, Category, Subcategory
 from pedidos.models import Pedido
@@ -47,11 +47,13 @@ def index(request):
             pass
     print(total_quantity_cart)
 
+    active_banners_menor = BannerMenor.objects.filter(active=True)
     active_banners = Banner.objects.filter(active=True)
 
     context = {
         'essencias_mais_vendidos': essencias_mais_vendidos,
         'produtos_mais_vendidos': produtos_mais_vendidos,
+        'active_banners_menor': active_banners_menor,
         'active_banners': active_banners,
         # 'products': products,
         'cart': cart,

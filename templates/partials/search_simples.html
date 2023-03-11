@@ -1,0 +1,67 @@
+<form class="form-inline my-md-2 my-md-0 " style="min-width: 310px">
+    <div class="input-group">
+        <input class="form-control" type="search" placeholder="Busca" aria-label="Search"
+               id="search-input">
+    </div>
+</form>
+<div class="dropdown dropdown-menu-search">
+  <div class="dropdown-menu" id="search-results" style="position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-100%);
+      z-index: 1000;
+      display: none;
+      min-width: 10rem;
+      padding: .5rem 0;
+      margin: .0rem 0 0;
+      font-size: 1rem;
+      color: #212529;
+      text-align: left;
+      list-style: none;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid rgba(0,0,0,.15);
+      border-radius: .25rem;">
+  </div>
+</div>
+
+
+<style>
+
+    .dropdown-item {
+    min-width: 300px;
+    max-width: 500px;
+    white-space: normal;
+}
+
+</style>
+<script>
+
+    $(document).ready(function() {
+  $('#search-input').on('input', function() {
+    var query = $(this).val();
+    if (query.length >= 3) {
+      $.ajax({
+        url: '/search/',
+        data: {
+          'q': query
+        },
+        dataType: 'json',
+        success: function(data) {
+  // Atualize a lista de resultados
+  $('#search-results').empty();
+  $.each(data.results, function(i, result) {
+        $('#search-results').append('<a class="dropdown-item" href="' + result.url + '"><img src="' + result.image_url + '" alt="' + result.name + '" width="50">' + result.name +'</a>');
+  });
+  // Mostre a lista de resultados
+  $('#search-results').show();
+}
+      });
+    } else {
+      // Esconda a lista de resultados
+      $('#search-results').hide();
+    }
+  });
+});
+
+</script>

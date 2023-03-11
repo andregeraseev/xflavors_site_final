@@ -1,13 +1,7 @@
-<div id="bannerSlider" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-indicators">
-    {% for banner in active_banners %}
-    {% if banner.is_active %}
-      <button type="button" data-bs-target="#bannerSlider" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
-    {% endif %}
-    {% endfor %}
-  </div>
+<div id="bannermenorSlider" class="carousel slide" data-bs-ride="carousel">
+
   <div class="carousel-inner">
-    {% for banner in active_banners %}
+    {% for banner in active_banners_menor %}
     {% if banner.is_active %}
     
       <div class="carousel-item {% if forloop.first %}active{% endif %}">

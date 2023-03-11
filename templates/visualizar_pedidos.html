@@ -45,32 +45,6 @@
 
 
 {% load static %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha384-EsrudgMzWCLb8n0tE2mFjbmakmPFDL9IVGvOsTk5CtPUXPJtH2QYoFvc4d3BWr5Z" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script>
-$(document).ready(function() {
-  $('.pedido-status').each(function() {
-    var status = $(this).data('status');
-    if (status === 'Aguardando pagamento') {
-      $(this).html('<i class="fas fa-exclamation-triangle text-warning" title="Aguardando pagamento"></i>');
-    } else if (status === 'Em Processamento') {
-      $(this).html('<i class="fas fa-cog fa-spin text-info" title="Em processamento"></i>');
-    } else if (status === 'Enviado') {
-      $(this).html('<i class="fas fa-truck text-success" title="Enviado"></i>');
-    } else if (status === 'Entregue') {
-      $(this).html('<i class="fas fa-check-circle text-primary" title="Entregue"></i>');
-    } else if (status === 'Cancelado') {
-      $(this).html('<i class="fas fa-times-circle text-danger" title="Cancelado"></i>');
-    }
-  });
-
-
-});
-</script>
-
-
-
-
 
 <style>
 .pedido-status {
@@ -94,14 +68,16 @@ $(document).ready(function() {
 $(document).ready(function() {
   $('.pedido-status').each(function() {
     var status = $(this).data('status');
-    if (status === 'Aguardando_pagamento') {
+    if (status === 'Aguardando pagamento') {
       $(this).html('<i class="fas fa-exclamation-triangle text-warning" title="Aguardando pagamento"></i>');
     } else if (status === 'Em Processamento') {
       $(this).html('<i class="fas fa-cog fa-spin text-info" title="Em processamento"></i>');
-    } else if (status === 'Enviado') {
-      $(this).html('<i class="fas fa-truck text-success" title="Enviado"></i>');
+      } else if (status === 'Pago') {
+      $(this).html('<i class="fas fa-check-circle text-success" title="Pago"></i>');
+    } else if (status === 'Em trânsito') {
+      $(this).html('<i class="fas fa-truck text-success" title="Em trânsito"></i>');
     } else if (status === 'Entregue') {
-      $(this).html('<i class="fas fa-check-circle text-primary" title="Entregue"></i>');
+      $(this).html('<i class="fas fa-check text-primary" title="Entregue"></i>');
     } else if (status === 'Cancelado') {
       $(this).html('<i class="fas fa-times-circle text-danger" title="Cancelado"></i>');
     }
