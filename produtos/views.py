@@ -45,6 +45,13 @@ def search(request):
 
 
 
+def pagina_search(request, q):
+    query = q
+    products = Produto.objects.filter(name__icontains=query)
+
+    context= { "products": products}
+
+    return  render(request, 'pagina_search.html', context)
 
 
 def import_products_view(request):
