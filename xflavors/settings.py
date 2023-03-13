@@ -31,6 +31,17 @@ TINY_ERP_API_KEY = os.getenv('TINY_ERP_API_KEY')
 MERCADO_PAGO_CLIENT_ID = 'TEST-1d90f4bf-b5c5-4f19-934c-a9624a780619'
 MERCADO_PAGO_CLIENT_SECRET = os.getenv('MERCADOLIVRETOKEN')
 
+
+# EMAIL
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'ageraseev@gmail.com'
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

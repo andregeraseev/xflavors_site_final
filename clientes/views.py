@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from cart.models import Cart
+
 from pedidos.models import Pedido
 from .models import Cliente, EnderecoEntrega
 from django.contrib.auth.models import User
@@ -59,6 +60,7 @@ def cadastro(request):
 
         client.address = address
         client.save()
+        # envia um email de confirmacao
 
         return redirect('cadastro')
 
@@ -68,7 +70,7 @@ def cadastro(request):
 
     return render(request, 'cadastro.html')
 
-
+@login_required
 def dashboard(request):
     cliente = Cliente.objects.get(user=request.user)
     enderecos = EnderecoEntrega.objects.filter(cliente=cliente)
