@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+
+
+<div class="container">
+
+  <div class="card-deck row row-cols-2 row-cols-md-3 row-cols-lg-4">
+    {% for product in products %}
+      <div class="col mb-4">
+        <div class="card h-100">
+          <a href="{% url 'product_detail' product.slug %}">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top">
+          </a>
+          <div class="card-body">
+
+
+              <h5 class="card-title" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
+
+            {% if product.variation_set.exists %}
+              <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}" >
+                {% for variation in product.variation_set.all %}
+                  <option value="{{ variation.id }}">{{ variation.name }} - R$ {{ variation.price }}</option>
+                {% endfor %}
+              </select>
+              <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
+            {% else %}
+              <p class="mb-1">{{ product.price }}</p>
+            {% endif %}
+
+            <div class="d-flex align-items-center add-to-cart-form">
+              <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
+              <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{{ product.stock_available }}">
+            </div>
+
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>Nenhum produto encontrado.</p>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+</div>
+</div>
+
+
+
+
+
+<style>
+
+
+  @media (max-width: 575.98px) {
+  .variation-select {
+    font-size: 8px;
+  }
+}
+
+</style>
+
+
+
+
+<script>
+$(document).ready(function() {
+  // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
+  $('.variation-select').change(function() {
+    let productId = $(this).data('product-id');
+    let selectedVariationId = $(this).val();
+    let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+
+    console.log('productId:', productId);
+    console.log('selectedVariationId:', selectedVariationId);
+    console.log('selectedVariationPrice:', selectedVariationPrice);
+
+    // Atualiza o preço exibido
+    $('#price'+productId).text('R$ ' + selectedVariationPrice);
+
+    // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
+    $('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
+  }).trigger('change'); // Dispara o evento 'change' após a página ser carregada
+});
+
+
+// Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
+$('.add-to-cart-button').click(function() {
+  let productId = $(this).data('product-id');
+  let variationId = $(this).data('variation-id');
+  let quantity = $(this).siblings('.quantity-input').val();
+
+  console.log('productId:', productId);
+  console.log('variationId:', variationId);
+  console.log('quantity:', quantity);
+
+  // Envia uma requisição AJAX para adicionar o produto ao carrinho
+  $.ajax({
+    type: 'POST',
+    url: '{% url "add_to_cart_carrocel" %}',
+    data: {
+      'productId': productId,
+      'variation_id': variationId,
+      'quantity': quantity,
+      'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: 'json',
+    success: function(data) {
+      if (data.success) {
+        // Recarrega o ícone do carrinho
+        $('#cart-icon').load(document.URL + ' #cart-icon');
+
+        // Exibe uma mensagem de sucesso
+        $('#alert_success').show();
+        $('#alert_container_success').show();
+        $('#alert_success').html(data.produto_adicionado);
+
+        // Oculta a mensagem de sucesso após 5 segundos
+        setTimeout(function() {
+          $('#alert_success').hide();
+          $('#alert_container_success').hide();
+        }, 5000);
+
+        // Define o valor do input de quantidade para 1
+        $('.quantity-input[data-product-id=' + productId + ']').val(1);
+      } else {
+        // Exibe uma mensagem de erro
+        $('#available-stock').text(data.stock);
+        $('#alert-erro').show();
+        $('#alert-container-erro').show();
+        $('#alert-erro').html(data.error);
+
+        // Oculta a mensagem de erro após 5 segundos
+        setTimeout(function() {
+          $('#alert-erro').hide();
+          $('#alert-container-erro').hide();
+        }, 5000);
+
+        // Define o valor do input de quantidade para 1
+        $('.quantity-input[data-product-id=' + productId + ']').val(1);
+      }
+    },
+    error: function(data) {
+      alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
+    }
+  });
+});
+
+
+</script>
+
+{% endblock %}
