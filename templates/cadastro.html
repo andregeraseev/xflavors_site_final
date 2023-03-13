@@ -16,6 +16,7 @@
   <label for="email">Email</label>
   <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
   <div id="email-feedback" class="invalid-feedback"></div>
+
 </div>
     <div class="form-group">
       <label for="cellphone">Celular:</label>
@@ -74,6 +75,27 @@
   </form>
  </div>
 
+
+
+<script>
+
+  $("#client-form").submit(function(event) {
+  // Verifica se todos os campos estão válidos
+  if (!$(this).find('.is-invalid').length) {
+    // Se todos os campos estiverem válidos, retorna true para permitir o envio do formulário
+    return true;
+  } else {
+    // Se algum campo estiver inválido, chama o preventDefault() para impedir o envio do formulário
+    event.preventDefault();
+    // Rola a página até o primeiro campo inválido
+    $('html, body').animate({
+        scrollTop: $(this).find('.is-invalid').first().offset().top - 100
+    }, 500);
+  }
+});
+
+</script>
+
 <script>
   $(document).ready(function() {
     $("#cep").blur(function() {
@@ -129,6 +151,7 @@
   $(document).ready(function() {
   $("#cpf").on("input", function() {
     var cpf = $(this).val().replace(/\D/g, "");
+    // Verifica se o CPF é composto por onze dígitos
     if (cpf.length != 11 || !validateCPF(cpf)) {
       $(this).addClass("is-invalid");
       $(this).removeClass("is-valid");
@@ -142,7 +165,10 @@
     var sum = 0;
     var rest;
 
-    if (cpf == "00000000000") return false;
+     // Verifica se o CPF é uma sequência de dígitos iguais
+  if (/^(\d)\1{10}$/.test(cpf)) {
+    return false;
+  }
 
     for (i=1; i<=9; i++) sum = sum + parseInt(cpf.substring(i-1, i)) * (11 - i);
     rest = (sum * 10) % 11;
@@ -162,22 +188,7 @@
 
 </script>
 
-<script>
-  $("#email").on("input", function() {
-    let email = $(this).val();
-    let emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-    if (emailRegex.test(email)) {
-      $(this).addClass("is-valid");
-      $(this).removeClass("is-invalid");
-      $("#email-feedback").html("");
-    } else {
-      $(this).addClass("is-invalid");
-      $(this).removeClass("is-valid");
-      $("#email-feedback").html("Digite um email válido");
-    }
-  });
-</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
@@ -186,4 +197,50 @@ $(document).ready(function(){
     $("input[name='cellphone']").mask("(00) 0 0000-0000");
 });
 </script>
+
+
+
+<script>
+  $(document).ready(function() {
+  $("#email").on("input", function() {
+    let emailInput = $(this);
+    let email = emailInput.val();
+    let emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+    if (emailRegex.test(email)) {
+      emailInput.addClass("is-valid");
+      emailInput.removeClass("is-invalid");
+
+      $.ajax({
+        url: "{% url 'verificar_email' %}",
+        method: "POST",
+        data: {
+          'email': email,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: 'json',
+        success: function(data) {
+          if (data.existe) {
+            emailInput.removeClass("is-valid");
+            emailInput.addClass("is-invalid");
+            $("#email-feedback").html("Este email já está cadastrado.");
+          } else {
+            $("#email-feedback").html("");
+          }
+        }
+      });
+    } else {
+      emailInput.addClass("is-invalid");
+      emailInput.removeClass("is-valid");
+      $("#email-feedback").html("Digite um email válido");
+    }
+  });
+});
+
+</script>
+
+
+
+
+
 {% endblock %}

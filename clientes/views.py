@@ -1,12 +1,13 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render, redirect
 
 from cart.models import Cart
+from enviadores.email import enviar_email_confirmacao
 
 from pedidos.models import Pedido
 from .models import Cliente, EnderecoEntrega
@@ -18,14 +19,21 @@ from produtos.models import Produto
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
+        email = request.POST['email']
         password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
+        # Procura um usuário com o email informado
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = None
+        # Autentica o usuário com o email e a senha informados
+        if user is not None:
+            user = authenticate(request, username=user.username, password=password)
         if user is not None:
             login(request, user)
             return redirect('home')
         else:
-            context = {'error': 'Usuário ou senha inválidos!'}
+            context = {'error': 'Email ou senha inválidos!'}
             return render(request, 'login.html', context)
     else:
         return render(request, 'login.html')
@@ -36,6 +44,22 @@ def logout_view(request):
 
 
 
+from django.core.mail import send_mail
+
+def verificar_email(request):
+    print('VERIFICANDO EMAIL')
+    if request.method == 'POST':
+        print('VERIFICANDO POST')
+
+        email = request.POST.get('email', None)
+        if email:
+            if User.objects.filter(email=email).exists():
+                print('Existe email')
+                return JsonResponse({'success':True, 'existe': True})
+            else:
+                print('Nao existe email')
+                return JsonResponse({'success':True,'existe': False})
+    return JsonResponse({'existe': False})
 
 
 def cadastro(request):
@@ -53,16 +77,34 @@ def cadastro(request):
         state = request.POST['state']
         complement = request.POST['complement']
 
+        # Verifica se já existe um usuário com o e-mail fornecido
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Este e-mail já está cadastrado.')
+            print('EMAIL JA CADASTRADO')
+            return redirect('cadastro')
+
         user = User.objects.create_user(username=full_name, email=email, password=password)
 
         client = Cliente.objects.create(user=user, celular=cellphone, cpf=cpf)
         address = EnderecoEntrega.objects.create(cliente=client, cep=cep, rua=street, numero=number, cidade=city, bairro=neighborhood, estado=state, complemento=complement)
 
         client.address = address
+        user.save()
         client.save()
-        # envia um email de confirmacao
 
-        return redirect('cadastro')
+
+        # Autentica o usuário recém-criado
+
+        print(user)
+        # envia um email de confirmacao
+        enviar_email_confirmacao(user.email, user.username)
+
+        if user is not None:
+            # Faz o login do usuário na sessão
+            login(request, user)
+
+
+        return redirect('home')
 
     return render(request, 'cadastro.html')
 

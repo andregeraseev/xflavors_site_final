@@ -18,7 +18,7 @@ urlpatterns = [
     path('administracao/', include('administracao.urls', namespace='administracao')),
     path('', index, name='home'),
     path('import_products/', import_products_view, name='import_products'),
-    path('admin/', admin.site.urls),
+    path('admin_site/', admin.site.urls),
     path('accounts/login/', views.login_view, name='login'),
     path('accounts/logout/', views.logout_view, name='logout'),
     path('accounts/cadastro/', views.cadastro, name='cadastro'),
@@ -55,7 +55,10 @@ urlpatterns = [
 
 # PESQUISA
     path('search/', search, name='search'),
-    path('pagina_search/<str:q>', pagina_search, name='pagina_search')
+    path('pagina_search/<str:q>', pagina_search, name='pagina_search'),
+
+# verificar
+    path('verificar_email/', views.verificar_email, name='verificar_email'),
 
 
 

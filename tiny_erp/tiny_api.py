@@ -72,7 +72,7 @@ def pegar_category_e_subcategory(categoria_completa):
 def pesquisar_produtos():
     url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
     token = TINY_ERP_API_KEY
-    params = {'token': token, 'formato': 'json', 'pagina': '7'}
+    params = {'token': token, 'formato': 'json', 'pagina': '2'}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:

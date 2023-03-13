@@ -1,6 +1,7 @@
 import os
 
 import xflavors
+from enviadores.email import enviar_email_pedido_criado
 from xflavors.settings import MERCADO_PAGO_CLIENT_SECRET
 from xflavors.settings import MERCADO_PAGO_CLIENT_ID
 import mercadopago
@@ -459,6 +460,15 @@ def criar_pedido(request):
         print('deletando carrinho')
         cart.cartitem_set.all().delete()
         print(pedido.id, 'PEDIDO ID')
+
+        # envia email
+        destinatario= user.email
+        nome= user.username
+        pedido_id = pedido.id
+        enviar_email_pedido_criado(destinatario, nome, pedido_id)
+
+
+
 
         data = {'success': True, 'pedido_id': pedido.id}
         return JsonResponse(data)

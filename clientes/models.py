@@ -1,8 +1,11 @@
 # clientes/models.py
-
-
 from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import User
+
+from django.contrib.auth.models import AbstractUser
+
 
 class Cliente(models.Model):
     # relacionamento um-para-um com o modelo de usuário do Django
@@ -14,6 +17,9 @@ class Cliente(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+
 
 class EnderecoEntrega(models.Model):
     primario = models.BooleanField(default=True)
