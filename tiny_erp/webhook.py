@@ -16,7 +16,7 @@ def tiny_webhook(request):
     try:
         print('lendo')
         payload = json.loads(request.body.decode("utf-8"))
-        print(payload)
+
     except json.JSONDecodeError:
         print('falha')
         return HttpResponseBadRequest("Falha ao decodificar JSON")
@@ -25,7 +25,9 @@ def tiny_webhook(request):
     if payload['tipo'] == 'produto':
         try:
             produto = payload['dados']
-
+            print(produto)
+            print(produto['variacoes'])
+            print(produto['kit'])
             nome = produto['nome']
             preco = produto['preco']
             id = produto['id']
