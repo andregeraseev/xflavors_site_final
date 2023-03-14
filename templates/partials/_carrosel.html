@@ -42,7 +42,7 @@
             <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
                 {% if product.variation_set.exists %}
                     {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
-                {% if materia_prima_stock > 1000 %}
+                {% if materia_prima_stock > 10 %}
                 <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
                 <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
                 {% else %}
