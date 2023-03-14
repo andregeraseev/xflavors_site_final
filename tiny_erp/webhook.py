@@ -29,7 +29,7 @@ def tiny_webhook(request):
             nome = produto['nome']
             preco = produto['preco']
             id = produto['id']
-            idMapeamento = produto['idMapeamento']
+            idMapeamento = int(produto['idMapeamento'])
             skuMapeamento = produto['codigo']
             # urlProduto = produto.get('urlProduto')
             # urlImagem = produto.get('urlImagem')
@@ -42,7 +42,7 @@ def tiny_webhook(request):
                 "mapeamentos": [{
                     "mapeamento": {
                         "idMapeamento": idMapeamento,
-                        "skuMapeamento": '123',
+                        "skuMapeamento": '123456',
 
                         "error": error
                     },
