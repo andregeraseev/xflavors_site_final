@@ -45,7 +45,7 @@ def tiny_webhook(request):
         print(id)
         idMapeamento = produto['idMapeamento']
         print(idMapeamento)
-        skuMapeamento = id
+        skuMapeamento = produto['codigo']
         # aqui você pode adicionar mais informações do produto que deseja exibir
 
         # Crie uma resposta HTTP com os dados do produto
