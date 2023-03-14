@@ -21,17 +21,6 @@ def tiny_webhook(request):
         print('falha')
         return HttpResponseBadRequest("Falha ao decodificar JSON")
 
-    # Verifica a autenticidade do webhook
-    secret = TINY_ERP_API_KEY  # Substitua com o seu token secreto
-    # signature = request.headers.get("X-Tiny-Signature")
-    # if not signature:
-    #     print('Assinatura não encontrada')
-    #     return HttpResponseBadRequest("Assinatura não encontrada")
-    # expected_signature = hmac.new(secret.encode(), request.body, hashlib.sha256).hexdigest()
-    # if not hmac.compare_digest(signature, expected_signature):
-    #     print('Assinatura inválida')
-    #     return HttpResponseBadRequest("Assinatura inválida")
-
 
     # Processa o evento de produto
     if payload['tipo'] == 'produto':
@@ -45,15 +34,13 @@ def tiny_webhook(request):
         urlProduto = produto.get('urlProduto')
         urlImagem = produto.get('urlImagem')
         error = produto.get('error')
-
+        print(payload)
         response_data = {
             "mapeamentos": [{
                 "mapeamento": {
                     "idMapeamento": idMapeamento,
                     "skuMapeamento": skuMapeamento,
-                    "urlProduto": urlProduto,
-                    "urlImagem": urlImagem,
-                    "error": error
+
                 },
             }]
         }
