@@ -18,7 +18,6 @@ urlpatterns = [
     path('administracao/', include('administracao.urls', namespace='administracao')),
     path('', index, name='home'),
     path('import_products/', import_products_view, name='import_products'),
-    path('admin_site/', admin.site.urls),
     path('accounts/login/', views.login_view, name='login'),
     path('accounts/logout/', views.logout_view, name='logout'),
     path('accounts/cadastro/', views.cadastro, name='cadastro'),
