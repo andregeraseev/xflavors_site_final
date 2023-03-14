@@ -36,14 +36,14 @@ def tiny_webhook(request):
     if payload['tipo'] == 'produto':
         print(payload)
         produto = payload['dados']
-        print(produto)
+
         nome = produto['nome']
         print(nome)
         preco = produto['preco']
         print(preco)
         id = produto['id']
         print(id)
-        idMapeamento = ['idMapeamento']
+        idMapeamento = produto['idMapeamento']
         print(idMapeamento)
         # aqui você pode adicionar mais informações do produto que deseja exibir
 
