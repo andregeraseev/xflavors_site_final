@@ -53,7 +53,7 @@ def tiny_webhook(request):
             "mapeamentos": [{
                 "mapeamento": {
                     'idMapeamento': idMapeamento,
-                    'skuMapeamento': skuMapeamento,
+                    'skuMapeamento': 'produto123',
                     'id': id,
                     'nome': nome,
                     'preco': preco,
@@ -61,10 +61,6 @@ def tiny_webhook(request):
             }]
         }
 
-        return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
-    else:
-        return HttpResponse(json.dumps({'error': 'Falha ao decodificar JSON'}), status=400,
-                            content_type="application/json")
 
     # Retorna uma resposta de sucesso
     return HttpResponse(status=200)
