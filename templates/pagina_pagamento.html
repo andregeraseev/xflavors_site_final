@@ -8,16 +8,62 @@
       <p>Seu pedido foi criado com sucesso! O número do pedido é {{ pedido_id }}.</p>
       <p>O método de pagamento escolhido foi {{ metodo_de_pagamento }}, siga as instruções abaixo para realizar o pagamento:</p>
           {% if metodo_de_pagamento == 'Pix' %}
-    <h3>Enviar comprovante de pagamento</h3>
-    <p>Por favor, envie o comprovante de pagamento para que possamos confirmar o seu pedido.</p>
-    <form action="{% url 'paga_pix' %}" method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="hidden" name="pedido_id" value="{{ pedido_id }}">
-      <div class="form-group">
-        <input type="file" name="comprovante" accept="image/*" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Enviar comprovante</button>
-    </form>
+      <h3>Dados de pagamento</h3>
+      <p>Para pagar com Pix, utilize a opção de transferência via Pix em seu aplicativo
+        ou internet banking e insira a chave Pix.
+        Verifique se a chave está correta antes de confirmar o pagamento.
+        Qualquer dúvida, entre em contato conosco.</p>
+      <p>Chave Pix: <b>xflavors@gmail.com</b></p>
+      <button style="background-color: #008CBA; border: none; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;"
+              onclick="copyToClipboard('xflavors@gmail.com')">Copiar Chave Pix
+      </button>
+      <h3>Enviar comprovante de pagamento</h3>
+      <p>Por favor, envie o comprovante de pagamento para que possamos confirmar o seu pedido.</p>
+      <form action="{% url 'paga_pix' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="pedido_id" value="{{ pedido_id }}">
+        <div class="form-group">
+          <label for="comprovante" class="botao-comprovante" id="botao-comprovante">Selecione o comprovante</label>
+<input type="file" name="comprovante" id="comprovante" accept="image/*" required style="display:none;" onchange="updateLabel(this)">
+
+
+
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar comprovante</button>
+      </form>
+
+
+      <script>
+function updateLabel(input) {
+  var fileName = input.value.split('\\').pop();
+  document.getElementById('botao-comprovante').innerHTML = fileName;
+}
+</script>
+
+
+      <style>
+
+        .botao-comprovante {
+background-color: #008CBA;
+color: #fff;
+font-size: 16px;
+padding: 10px 20px;
+border-radius: 5px;
+cursor: pointer;
+}
+
+      </style>
+      <script>
+function copyToClipboard(text) {
+  var input = document.createElement("input");
+  input.value = text;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand("copy");
+  document.body.removeChild(input);
+  alert("Chave Pix copiada para a área de transferência!");
+}
+</script>
   {% endif %}
 
   {% if metodo_de_pagamento == 'MercadoPago' %}
