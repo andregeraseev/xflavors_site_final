@@ -34,6 +34,7 @@ def tiny_webhook(request):
 
     # Processa o evento de produto
     if payload['tipo'] == 'produto':
+        print(payload)
         produto = payload['dados']
         nome = produto['nome']
         preco = produto['preco']
@@ -49,6 +50,7 @@ def tiny_webhook(request):
             'preco': preco,
             # aqui você pode adicionar mais informações do produto que deseja exibir
         }
+        print(response_data)
         return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         return HttpResponse(status=200)
