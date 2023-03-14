@@ -36,10 +36,15 @@ def tiny_webhook(request):
     if payload['tipo'] == 'produto':
         print(payload)
         produto = payload['dados']
+        print(produto)
         nome = produto['nome']
+        print(nome)
         preco = produto['preco']
+        print(preco)
         id = produto['id']
+        print(id)
         idMapeamento = ['idMapeamento']
+        print(idMapeamento)
         # aqui você pode adicionar mais informações do produto que deseja exibir
 
         # Crie uma resposta HTTP com os dados do produto
@@ -53,7 +58,7 @@ def tiny_webhook(request):
         print(response_data)
         return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
-        return HttpResponse(status=200)
+        return HttpResponse(json.dumps({'error': 'Falha ao decodificar JSON'}), status=400, content_type="application/json")
 
     # Retorna uma resposta de sucesso
     return HttpResponse(status=200)
