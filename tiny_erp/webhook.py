@@ -41,7 +41,7 @@ def tiny_webhook(request):
             mapeamentos = [
                 {
                  "idMapeamento": idMapeamento,
-                 "skuMapeamento": "123"
+                 "skuMapeamento": skuMapeamento
                 },
 
             ]
