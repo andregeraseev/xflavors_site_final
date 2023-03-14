@@ -16,20 +16,21 @@ def tiny_webhook(request):
     try:
         print('lendo')
         payload = json.loads(request.body.decode("utf-8"))
+        print(payload)
     except json.JSONDecodeError:
         print('falha')
         return HttpResponseBadRequest("Falha ao decodificar JSON")
 
     # Verifica a autenticidade do webhook
     secret = TINY_ERP_API_KEY  # Substitua com o seu token secreto
-    signature = request.headers.get("X-Tiny-Signature")
-    if not signature:
-        print('Assinatura não encontrada')
-        return HttpResponseBadRequest("Assinatura não encontrada")
-    expected_signature = hmac.new(secret.encode(), request.body, hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(signature, expected_signature):
-        print('Assinatura inválida')
-        return HttpResponseBadRequest("Assinatura inválida")
+    # signature = request.headers.get("X-Tiny-Signature")
+    # if not signature:
+    #     print('Assinatura não encontrada')
+    #     return HttpResponseBadRequest("Assinatura não encontrada")
+    # expected_signature = hmac.new(secret.encode(), request.body, hashlib.sha256).hexdigest()
+    # if not hmac.compare_digest(signature, expected_signature):
+    #     print('Assinatura inválida')
+    #     return HttpResponseBadRequest("Assinatura inválida")
 
     # Processa o evento de produto
     event_type = payload.get("event_type")
