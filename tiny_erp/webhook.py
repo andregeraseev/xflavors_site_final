@@ -21,35 +21,45 @@ def tiny_webhook(request):
         print('falha')
         return HttpResponseBadRequest("Falha ao decodificar JSON")
 
-
     # Processa o evento de produto
     if payload['tipo'] == 'produto':
-        produto = payload['dados']
+        try:
+            produto = payload['dados']
 
-        nome = produto['nome']
-        preco = produto['preco']
-        id = produto['id']
-        idMapeamento = produto['idMapeamento']
-        skuMapeamento = produto['codigo']
-        urlProduto = produto.get('urlProduto')
-        urlImagem = produto.get('urlImagem')
-        error = produto.get('error')
-        print(payload)
-        response_data = {
-            "mapeamentos": [{
-                "mapeamento": {
-                    "idMapeamento": idMapeamento,
-                    "skuMapeamento": skuMapeamento,
+            nome = produto['nome']
+            preco = produto['preco']
+            id = produto['id']
+            idMapeamento = produto['idMapeamento']
+            skuMapeamento = produto['codigo']
+            # urlProduto = produto.get('urlProduto')
+            # urlImagem = produto.get('urlImagem')
+            error = produto.get('error')
 
-                },
-            }]
-        }
+            # faça o processamento do evento de produto aqui
 
-        return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
+            # Crie uma resposta HTTP com os dados do produto
+            response_data = {
+                "mapeamentos": [{
+                    "mapeamento": {
+                        "idMapeamento": idMapeamento,
+                        "skuMapeamento": skuMapeamento,
+
+                        "error": error
+                    },
+                }]
+            }
+            print(response_data)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
+
+        except Exception as e:
+            # Trata o erro aqui e retorna uma resposta HTTP com o status 400 e uma mensagem de erro apropriada
+            return HttpResponseBadRequest("Erro ao processar evento de produto: {}".format(str(e)))
+
     else:
         return HttpResponse(json.dumps({'error': 'Falha ao decodificar JSON'}), status=400,
                             content_type="application/json")
-        # Retorna uma resposta de sucesso
+
+    # Retorna uma resposta de sucesso
     return HttpResponse(status=200)
 
 import json
