@@ -50,7 +50,7 @@ def tiny_webhook(request):
 
         # Crie uma resposta HTTP com os dados do produto
         response_data = {
-            "mapeamentos": [{
+            "mapeamento": [{
 
                 'idMapeamento': idMapeamento,
                 'skuMapeamento':skuMapeamento,
