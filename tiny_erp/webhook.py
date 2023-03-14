@@ -33,14 +33,25 @@ def tiny_webhook(request):
     #     return HttpResponseBadRequest("Assinatura inválida")
 
     # Processa o evento de produto
-    event_type = payload.get("event_type")
-    print('event_type')
-    if event_type == "inclusao_produto":
-        # Lê as informações do produto
-        produto = payload.get("produto")
-        nome = produto.get("nome")
-        preco = produto.get("preco")
-        # Faça o que quiser com as informações do produto, como salvá-las em um banco de dados
+    if payload['tipo'] == 'produto':
+        produto = payload['dados']
+        nome = produto['nome']
+        preco = produto['preco']
+        id = produto['id']
+        idMapeamento = ['idMapeamento']
+        # aqui você pode adicionar mais informações do produto que deseja exibir
+
+        # Crie uma resposta HTTP com os dados do produto
+        response_data = {
+            'idMapeamento' : idMapeamento,
+            'id': id,
+            'nome': nome,
+            'preco': preco,
+            # aqui você pode adicionar mais informações do produto que deseja exibir
+        }
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    else:
+        return HttpResponse(status=200)
 
     # Retorna uma resposta de sucesso
     return HttpResponse(status=200)
