@@ -60,7 +60,7 @@ def tiny_webhook(request):
                 }]
             }]
         }
-        print(HttpResponse(json.dumps(response_data), content_type="application/json"), status=200)
+
         return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
     else:
         return HttpResponse(json.dumps({'error': 'Falha ao decodificar JSON'}), status=400,
