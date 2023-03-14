@@ -39,14 +39,17 @@ def tiny_webhook(request):
 
             # Crie uma resposta HTTP com os dados do produto
             mapeamentos = {
-                "mapeamento": [{
+                            "mapeamentos": [
+                                {
+                                    "mapeamento": {
+                                        "idMapeamento": idMapeamento,
+                                        "skuMapeamento": "ABC123",
+                                        "error": error
+                                    }
+                                }
+                            ]
+                        }
 
-                        "idMapeamento": idMapeamento,
-                        "skuMapeamento": '123456',
-                        "error": error
-
-                }]
-            }
             print(mapeamentos)
             return HttpResponse(json.dumps(mapeamentos), content_type="application/json", status=200)
 
