@@ -163,7 +163,7 @@ def obter_info_produto(product_id):
         'id': product_id,
     }
     response = requests.get(url, params=params)
-    print(response.json()['retorno'])
+    print(response.json()['retorno']['produto']['kit'])
 
     if response.status_code == 200:
         return response
