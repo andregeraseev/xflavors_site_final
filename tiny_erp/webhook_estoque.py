@@ -15,10 +15,13 @@ def tiny_webhook_stock_update(request):
         return HttpResponseBadRequest("Falha ao decodificar JSON")
 
     # Processa o evento de atualização de estoque
+    print('ATUALIZANDO ESTOQUE')
     if payload['tipo'] == 'estoque':
+        print('Estoque')
+
         try:
             estoque = payload['dados']
-
+            print(estoque)
             id_mapeamento = estoque['idMapeamento']
             print(id_mapeamento)
             estoque_atual = estoque['saldo']
