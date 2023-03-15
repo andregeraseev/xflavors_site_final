@@ -145,7 +145,7 @@ def print_payload_data(payload):
         print("  ID:", kit["id"])
         print("  Quantidade:", kit["quantidade"])
 
-    print("Dias de Preparação:", payload["diasPreparacao"])
+
 
 
 
