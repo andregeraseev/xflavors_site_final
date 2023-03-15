@@ -111,7 +111,7 @@ def print_payload_data(payload):
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
-        pesquisar_produtos(variacao["id"])
+        obter_info_produto(variacao["id"])
         print("  ID Mapeamento:", variacao["idMapeamento"])
         print("  SKU Mapeamento:", variacao["skuMapeamento"])
         print("  Código:", variacao["codigo"])
@@ -154,24 +154,21 @@ def print_payload_data(payload):
 
 
 
-def pesquisar_produtos(produtoid):
-    url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
+def obter_info_produto(product_id):
+    url = 'https://api.tiny.com.br/api2/produto.obter.php'
     token = TINY_ERP_API_KEY
-    params = {'token': token, 'formato': 'json', 'pesquisa': '555Tobacco-FW-10mls'}
+    params = {
+        'token': token,
+        'formato': 'json',
+        'id': product_id,
+    }
     response = requests.get(url, params=params)
+    print(response)
 
     if response.status_code == 200:
-        if 'erros' in response.json()['retorno']:
-            erros = response.json()['retorno']['erros']
-            for erro in erros:
-                print('Erro ao ao pesquisar produtos: ' + erro['erro'])
-        else:
-            print(response.json()['retorno']['produtos'], 'DEU CERTOOO')
-            return response.json()['retorno']['produtos']
-
+        return response
     else:
-        print('Erro ao pesquisar produtos', response.status_code)
-
+        print('Erro ao obter informações do produto',response.status_code)
 
 
 
