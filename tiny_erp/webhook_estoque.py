@@ -24,8 +24,8 @@ def tiny_webhook_stock_update(request):
         try:
             estoque = payload['dados']
             print(estoque)
-            id_mapeamento = estoque['idMapeamento']
-            print(id_mapeamento)
+            # id_mapeamento = estoque['idMapeamento']
+            # print(id_mapeamento)
             estoque_atual = estoque['saldo']
             print(estoque_atual)
             id_produto = estoque['idProduto']
