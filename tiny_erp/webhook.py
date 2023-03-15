@@ -74,19 +74,19 @@ def print_payload_data(payload):
     print("Preço:", payload["preco"])
 
     print("Preço Promocional:", payload["precoPromocional"])
-    print("NCM:", payload["ncm"])
-    print("Origem:", payload["origem"])
-    print("GTIN:", payload["gtin"])
-    print("GTIN Embalagem:", payload["gtinEmbalagem"])
-    print("Localização:", payload["localizacao"])
-    print("Peso Líquido:", payload["pesoLiquido"])
-    print("Peso Bruto:", payload["pesoBruto"])
-    print("Estoque Mínimo:", payload["estoqueMinimo"])
-    print("Estoque Máximo:", payload["estoqueMaximo"])
-    print("ID Fornecedor:", payload["idFornecedor"])
-    print("Código Fornecedor:", payload["codigoFornecedor"])
-    print("Código Pelo Fornecedor:", payload["codigoPeloFornecedor"])
-    print("Unidade Por Caixa:", payload["unidadePorCaixa"])
+    # print("NCM:", payload["ncm"])
+    # print("Origem:", payload["origem"])
+    # print("GTIN:", payload["gtin"])
+    # print("GTIN Embalagem:", payload["gtinEmbalagem"])
+    # print("Localização:", payload["localizacao"])
+    # print("Peso Líquido:", payload["pesoLiquido"])
+    # print("Peso Bruto:", payload["pesoBruto"])
+    # print("Estoque Mínimo:", payload["estoqueMinimo"])
+    # print("Estoque Máximo:", payload["estoqueMaximo"])
+    # print("ID Fornecedor:", payload["idFornecedor"])
+    # print("Código Fornecedor:", payload["codigoFornecedor"])
+    # print("Código Pelo Fornecedor:", payload["codigoPeloFornecedor"])
+    # print("Unidade Por Caixa:", payload["unidadePorCaixa"])
     print("Estoque Atual:", payload["estoqueAtual"])
 
     print("Preço Custo:", payload["precoCusto"])
@@ -100,14 +100,14 @@ def print_payload_data(payload):
     print("Sob Encomenda:", payload["sobEncomenda"])
     print("Marca:", payload["marca"])
 
-    print("Tipo Embalagem:", payload["tipoEmbalagem"])
-    print("Altura Embalagem:", payload["alturaEmbalagem"])
-    print("Largura Embalagem:", payload["larguraEmbalagem"])
-    print("Comprimento Embalagem:", payload["comprimentoEmbalagem"])
-    print("Diâmetro Embalagem:", payload["diametroEmbalagem"])
-    print("Classe Produto:", payload["classeProduto"])
-    print("ID Categoria:", payload["idCategoria"])
-    print("Descrição Categoria:", payload["descricaoCategoria"])
+    # print("Tipo Embalagem:", payload["tipoEmbalagem"])
+    # print("Altura Embalagem:", payload["alturaEmbalagem"])
+    # print("Largura Embalagem:", payload["larguraEmbalagem"])
+    # print("Comprimento Embalagem:", payload["comprimentoEmbalagem"])
+    # print("Diâmetro Embalagem:", payload["diametroEmbalagem"])
+    # print("Classe Produto:", payload["classeProduto"])
+    # print("ID Categoria:", payload["idCategoria"])
+    # print("Descrição Categoria:", payload["descricaoCategoria"])
 
     print("Descrição Árvore Categoria:", payload["descricaoArvoreCategoria"])
 
@@ -125,7 +125,8 @@ def print_payload_data(payload):
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
-        obter_info_produto(variacao["id"], produto_pai)
+        variacao_id = variacao["id"]
+        obter_info_produto(variacao_id, produto_pai)
         print("  ID Mapeamento:", variacao["idMapeamento"])
         print("  SKU Mapeamento:", variacao["skuMapeamento"])
         print("  Código:", variacao["codigo"])
@@ -157,13 +158,13 @@ def print_payload_data(payload):
 
 
 
-    print("SEO:")
-    seo = payload["seo"]
-    print("  Title:", seo["title"])
-    print("  Description:", seo["description"])
-    print("  Keywords:", seo["keywords"])
-    print("  Link Vídeo:", seo["linkVideo"])
-    print("  Slug:", seo["slug"])
+    # print("SEO:")
+    # seo = payload["seo"]
+    # print("  Title:", seo["title"])
+    # print("  Description:", seo["description"])
+    # print("  Keywords:", seo["keywords"])
+    # print("  Link Vídeo:", seo["linkVideo"])
+    # print("  Slug:", seo["slug"])
 
     print("Kit:")
     for kit in payload["kit"]:
@@ -333,6 +334,7 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
 
 
 def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade):
+    print('salvando variacao')
     dicionario = nome_simplificado
     nome_simplificado = ' '.join([str(chave) + ' ' + str(valor) for chave, valor in dicionario.items()])
 
