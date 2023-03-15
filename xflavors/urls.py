@@ -63,7 +63,7 @@ urlpatterns = [
 
     # TINY
     path("webhooks/tiny/", tiny_webhook, name="tiny_webhook"),
-     path('webhooks/tiny_rastreio/', tiny_rastreio, name='tiny_rastreio'),
+    path('webhooks/tiny_rastreio/', tiny_rastreio, name='tiny_rastreio'),
     path('webhooks/tiny_webhook_stock_update/', tiny_webhook_stock_update, name='tiny_webhook_stock_update'),
 
 

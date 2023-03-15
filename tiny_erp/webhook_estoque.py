@@ -4,6 +4,7 @@ import json
 
 @csrf_exempt
 def tiny_webhook_stock_update(request):
+    print("ESTOQUEEEEE")
     # Verifica se a solicitação é um POST
     if request.method != "POST":
         return HttpResponseBadRequest("Esse endpoint suporta somente requisições POST")
