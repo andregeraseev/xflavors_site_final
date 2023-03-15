@@ -2,6 +2,12 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
+from PIL import Image
+from io import BytesIO
+from produtos.models import Produto
+import os
+from urllib.parse import urlparse
+
 
 @csrf_exempt
 def tiny_webhook(request):
@@ -57,12 +63,15 @@ def process_product_event(dados_produto):
 
 def print_payload_data(payload):
     print("ID:", payload["id"])
+    product_id = payload["id"]
     print("ID Mapeamento:", payload["idMapeamento"])
     print("SKU Mapeamento:", payload["skuMapeamento"])
     print("Nome:", payload["nome"])
+    nome = payload["nome"]
     print("Código:", payload["codigo"])
     print("Unidade:", payload["unidade"])
     print("Preço:", payload["preco"])
+    preco: payload["preco"]
     print("Preço Promocional:", payload["precoPromocional"])
     print("NCM:", payload["ncm"])
     print("Origem:", payload["origem"])
@@ -78,15 +87,18 @@ def print_payload_data(payload):
     print("Código Pelo Fornecedor:", payload["codigoPeloFornecedor"])
     print("Unidade Por Caixa:", payload["unidadePorCaixa"])
     print("Estoque Atual:", payload["estoqueAtual"])
+    estoque = payload["estoqueAtual"]
     print("Preço Custo:", payload["precoCusto"])
     print("Preço Custo Médio:", payload["precoCustoMedio"])
     print("Situação:", payload["situacao"])
     print("Descrição Complementar:", payload["descricaoComplementar"])
+    descricao = payload["descricaoComplementar"]
     print("Observações:", payload["obs"])
     print("Garantia:", payload["garantia"])
     print("CEST:", payload["cest"])
     print("Sob Encomenda:", payload["sobEncomenda"])
     print("Marca:", payload["marca"])
+    marca = payload["marca"]
     print("Tipo Embalagem:", payload["tipoEmbalagem"])
     print("Altura Embalagem:", payload["alturaEmbalagem"])
     print("Largura Embalagem:", payload["larguraEmbalagem"])
@@ -95,8 +107,12 @@ def print_payload_data(payload):
     print("Classe Produto:", payload["classeProduto"])
     print("ID Categoria:", payload["idCategoria"])
     print("Descrição Categoria:", payload["descricaoCategoria"])
+    category = payload["descricaoCategoria"]
     print("Descrição Árvore Categoria:", payload["descricaoArvoreCategoria"])
+    subcategoria= 'teste'
 
+    image_path = 'https://xflavors.net/uploads/thumbs/produtos/o9f3JSAuC3ILyBIWNmLGXAeYtoLBlWH1TDyo5gLy.jpeg'
+    salvar_ou_atualizar_produto(nome, product_id, category, subcategoria, estoque, image_path, descricao, marca)
     print("Árvore Categoria:")
     try:
         for categoria in payload["arvoreCategoria"]:
@@ -153,6 +169,41 @@ def print_payload_data(payload):
 
 
 
+def pegar_imagem(produto):
+    tamanho_padrao = (800, 800)
+    try:
+        url_imagem = produto['produto']['imagens_externas'][0]['imagem_externa']['url']
+    except:
+        url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
+
+    if url_imagem:
+        # Faz uma nova requisição para baixar a imagem
+        response = requests.get(url_imagem)
+        if response.status_code == 200:
+            # Extrai o nome do arquivo da URL da imagem
+            url_parts = urlparse(url_imagem)
+            filename = os.path.basename(url_parts.path)
+
+            # Redimensiona a imagem
+            with Image.open(BytesIO(response.content)) as img:
+                width, height = img.size
+                if width < tamanho_padrao[0] or height < tamanho_padrao[1]:
+                    # Caso a imagem seja menor que o tamanho padrão, redimensiona sem manter a proporção
+                    img = img.resize(tamanho_padrao)
+                else:
+                    # Caso contrário, redimensiona mantendo a proporção
+                    img.thumbnail(tamanho_padrao)
+
+                # Salva a imagem na pasta "media" do projeto
+                with open(os.path.join('media/products', filename), 'wb') as f:
+                    img.save(f)
+                image_path = os.path.join('products', filename)
+                return image_path
+    else:
+        print("ERRO ao pegar imagem")
+
+
+
 
 def obter_info_produto(product_id):
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
@@ -171,14 +222,67 @@ def obter_info_produto(product_id):
         print('Erro ao obter informações do produto',response.status_code)
 
 
+def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca):
+    obj, created = Produto.objects.update_or_create(
+        name=nome,
+        defaults={
+            'id': product_id,
+            'description': descricao,
+            'price': preco,
+            'category': category,
+            'subcategory': subcategoria,
+            'stock': estoque,
+            'image': image_path,
+            'marca': marca
+        }
+    )
+    print(obj, created)
 
-
-
-
-
-
-
-
+#
+# def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade):
+#     dicionario = nome_simplificado
+#     nome_simplificado = ' '.join([str(chave) + ' ' + str(valor) for chave, valor in dicionario.items()])
+#
+#     # Aqui você pode obter o objeto MateriaPrima correspondente ao ID da matéria-prima
+#     try:
+#         materia_prima = gasto[0]['item']['id_produto']
+#         materia_prima = MateriaPrima.objects.get(id=materia_prima)
+#         print(materia_prima)
+#     except:
+#         materia_prima = None
+#
+#     print('Materia Prima', materia_prima)
+#     try:
+#         gasto = gasto[0]['item']['quantidade']
+#     except:
+#         gasto = 1
+#     print(gasto)
+#
+#     pai = Produto.objects.get(id=produtopai)
+#     Variation.objects.update_or_create(
+#         id=produto['produto']['id'],
+#         produto_pai=pai,
+#         defaults={'name': produto['produto']['nome'],
+#                   'price': produto['produto']['preco'],
+#                   'stock': estoque,
+#                   'nome_simplificado': nome_simplificado,
+#                   'gasto': gasto,
+#                   'materia_prima': materia_prima,
+#                   'unidade': unidade
+#                   }
+#     )
+#
+#
+# def salvar_ou_atualizar_materia_prima(produto, estoque, product_id):
+#     MateriaPrima.objects.update_or_create(
+#         id=produto['produto']['id'],
+#
+#         defaults={'id': product_id,
+#                   'name': produto['produto']['nome'],
+#                   'stock': estoque,
+#                   }
+#     )
+#
 
 import json
 import hmac

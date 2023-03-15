@@ -46,10 +46,10 @@ class Produto(models.Model):
     """
     name = models.CharField(max_length=255)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     image = models.ImageField(upload_to='products')
     slug = models.SlugField(max_length=255, unique=True, blank=True)
-    stock = models.PositiveIntegerField()
+    stock = models.PositiveIntegerField( blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, blank=True, null=True)
     peso = models.DecimalField(max_digits=10, decimal_places=2, default=0.04)
@@ -85,8 +85,8 @@ class Variation(models.Model):
     """
     name = models.CharField(max_length=100)
     nome_simplificado = models.CharField(max_length=100, blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    stock = models.PositiveIntegerField( blank=True, null=True)
     peso = models.DecimalField(max_digits=10, decimal_places=2,default=0.04)
     produto_pai = models.ForeignKey(Produto,on_delete=models.CASCADE, blank=True, null=True)
     materia_prima = models.ForeignKey(MateriaPrima,on_delete=models.CASCADE, blank=True, null=True)
