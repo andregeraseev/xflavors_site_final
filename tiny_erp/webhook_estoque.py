@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
+from produtos.models import MateriaPrima, Produto
 
 @csrf_exempt
 def tiny_webhook_stock_update(request):
@@ -30,7 +31,23 @@ def tiny_webhook_stock_update(request):
             id_produto = estoque['idProduto']
             print(id_produto)
 
-            # Faça algo com os dados de atualização de estoque, por exemplo, atualizar o estoque na sua plataforma
+            # Tenta atualizar a MateriaPrima
+            try:
+                materia_prima = MateriaPrima.objects.get(id=id_produto)
+                materia_prima.stock = estoque_atual
+                materia_prima.save()
+            except MateriaPrima.DoesNotExist:
+                # Tenta atualizar o Produto se a MateriaPrima não for encontrada
+                try:
+                    produto = Produto.objects.get(id=id_produto)
+                    produto.stock = estoque_atual
+                    produto.save()
+                except Produto.DoesNotExist:
+                    return HttpResponseBadRequest(
+                        "MateriaPrima ou Produto com id_mapeamento {} não encontrado".format(id_mapeamento))
+
+            # Retorna uma resposta de sucesso
+            return HttpResponse(status=200)
 
             # Retorna uma resposta de sucesso
             return HttpResponse(status=200)
