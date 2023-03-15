@@ -39,9 +39,9 @@ def tiny_webhook(request):
                     'idMapeamento': id_mapeamento,
                     'skuMapeamento': sku_mapeamento
                 }
-                mapeamentos.append({'mapeamento': mapeamento})
+                mapeamentos.append(mapeamento)
 
-            response_data = {'mapeamentos': mapeamentos}
+            response_data = mapeamentos
 
 
             print(mapeamentos)
