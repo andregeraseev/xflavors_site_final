@@ -157,7 +157,7 @@ def print_payload_data(payload):
 def pesquisar_produtos(produtoid):
     url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
     token = TINY_ERP_API_KEY
-    params = {'token': token, 'formato': 'json', 'pesquisa': produtoid}
+    params = {'token': token, 'formato': 'json', 'pesquisa': '555Tobacco-FW-10mls'}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:
