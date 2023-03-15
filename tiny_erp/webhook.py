@@ -25,32 +25,27 @@ def tiny_webhook(request):
     if payload['tipo'] == 'produto':
         try:
             produto = payload['dados']
-            print(produto)
-            print(produto['variacoes'])
-            print(produto['kit'])
-            nome = produto['nome']
-            preco = produto['preco']
-            id = produto['id']
-            idMapeamento = int(produto['idMapeamento'])
-            skuMapeamento = produto['codigo']
-            # urlProduto = produto.get('urlProduto')
-            # urlImagem = produto.get('urlImagem')
-            error = produto.get('error')
 
-            # faça o processamento do evento de produto aqui
+            produtos = [produto] + produto.get('variacoes', [])
 
-            # Crie uma resposta HTTP com os dados do produto
-            mapeamentos = [
-                {
-                 "idMapeamento": idMapeamento,
-                 "skuMapeamento": skuMapeamento
-                },
+            mapeamentos = []
 
-            ]
+            for prod in produtos:
+                # Faça algo com cada produto
+                id_mapeamento = prod['idMapeamento']
+                sku_mapeamento = prod['codigo']  # Substitua pelo SKU do produto na sua plataforma, se necessário
+
+                mapeamento = {
+                    'idMapeamento': id_mapeamento,
+                    'skuMapeamento': sku_mapeamento
+                }
+                mapeamentos.append({'mapeamento': mapeamento})
+
+            response_data = {'mapeamentos': mapeamentos}
 
 
             print(mapeamentos)
-            return HttpResponse(json.dumps(mapeamentos), content_type="application/json", status=200)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
 
         except Exception as e:
             # Trata o erro aqui e retorna uma resposta HTTP com o status 400 e uma mensagem de erro apropriada
