@@ -122,6 +122,16 @@ def print_payload_data(payload):
     except:
         print("Sem Arvore de Categoria")
 
+    nome = payload["nome"]
+    preco = payload["preco"]
+    estoque = payload["estoqueAtual"]
+    product_id = payload["id"]
+    descricao = payload["descricaoComplementar"]
+    marca = payload["marca"]
+    category, subcategoria = categoria_subcategoria(payload)
+    image_path = salva_imagem(payload)
+
+    salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
@@ -171,16 +181,7 @@ def print_payload_data(payload):
         print("  ID:", kit["id"])
         print("  Quantidade:", kit["quantidade"])
 
-    nome = payload["nome"]
-    preco = payload["preco"]
-    estoque = payload["estoqueAtual"]
-    product_id = payload["id"]
-    descricao = payload["descricaoComplementar"]
-    marca = payload["marca"]
-    category, subcategoria = categoria_subcategoria(payload)
-    image_path = salva_imagem(payload)
 
-    salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
 
 def salva_imagem(payload):
     tamanho_padrao = (800, 800)
