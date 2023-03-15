@@ -264,7 +264,7 @@ def obter_info_produto(product_id,produtopai):
 
 
 
-    print('MATERIA PRIMA', materia_prima)
+    print('MATERIA PRIMA 1', materia_prima)
     if response.status_code == 200:
         return response
     else:
@@ -290,7 +290,7 @@ def obtendo_materia_prima(materia_prima):
         else:
             pass
     except:
-        print('sem materia prima')
+        print('sem materia prima ')
 
 def obter_info_estoque_materia_prima(product_id):
     url_estoque = 'https://api.tiny.com.br/api2/produto.obter.estoque.php'
@@ -346,7 +346,7 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     except:
         materia_prima = None
 
-    print('Materia Prima', materia_prima)
+    print('Materia Prima 2', materia_prima)
     try:
         gasto = gasto[0]['item']['quantidade']
     except:
