@@ -97,12 +97,15 @@ def print_payload_data(payload):
     print("Descrição Árvore Categoria:", payload["descricaoArvoreCategoria"])
 
     print("Árvore Categoria:")
-    for categoria in payload["arvoreCategoria"]:
-        print("  ID:", categoria["id"])
-        print("  ID Pai:", categoria["idPai"])
-        print("  Descrição:", categoria["descricao"])
-        print("  Descrição Completa:", categoria["descricaoCompleta"])
-        print()
+    try:
+        for categoria in payload["arvoreCategoria"]:
+            print("  ID:", categoria["id"])
+            print("  ID Pai:", categoria["idPai"])
+            print("  Descrição:", categoria["descricao"])
+            print("  Descrição Completa:", categoria["descricaoCompleta"])
+            print()
+    except:
+        print("Sem Arvore de Categoria")
 
     print("Variações:")
     for variacao in payload["variacoes"]:
