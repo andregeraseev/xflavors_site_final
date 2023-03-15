@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
+import requests
 
 @csrf_exempt
 def tiny_webhook(request):
@@ -110,6 +111,7 @@ def print_payload_data(payload):
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
+        pesquisar_produtos(variacao["id"])
         print("  ID Mapeamento:", variacao["idMapeamento"])
         print("  SKU Mapeamento:", variacao["skuMapeamento"])
         print("  Código:", variacao["codigo"])
@@ -147,6 +149,34 @@ def print_payload_data(payload):
     for kit in payload["kit"]:
         print("  ID:", kit["id"])
         print("  Quantidade:", kit["quantidade"])
+
+
+
+
+
+def pesquisar_produtos(produtoid):
+    url = 'https://api.tiny.com.br/api2/produtos.pesquisa.php'
+    token = TINY_ERP_API_KEY
+    params = {'token': token, 'formato': 'json', 'pesquisa': produtoid}
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        if 'erros' in response.json()['retorno']:
+            erros = response.json()['retorno']['erros']
+            for erro in erros:
+                print('Erro ao ao pesquisar produtos: ' + erro['erro'])
+        else:
+            print(response.json()['retorno']['produtos'], 'DEU CERTOOO')
+            return response.json()['retorno']['produtos']
+
+    else:
+        print('Erro ao pesquisar produtos', response.status_code)
+
+
+
+
+
+
 
 
 
