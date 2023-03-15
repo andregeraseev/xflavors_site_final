@@ -207,7 +207,7 @@ def salva_imagem(payload):
                     img.thumbnail(tamanho_padrao)
 
                 # Salva a imagem na pasta "media" do projeto
-                with open(os.path.join('media/products', filename), 'wb') as f:
+                with open(os.path.join('/home/xflavors/xflavors_site_final/media/products', filename), 'wb') as f:
                     img.save(f)
                 image_path = os.path.join('products', filename)
     return image_path
