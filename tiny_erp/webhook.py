@@ -63,6 +63,7 @@ def process_product_event(dados_produto):
 
 def print_payload_data(payload):
     print("ID:", payload["id"])
+    produto_pai = payload["id"]
 
     print("ID Mapeamento:", payload["idMapeamento"])
     print("SKU Mapeamento:", payload["skuMapeamento"])
@@ -124,7 +125,7 @@ def print_payload_data(payload):
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
-        obter_info_produto(variacao["id"])
+        obter_info_produto(variacao["id"], produto_pai)
         print("  ID Mapeamento:", variacao["idMapeamento"])
         print("  SKU Mapeamento:", variacao["skuMapeamento"])
         print("  Código:", variacao["codigo"])
@@ -132,7 +133,7 @@ def print_payload_data(payload):
         print("  Preço:", variacao["preco"])
         print("  Preço Promocional:", variacao["precoPromocional"])
         print("  Estoque Atual:", variacao["estoqueAtual"])
-
+        # salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
         print("  Grade:")
         for grade in variacao["grade"]:
             print("    Chave:", grade["chave"])
@@ -207,7 +208,7 @@ def salva_imagem(payload):
                     img.thumbnail(tamanho_padrao)
 
                 # Salva a imagem na pasta "media" do projeto
-                with open(os.path.join('/home/xflavors/xflavors_site_final/media/products', filename), 'wb') as f:
+                with open(os.path.join('media/products', filename), 'wb') as f:
                     img.save(f)
                 image_path = os.path.join('products', filename)
     return image_path
@@ -233,7 +234,7 @@ def categoria_subcategoria(payload):
 
 
 
-def obter_info_produto(product_id):
+def obter_info_produto(product_id,produtopai):
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
     token = TINY_ERP_API_KEY
     params = {
@@ -242,12 +243,75 @@ def obter_info_produto(product_id):
         'id': product_id,
     }
     response = requests.get(url, params=params)
+    produto= response.json()['retorno']
     print(response.json()['retorno']['produto']['kit'])
+    gasto = response.json()['retorno']['produto']['kit']
+    materia_prima = gasto[0]['item']['id_produto']
+    estoque = 0
+    nome_simplificado = produto['produto']['grade']
 
+    try:
+        gasto = produto['produto']['kit']
+    except:
+        gasto = 1
+    unidade = produto['produto']['unidade']
+
+    obtendo_materia_prima(materia_prima)
+
+
+    salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
+
+
+
+    print('MATERIA PRIMA', materia_prima)
     if response.status_code == 200:
         return response
     else:
         print('Erro ao obter informações do produto',response.status_code)
+
+
+def obtendo_materia_prima(materia_prima):
+    try:
+        if materia_prima:
+            url = 'https://api.tiny.com.br/api2/produto.obter.php'
+            token = TINY_ERP_API_KEY
+            params = {
+                'token': token,
+                'formato': 'json',
+                'id': materia_prima,
+            }
+            resposta = requests.get(url, params=params)
+            print(resposta.json()['retorno']['produto'], 'RESPOSTAAAAA')
+            materia_prima_nome = resposta.json()['retorno']['produto']['nome']
+            materia_prima_id = resposta.json()['retorno']['produto']['id']
+            estoque = obter_info_estoque_materia_prima(materia_prima_id)
+            salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima_id)
+        else:
+            pass
+    except:
+        print('sem materia prima')
+
+def obter_info_estoque_materia_prima(product_id):
+    url_estoque = 'https://api.tiny.com.br/api2/produto.obter.estoque.php'
+    token = TINY_ERP_API_KEY
+    params_estoque = {'token': token, 'formato': 'json', 'id': product_id}
+    response_estoque = requests.get(url_estoque, params=params_estoque)
+
+    if response_estoque.status_code == 200:
+        if 'erros' in response_estoque.json()['retorno']:
+            erros = response_estoque.json()['retorno']['erros']
+            for erro in erros:
+                print('Erro ao obter informações do estoque do produto: ' + erro['erro'])
+
+        else:
+            return response_estoque.json()['retorno']['produto']['saldo']
+
+    else:
+        error_descricao = response_estoque.json()['retorno']['erros'][0]['erro']
+        print(f'Erro ao obter informações do estoque do produto{error_descricao}')
+
+
+
 
 
 def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca):
@@ -267,51 +331,64 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
     )
     print(obj, created)
 
-#
-# def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade):
-#     dicionario = nome_simplificado
-#     nome_simplificado = ' '.join([str(chave) + ' ' + str(valor) for chave, valor in dicionario.items()])
-#
-#     # Aqui você pode obter o objeto MateriaPrima correspondente ao ID da matéria-prima
-#     try:
-#         materia_prima = gasto[0]['item']['id_produto']
-#         materia_prima = MateriaPrima.objects.get(id=materia_prima)
-#         print(materia_prima)
-#     except:
-#         materia_prima = None
-#
-#     print('Materia Prima', materia_prima)
-#     try:
-#         gasto = gasto[0]['item']['quantidade']
-#     except:
-#         gasto = 1
-#     print(gasto)
-#
-#     pai = Produto.objects.get(id=produtopai)
-#     Variation.objects.update_or_create(
-#         id=produto['produto']['id'],
-#         produto_pai=pai,
-#         defaults={'name': produto['produto']['nome'],
-#                   'price': produto['produto']['preco'],
-#                   'stock': estoque,
-#                   'nome_simplificado': nome_simplificado,
-#                   'gasto': gasto,
-#                   'materia_prima': materia_prima,
-#                   'unidade': unidade
-#                   }
-#     )
-#
-#
-# def salvar_ou_atualizar_materia_prima(produto, estoque, product_id):
-#     MateriaPrima.objects.update_or_create(
-#         id=produto['produto']['id'],
-#
-#         defaults={'id': product_id,
-#                   'name': produto['produto']['nome'],
-#                   'stock': estoque,
-#                   }
-#     )
-#
+
+def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade):
+    dicionario = nome_simplificado
+    nome_simplificado = ' '.join([str(chave) + ' ' + str(valor) for chave, valor in dicionario.items()])
+
+    # Aqui você pode obter o objeto MateriaPrima correspondente ao ID da matéria-prima
+    try:
+        materia_prima = gasto[0]['item']['id_produto']
+        materia_prima = MateriaPrima.objects.get(id=materia_prima)
+        print(materia_prima)
+    except:
+        materia_prima = None
+
+    print('Materia Prima', materia_prima)
+    try:
+        gasto = gasto[0]['item']['quantidade']
+    except:
+        gasto = 1
+    print(gasto)
+
+    pai = Produto.objects.get(id=produtopai)
+    Variation.objects.update_or_create(
+        id=produto['produto']['id'],
+        produto_pai=pai,
+        defaults={'name': produto['produto']['nome'],
+                  'price': produto['produto']['preco'],
+                  'stock': estoque,
+                  'nome_simplificado': nome_simplificado,
+                  'gasto': gasto,
+                  'materia_prima': materia_prima,
+                  'unidade': unidade
+                  }
+    )
+
+
+def salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima_id):
+
+    MateriaPrima.objects.update_or_create(
+        id=materia_prima_id,
+
+        defaults={'id': materia_prima_id,
+                  'name': materia_prima_nome,
+                  'stock': estoque,
+                  }
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import json
 import hmac
@@ -319,6 +396,12 @@ import hashlib
 from django.http import HttpResponseBadRequest, HttpResponse
 from xflavors.settings import TINY_ERP_API_KEY
 from django.views.decorators.csrf import csrf_exempt
+
+
+
+
+
+
 
 @csrf_exempt
 def tiny_rastreio(request):
