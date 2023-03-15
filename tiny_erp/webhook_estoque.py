@@ -43,8 +43,7 @@ def tiny_webhook_stock_update(request):
                     produto.stock = estoque_atual
                     produto.save()
                 except Produto.DoesNotExist:
-                    return HttpResponseBadRequest(
-                        "MateriaPrima ou Produto com id_mapeamento {} não encontrado".format(id_mapeamento))
+                    return HttpResponse(status=200)
 
             # Retorna uma resposta de sucesso
             return HttpResponse(status=200)
