@@ -23,7 +23,8 @@
             {% if product.variation_set.exists %}
               <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}" >
                 {% for variation in product.variation_set.all %}
-                  <option value="{{ variation.id }}">{{ variation.name }} - R$ {{ variation.price }}</option>
+              <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{ variation.nome_simplificado }} - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}</option>
+
                 {% endfor %}
               </select>
               <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
@@ -32,8 +33,16 @@
             {% endif %}
 
             <div class="d-flex align-items-center add-to-cart-form">
+              {% if product.variation_set.exists %}
+                    {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
+                {% if materia_prima_stock > 10 %}
               <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
               <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{{ product.stock_available }}">
+            {% else %}
+                    <button  class="btn btn-danger btn-sm w-100 " >Sem estoque</button>
+                {% endif %}
+                {% endwith %}
+                {% endif %}
             </div>
 
           </div>

@@ -7,6 +7,7 @@ from produtos.views import product_detail, produto_por_subcategoria, import_prod
 from .views import index
 from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
 from tiny_erp.webhook import tiny_webhook, tiny_rastreio
+from tiny_erp.webhook_estoque import tiny_webhook_stock_update
 from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,\
     pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending
 
@@ -63,6 +64,7 @@ urlpatterns = [
     # TINY
     path("webhooks/tiny/", tiny_webhook, name="tiny_webhook"),
      path('webhooks/tiny_rastreio/', tiny_rastreio, name='tiny_rastreio'),
+    path('tiny_webhook_stock_update/', tiny_webhook_stock_update, name='tiny_webhook_stock_update'),
 
 
 
