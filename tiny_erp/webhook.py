@@ -4,10 +4,10 @@ import json
 import requests
 from PIL import Image
 from io import BytesIO
-from produtos.models import Produto
+from produtos.models import Produto, Subcategory
 import os
 from urllib.parse import urlparse
-
+from produtos.models import Category, Subcategory, Variation,MateriaPrima
 
 @csrf_exempt
 def tiny_webhook(request):
@@ -63,15 +63,15 @@ def process_product_event(dados_produto):
 
 def print_payload_data(payload):
     print("ID:", payload["id"])
-    product_id = payload["id"]
+
     print("ID Mapeamento:", payload["idMapeamento"])
     print("SKU Mapeamento:", payload["skuMapeamento"])
     print("Nome:", payload["nome"])
-    nome = payload["nome"]
+
     print("Código:", payload["codigo"])
     print("Unidade:", payload["unidade"])
     print("Preço:", payload["preco"])
-    preco: payload["preco"]
+
     print("Preço Promocional:", payload["precoPromocional"])
     print("NCM:", payload["ncm"])
     print("Origem:", payload["origem"])
@@ -87,18 +87,18 @@ def print_payload_data(payload):
     print("Código Pelo Fornecedor:", payload["codigoPeloFornecedor"])
     print("Unidade Por Caixa:", payload["unidadePorCaixa"])
     print("Estoque Atual:", payload["estoqueAtual"])
-    estoque = payload["estoqueAtual"]
+
     print("Preço Custo:", payload["precoCusto"])
     print("Preço Custo Médio:", payload["precoCustoMedio"])
     print("Situação:", payload["situacao"])
     print("Descrição Complementar:", payload["descricaoComplementar"])
-    descricao = payload["descricaoComplementar"]
+
     print("Observações:", payload["obs"])
     print("Garantia:", payload["garantia"])
     print("CEST:", payload["cest"])
     print("Sob Encomenda:", payload["sobEncomenda"])
     print("Marca:", payload["marca"])
-    marca = payload["marca"]
+
     print("Tipo Embalagem:", payload["tipoEmbalagem"])
     print("Altura Embalagem:", payload["alturaEmbalagem"])
     print("Largura Embalagem:", payload["larguraEmbalagem"])
@@ -107,12 +107,9 @@ def print_payload_data(payload):
     print("Classe Produto:", payload["classeProduto"])
     print("ID Categoria:", payload["idCategoria"])
     print("Descrição Categoria:", payload["descricaoCategoria"])
-    category = payload["descricaoCategoria"]
-    print("Descrição Árvore Categoria:", payload["descricaoArvoreCategoria"])
-    subcategoria= 'teste'
 
-    image_path = 'https://xflavors.net/uploads/thumbs/produtos/o9f3JSAuC3ILyBIWNmLGXAeYtoLBlWH1TDyo5gLy.jpeg'
-    salvar_ou_atualizar_produto(nome, product_id, category, subcategoria, estoque, image_path, descricao, marca)
+    print("Descrição Árvore Categoria:", payload["descricaoArvoreCategoria"])
+
     print("Árvore Categoria:")
     try:
         for categoria in payload["arvoreCategoria"]:
@@ -147,11 +144,17 @@ def print_payload_data(payload):
             print("    Nome:", anexo["nome"])
             print("    Tipo:", anexo["tipo"])
 
+
+
     print("Anexos:")
     for anexo in payload["anexos"]:
         print("  URL:", anexo["url"])
         print("  Nome:", anexo["nome"])
         print("  Tipo:", anexo["tipo"])
+
+
+
+
 
     print("SEO:")
     seo = payload["seo"]
@@ -166,16 +169,25 @@ def print_payload_data(payload):
         print("  ID:", kit["id"])
         print("  Quantidade:", kit["quantidade"])
 
+    nome = payload["nome"]
+    preco = payload["preco"]
+    estoque = payload["estoqueAtual"]
+    product_id = payload["id"]
+    descricao = payload["descricaoComplementar"]
+    marca = payload["marca"]
+    category, subcategoria = categoria_subcategoria(payload)
+    image_path = salva_imagem(payload)
 
+    salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
 
-
-def pegar_imagem(produto):
+def salva_imagem(payload):
     tamanho_padrao = (800, 800)
     try:
-        url_imagem = produto['produto']['imagens_externas'][0]['imagem_externa']['url']
+        for anexo in payload["anexos"]:
+            url_imagem = anexo["url"]
+        print(url_imagem)
     except:
         url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
-
     if url_imagem:
         # Faz uma nova requisição para baixar a imagem
         response = requests.get(url_imagem)
@@ -198,9 +210,25 @@ def pegar_imagem(produto):
                 with open(os.path.join('media/products', filename), 'wb') as f:
                     img.save(f)
                 image_path = os.path.join('products', filename)
-                return image_path
+    return image_path
+
+
+def categoria_subcategoria(payload):
+    categoria_completa = payload["descricaoArvoreCategoria"]
+    if '>' in categoria_completa:
+        split_values = categoria_completa.split(' > ')
+        category = split_values[0]
+        if len(split_values) > 2:
+            subcategoria = ' > '.join(split_values[1:])
+        else:
+            subcategoria = split_values[1]
     else:
-        print("ERRO ao pegar imagem")
+        category = categoria_completa
+        subcategoria = 'sem_subcategoria'
+    category, created = Category.objects.get_or_create(name=category, description='categoria')
+    subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
+                                                              category=category)
+    return category, subcategoria
 
 
 
@@ -224,8 +252,9 @@ def obter_info_produto(product_id):
 
 def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca):
     obj, created = Produto.objects.update_or_create(
-        name=nome,
+        id=product_id,
         defaults={
+            'name': nome,
             'id': product_id,
             'description': descricao,
             'price': preco,
