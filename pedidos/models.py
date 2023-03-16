@@ -16,7 +16,7 @@ class PedidoItem(models.Model):
     # Quantidade do produto adicionado ao pedido
     quantity = models.PositiveIntegerField(default=0)
     # Método para calcular o preço total do item, multiplicando a quantidade pelo preço unitário do produto
-    variation = models.ForeignKey(Variation, on_delete=models.SET_NULL,null=True)
+    variation = models.ForeignKey(Variation, on_delete=models.SET_NULL,null=True, blank=True)
     # Relacionamento com a classe Variation, representando a variacao adicionado ao pedido
     price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
     def valor_total(self):
