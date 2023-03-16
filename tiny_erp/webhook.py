@@ -330,6 +330,8 @@ def obter_info_estoque_materia_prima(product_id):
 
 
 def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca):
+    print(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
+    print("Criando/Atualizando produto")
     obj, created = Produto.objects.update_or_create(
         id=product_id,
         defaults={
@@ -344,6 +346,7 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
             'marca': marca
         }
     )
+    print("Criado/Atualizado")
     print(obj, created)
 
 
