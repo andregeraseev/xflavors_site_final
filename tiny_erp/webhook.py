@@ -8,7 +8,8 @@ from produtos.models import Produto, Subcategory
 import os
 from urllib.parse import urlparse
 from produtos.models import Category, Subcategory, Variation,MateriaPrima
-
+import time
+from xflavors.settings import MEDIA_ROOT
 @csrf_exempt
 def tiny_webhook(request):
     if request.method != "POST":
@@ -131,6 +132,8 @@ def print_payload_data(payload):
     category, subcategoria = categoria_subcategoria(payload)
     image_path = salva_imagem(payload)
 
+
+
     salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
     print("Variações:")
     for variacao in payload["variacoes"]:
@@ -144,7 +147,7 @@ def print_payload_data(payload):
         print("  Preço:", variacao["preco"])
         print("  Preço Promocional:", variacao["precoPromocional"])
         print("  Estoque Atual:", variacao["estoqueAtual"])
-        # salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
+
         print("  Grade:")
         for grade in variacao["grade"]:
             print("    Chave:", grade["chave"])
@@ -210,7 +213,7 @@ def salva_imagem(payload):
                     img.thumbnail(tamanho_padrao)
 
                 # Salva a imagem na pasta "media" do projeto
-                with open(os.path.join('media/products', filename), 'wb') as f:
+                with open(os.path.join(MEDIA_ROOT+"/products", filename), 'wb') as f:
                     img.save(f)
                 image_path = os.path.join('products', filename)
     return image_path
@@ -237,6 +240,7 @@ def categoria_subcategoria(payload):
 
 
 def obter_info_produto(product_id,produtopai):
+    time.sleep(2)
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
     token = TINY_ERP_API_KEY
     params = {

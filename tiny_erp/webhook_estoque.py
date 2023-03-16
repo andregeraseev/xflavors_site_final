@@ -34,11 +34,14 @@ def tiny_webhook_stock_update(request):
             # Tenta atualizar a MateriaPrima
             try:
                 materia_prima = MateriaPrima.objects.get(id=id_produto)
+                print(materia_prima.stock)
                 materia_prima.stock = estoque_atual
+                print(materia_prima.stock)
                 materia_prima.save()
             except MateriaPrima.DoesNotExist:
                 # Tenta atualizar o Produto se a MateriaPrima não for encontrada
                 try:
+
                     produto = Produto.objects.get(id=id_produto)
                     produto.stock = estoque_atual
                     produto.save()

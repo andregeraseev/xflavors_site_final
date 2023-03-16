@@ -1,6 +1,6 @@
 import os
 from urllib.parse import urlparse
-
+from xflavors.settings import MEDIA_ROOT
 import requests
 from pedidos.models import Produto
 from produtos.models import Category, Subcategory, Variation,MateriaPrima
@@ -145,7 +145,7 @@ def pegar_imagem(produto):
                     img.thumbnail(tamanho_padrao)
 
                 # Salva a imagem na pasta "media" do projeto
-                with open(os.path.join('media/products', filename), 'wb') as f:
+                with open(os.path.join(MEDIA_ROOT+"/products", filename), 'wb') as f:
                     img.save(f)
                 image_path = os.path.join('products', filename)
                 return image_path
