@@ -128,9 +128,10 @@ def print_payload_data(payload):
     estoque = payload["estoqueAtual"]
     product_id = payload["id"]
     descricao = payload["descricaoComplementar"]
-    marca = payload["marca"]
+    marca = payload["marca"] if "marca" in payload else "marca não especificada"
     category, subcategoria = categoria_subcategoria(payload)
     image_path = salva_imagem(payload)
+    print(payload)
 
     print("Classe do produto", payload['classeProduto'])
     if payload['classeProduto'] == "M":
