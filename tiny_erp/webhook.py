@@ -224,20 +224,24 @@ def salva_imagem(payload):
 
 
 def categoria_subcategoria(payload):
-    categoria_completa = payload["descricaoArvoreCategoria"]
-    if '>' in categoria_completa:
-        split_values = categoria_completa.split(' > ')
-        category = split_values[0]
-        if len(split_values) > 2:
-            subcategoria = ' > '.join(split_values[1:])
+    try:
+        categoria_completa = payload["descricaoArvoreCategoria"]
+        if '>' in categoria_completa:
+            split_values = categoria_completa.split(' > ')
+            category = split_values[0]
+            if len(split_values) > 2:
+                subcategoria = ' > '.join(split_values[1:])
+            else:
+                subcategoria = split_values[1]
         else:
-            subcategoria = split_values[1]
-    else:
-        category = categoria_completa
-        subcategoria = 'sem_subcategoria'
-    category, created = Category.objects.get_or_create(name=category, description='categoria')
-    subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
-                                                              category=category)
+            category = categoria_completa
+            subcategoria = 'sem_subcategoria'
+        category, created = Category.objects.get_or_create(name=category, description='categoria')
+        subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
+                                                                  category=category)
+    except:
+        category = 'Sem Categoria'
+        subcategoria = 'Sem Subcategoria'
     return category, subcategoria
 
 
