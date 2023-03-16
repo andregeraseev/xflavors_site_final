@@ -1,0 +1,32 @@
+<div class="d-flex flex-wrap align-items-center">
+    {% if user.is_authenticated %}
+    <div class=" text-nowrap">
+        <span class="link-no-style text-white">Olá, {{ user.username }}</span>
+    </div>
+    <div class="mx-md-2">
+        <a class="link-no-style mx-2 text-white" href="{% url 'dashboard' %}">Minha Conta<i class=" mx-1 fas fa-address-card"></i></a>
+    </div>
+    <div class="mx-md-2">
+        <a class="link-no-style  text-white" href="{% url 'logout' %}">
+            Logout<i class="mx-1 fas fa-sign-out-alt"></i>
+        </a>
+    </div>
+
+</div>
+
+{% else %}
+<div class="mx-md-2">
+    <a class="link-no-style text-white mx-2" href="{% url 'login' %}">
+        <i class="fas fa-sign-in-alt"></i> Login
+    </a>
+</div>
+<div class="mx-md-2">
+    <a class="link-no-style text-white mx-2" href="{% url 'cadastro' %}">
+        <i class="fas fa-user-plus"></i> Cadastro
+    </a>
+</div>
+{% endif %}
+</div>
+
+
+</div>
