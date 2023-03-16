@@ -6,7 +6,7 @@
 </form>
 
 <div class="dropdown dropdown-menu-search">
-  <div class="dropdown-menu" id="search-results" style="position: absolute;
+  <div class="dropdown-menu text-center" id="search-results" style="position: absolute;
       top: 20px;
       left: 50%;
       transform: translateX(-100%);
@@ -17,7 +17,7 @@
       margin: .0rem 0 0;
       font-size: 1rem;
       color: #212529;
-      min-width: 400px;
+      min-width: 300px;
       max-width: 500px;
       text-align: left;
       list-style: none;
@@ -137,6 +137,11 @@ $(document).ready(function() {
             if (data.results.length > 3) {
   var remainingResults = data.results.length - 3;
   var buttonHtml = '<button class="btn btn-primary mt-2 mb-2" id="ver-mais-btn" data-query="' + query + '">Ver mais ' + remainingResults + ' resultados</button>';
+  $('#search-results').append(buttonHtml);
+}
+            else  {
+
+  var buttonHtml = '<button class="btn btn-primary mt-2 mb-2" id="ver-mais-btn" data-query="' + query + '">Ver produto ' +  ' </button>';
   $('#search-results').append(buttonHtml);
 }
 
