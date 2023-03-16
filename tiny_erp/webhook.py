@@ -133,8 +133,10 @@ def print_payload_data(payload):
     image_path = salva_imagem(payload)
 
 
-
-    salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
+    if payload['classeProduto'] == "M":
+        salvar_ou_atualizar_materia_prima(nome, estoque, product_id)
+    else:
+        salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
