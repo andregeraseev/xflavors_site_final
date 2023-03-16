@@ -42,7 +42,15 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-
+def verificar_cpf(request):
+    print("VERIFICANDO CPF")
+    if request.method == 'POST':
+        cpf = request.POST['cpf']
+        existe = Cliente.objects.filter(cpf=cpf).exists()
+        print("CPF JA CADASTRADO")
+        return JsonResponse({'existe': existe})
+    else:
+        return JsonResponse({'erro': 'Requisição inválida'})
 
 from django.core.mail import send_mail
 

@@ -59,7 +59,7 @@ urlpatterns = [
 
 # verificar
     path('verificar_email/', views.verificar_email, name='verificar_email'),
-
+    path('verificar_cpf/', views.verificar_cpf, name='verificar_cpf'),
 
     # TINY
     path("webhooks/tiny/", tiny_webhook, name="tiny_webhook"),

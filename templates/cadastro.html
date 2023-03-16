@@ -31,9 +31,14 @@
   <div class="valid-feedback">
     CPF válido.
   </div>
-      <div>
+       <div>
         <label for="password">Senha:</label>
         <input type="password" id="password" name="password" required>
+      </div>
+      <div>
+        <label for="password-confirm">Confirme a senha:</label>
+        <input type="password" id="password-confirm" name="password_confirm" required>
+        <div id="password-feedback" class="invalid-feedback"></div>
       </div>
 </div>
 
@@ -186,6 +191,7 @@
   }
 });
 
+
 </script>
 
 
@@ -201,6 +207,21 @@ $(document).ready(function(){
 
 
 <script>
+
+$("#password, #password-confirm").on("input", function() {
+    var password = $("#password").val();
+    var confirmPassword = $("#password-confirm").val();
+    if (password !== confirmPassword) {
+      $("#password-confirm").addClass("is-invalid");
+      $("#password-confirm").removeClass("is-valid");
+      $("#password-feedback").html("As senhas não coincidem.");
+    } else {
+      $("#password-confirm").addClass("is-valid");
+      $("#password-confirm").removeClass("is-invalid");
+      $("#password-feedback").html("");
+    }
+  });
+
   $(document).ready(function() {
   $("#email").on("input", function() {
     let emailInput = $(this);
