@@ -132,10 +132,12 @@ def print_payload_data(payload):
     category, subcategoria = categoria_subcategoria(payload)
     image_path = salva_imagem(payload)
 
-
+    print("Classe do produto", payload['classeProduto'])
     if payload['classeProduto'] == "M":
+        print("Materia Prima")
         salvar_ou_atualizar_materia_prima(nome, estoque, product_id)
     else:
+        print("Produto")
         salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
     print("Variações:")
     for variacao in payload["variacoes"]:
@@ -376,7 +378,10 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
 
 
 def salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima_id):
-
+    print("salvando materia prima")
+    print("Nome materia prima" , materia_prima_nome)
+    print("Estoque materia prima", estoque)
+    print("ID materia prima", materia_prima_id)
     MateriaPrima.objects.update_or_create(
         id=materia_prima_id,
 
