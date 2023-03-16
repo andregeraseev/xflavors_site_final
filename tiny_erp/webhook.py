@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 from produtos.models import Category, Subcategory, Variation,MateriaPrima
 import time
 from xflavors.settings import MEDIA_ROOT
+from django.core.exceptions import ValidationError
+
 @csrf_exempt
 def tiny_webhook(request):
     if request.method != "POST":
@@ -330,22 +332,35 @@ def obter_info_estoque_materia_prima(product_id):
 
 
 def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca):
-    print(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
+    print("Nome", nome,
+          "Id", product_id,
+          "Preco", preco,
+          "Categoria", category,
+          "Subcategoria", subcategoria,
+          "Estoque", estoque,
+          "Image_path", image_path,
+          "Descricao", descricao,
+          "Marca", marca)
     print("Criando/Atualizando produto")
-    obj, created = Produto.objects.update_or_create(
-        id=product_id,
-        defaults={
-            'name': nome,
-            'id': product_id,
-            'description': descricao,
-            'price': preco,
-            'category': category,
-            'subcategory': subcategoria,
-            'stock': estoque,
-            'image': image_path,
-            'marca': marca
-        }
-    )
+    try:
+        obj, created = Produto.objects.update_or_create(
+            id=product_id,
+            defaults={
+                'name': nome,
+                'id': product_id,
+                'description': descricao,
+                'price': preco,
+                'category': category,
+                'subcategory': subcategoria,
+                'stock': estoque,
+                'image': image_path,
+                'marca': marca
+            }
+        )
+    except ValidationError as e:
+        print(f"Erro de validação: {e}")
+    except Exception as e:
+        print(f"Erro inesperado ao atualizar ou criar Produto: {e}")
     print("Criado/Atualizado")
     print(obj, created)
 
