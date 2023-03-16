@@ -23,14 +23,24 @@ from django.views.decorators.http import require_GET
 
 @require_GET
 def search(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip()
+
+    if not query:
+        data = {'message': "Por favor, digite algo para realizar a busca."}
+        return JsonResponse(data)
+
     products = Produto.objects.filter(name__icontains=query)
     data = {'results': []}
+    if not products:
+        data = {'message': "Sem Resultados."}
+        return JsonResponse(data)
+
     for product in products:
         has_variation = product.variation_set.exists()
-        url= product.get_absolute_url()
+        url = product.get_absolute_url()
         product_data = {'id': product.id, 'name': product.name, 'url': url, 'price': product.price, 'image_url': product.image.url, 'has_variation': has_variation}
         variations = []
+
         if product.variation_set.exists():
             for variation in product.variation_set.all():
                 if variation.nome_simplificado:
@@ -39,8 +49,9 @@ def search(request):
                     variation_data = {'id': variation.id, 'name': variation.name, 'price': variation.price}
                 variations.append(variation_data)
             product_data['variations'] = variations
+
         data['results'].append(product_data)
-    print(product_data)
+
     return JsonResponse(data)
 
 

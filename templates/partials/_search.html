@@ -17,6 +17,8 @@
       margin: .0rem 0 0;
       font-size: 1rem;
       color: #212529;
+      min-width: 400px;
+      max-width: 500px;
       text-align: left;
       list-style: none;
       background-color: #fff;
@@ -89,7 +91,13 @@ $(document).ready(function() {
         },
         dataType: 'json',
         success: function(data) {
-
+            // Verifica se há uma mensagem retornada pelo servidor
+          if (data.message) {
+            // Mostra a mensagem e esconde os resultados
+            $('#search-results').empty();
+            $('#search-results').append('<p>' + data.message + '</p>');
+            $('#search-results').show();
+          } else {
           // Atualize a lista de resultados
           $('#search-results').empty();
           $.each(data.results, function(i, result) {
@@ -138,6 +146,7 @@ $('#ver-mais-btn').on('click', function() {
 });
           // Mostre a lista de resultados
           $('#search-results').show();
+          }
         }
       });
     } else {
@@ -223,6 +232,13 @@ $.ajax({
   }
 });
 
+});
+
+$('#search-input').on('keydown', function(event) {
+  if (event.keyCode == 13) {
+    event.preventDefault();
+    $('#ver-mais-btn').click();
+  }
 });
 
 // Fechar o dropdown ao clicar fora dele
