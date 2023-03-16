@@ -245,6 +245,9 @@ def categoria_subcategoria(payload):
     except:
         category = 'Sem Categoria'
         subcategoria = 'Sem Subcategoria'
+        category, created = Category.objects.get_or_create(name=category, description='categoria')
+        subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
+                                                                  category=category)
     return category, subcategoria
 
 
