@@ -14,7 +14,6 @@ class CartView(TemplateView):
 
 @login_required
 def carrinho(request):
-    cart = Cart.objects.get(user=request.user)
     total_quantity_cart = 0
 
     if request.user.is_authenticated:
@@ -24,21 +23,20 @@ def carrinho(request):
         except Cart.DoesNotExist:
             pass
 
+    itens = cart.cartitem_set.all() if cart else []
 
-    itens = cart.cartitem_set.all()
     # Calcula o valor total dos itens no carrinho
     total = 0
     for item in itens:
         if item.variation:
-            preco= item.variation.price
+            preco = item.variation.price
         else:
             preco = item.product.price
         total += item.quantity * preco
 
+    total_do_item = item.quantity * item.product.price if itens else 0
 
-    total_do_item = item.quantity * item.product.price
-
-    return render(request, 'carrinho.html', {'itens': itens, 'total': total, 'total_quantity_cart':total_quantity_cart, 'total_do_item':total_do_item})
+    return render(request, 'carrinho.html', {'itens': itens, 'total': total, 'total_quantity_cart': total_quantity_cart, 'total_do_item': total_do_item})
 
 
 # views.py
