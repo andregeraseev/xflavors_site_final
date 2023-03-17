@@ -287,10 +287,10 @@ def obter_info_produto(product_id,produtopai):
         print(produto['produto']['kit'])
         gasto = produto['produto']['kit']
         materia_prima = gasto[0]['item']['id_produto']
-    except KeyError:
         materia_prima = produtopai
-        print("Erro ao obter informações do kit e matéria-prima.")
-        return materia_prima
+    except KeyError:
+        print("Erro ao obter informações do kit e matéria-prima. Usando produto pai como matéria-prima.")
+        materia_prima = produtopai
 
     estoque = 0
     nome_simplificado = produto.get('produto', {}).get('grade', '')
