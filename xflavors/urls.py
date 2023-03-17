@@ -11,7 +11,7 @@ from tiny_erp.webhook_estoque import tiny_webhook_stock_update
 from tiny_erp.webhook_rastreio import tiny_rastreio
 from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,\
     pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending
-
+from mercado_livre_weebhook import mercado_pago_webhook
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('termos/', views.termos, name='termos'),
@@ -52,7 +52,7 @@ urlpatterns = [
     path('success/', success, name='success'),
     path('failure/', failure, name='failure'),
     path('pending/', pending, name='pending'),
-
+    path('webhook/mercado-pago/', mercado_pago_webhook, name='mercado_pago_webhook'),
 
 # PESQUISA
     path('search/', search, name='search'),

@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="container mt-5">
+ <div class="container mt-5">
     <div class="row">
-      <div class="col-md-6 offset-md-3">
-        <div class="card">
+      <div class="col-md-8 offset-md-2">
+        <div class="card shadow-lg">
           <div class="card-body">
-            <h1 class="card-title">Pagamento Confirmado!</h1>
-            <p class="card-text">O seu pedido número {{ pedido.id }} foi confirmado com sucesso.</p>
-            <p class="card-text">Valor total pago: R$ {{ pedido.total }}</p>
-            <p class="card-text">Método de pagamento: {{ pedido.metodo_de_pagamento }}</p>
-            <a href="{% url 'detalhes_pedido' pedido.id %}" class="btn btn-primary">Ver Detalhes do Pedido</a>
+            <div class="text-center">
+              <h1 class="card-title display-4 mb-4">Pagamento Confirmado!</h1>
+              <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+            </div>
+            <h3 class="card-text mb-3">Pedido: <span class="font-weight-bold">#{{ pedido.id }}</span></h3>
+            <h4 class="card-text mb-3">Valor total pago: <span class="font-weight-bold">R$ {{ pedido.total }}</span></h4>
+            <h4 class="card-text mb-4">Método de pagamento: <span class="font-weight-bold">{{ pedido.metodo_de_pagamento }}</span></h4>
+            <div class="d-flex justify-content-center">
+              <a href="{% url 'detalhes_pedido' pedido.id %}" class="btn btn-danger btn-lg mr-3">Ver Detalhes do Pedido</a>
+              <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">Home</a>
+            </div>
           </div>
         </div>
       </div>
