@@ -52,28 +52,36 @@ from pedidos.models import Pedido
 def mercado_pago_webhook(request):
     mp = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
     if not request.body:
+        print(1)
         return JsonResponse({'error': 'Request body is empty.'}, status=400)
 
     try:
+        print(2)
         data = json.loads(request.body)
+        print(data)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
 
     if 'data' not in data or 'id' not in data['data']:
+        print(3)
         return JsonResponse({'error': 'Missing data or id in the request.'}, status=400)
 
     if 'type' not in data:
+        print(4)
         return JsonResponse({'error': 'Missing type in the request.'}, status=400)
 
     if data['type'] != 'payment':
+        print(5)
         return JsonResponse({'error': 'Invalid type. Only "payment" type is supported.'}, status=400)
 
     resource = mp.get(f"/v1/payments/{data['data']['id']}")
 
     if 'response' not in resource:
+        print(6)
         return JsonResponse({'error': 'Missing response object in the API response.'}, status=400)
 
     payment_status = resource['response']['status']
+
     order_id = resource['response']['order']['id']
 
     if payment_status == 'approved':
