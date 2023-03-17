@@ -291,6 +291,7 @@ def obter_info_produto(product_id,produtopai):
     except KeyError:
         print("Erro ao obter informações do kit e matéria-prima. Usando produto pai como matéria-prima.")
         materia_prima = produtopai
+        gasto = 0
 
     estoque = 0
     nome_simplificado = produto.get('produto', {}).get('grade', '')
@@ -304,6 +305,7 @@ def obter_info_produto(product_id,produtopai):
         return
     print("obtendo_materia_prima")
     obtendo_materia_prima(materia_prima)
+    print('tentando salvar variacao')
     salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
 
 
@@ -404,7 +406,10 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
         materia_prima = MateriaPrima.objects.get(id=materia_prima)
         print(materia_prima)
     except:
-        materia_prima = None
+        if gasto == 0:
+            materia_prima = MateriaPrima.objects.get(id=produtopai)
+        else:
+            materia_prima = None
 
     print('Materia Prima 2', materia_prima)
     try:
@@ -446,6 +451,7 @@ def salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima
                       'stock': estoque,
                       }
         )
+        print("Materia prima Salva ou atualizada")
     except ValidationError as e:
         print(f"Erro de validação: {e}")
     except Exception as e:
