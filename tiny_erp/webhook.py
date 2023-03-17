@@ -146,6 +146,7 @@ def print_payload_data(payload):
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
         variacao_id = variacao["id"]
+        print("tentando obter infomacao da varicao")
         obter_info_produto(variacao_id, produto_pai)
         print("  ID Mapeamento:", variacao["idMapeamento"])
         print("  SKU Mapeamento:", variacao["skuMapeamento"])
@@ -255,6 +256,7 @@ def categoria_subcategoria(payload):
 
 def obter_info_produto(product_id,produtopai):
     time.sleep(2)
+    print("Obtendo Informacao do produto:", product_id)
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
     token = TINY_ERP_API_KEY
     params = {
