@@ -296,11 +296,13 @@ def obter_info_produto(product_id,produtopai):
     nome_simplificado = produto.get('produto', {}).get('grade', '')
 
     try:
+
         unidade = produto['produto']['unidade']
+        print("UNIDADE:", unidade)
     except KeyError:
         print("Erro ao obter a unidade do produto.")
         return
-
+    print("obtendo_materia_prima")
     obtendo_materia_prima(materia_prima)
     salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
 
