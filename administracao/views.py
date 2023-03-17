@@ -37,7 +37,8 @@ def dashboard_adm(request):
     return render(request, 'administracao/dashboard_adm.html', context)
 
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+
 
 @csrf_exempt
 def atualizar_status(request):
@@ -51,3 +52,18 @@ def atualizar_status(request):
         return HttpResponse("OK")
     else:
         return HttpResponse("Método não permitido")
+
+@csrf_exempt
+def adicionar_rastreamento(request):
+    if request.method == 'POST':
+        pedido_id = request.POST.get('pedido_id')
+        rastreamento = request.POST.get('rastreamento')
+        print(rastreamento)
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+            pedido.rastreamento = rastreamento
+            pedido.save()
+            return JsonResponse({'status': 'success'})
+        except Pedido.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Pedido não encontrado'})
+    return JsonResponse({'status': 'error', 'message': 'Método inválido'})

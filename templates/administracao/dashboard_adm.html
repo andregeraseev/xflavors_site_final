@@ -39,7 +39,16 @@
             </td>
 
 
-            <td>{{ pedido.rastreamento }}</td>
+             <td>
+        {% if pedido.rastreamento %}
+            {{ pedido.rastreamento }}
+        {% else %}
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#rastreamentoModal-{{ pedido.id }}">Adicionar rastreamento</button>
+
+            {% include 'partials/_modal_rastreio_adm.html' %}
+
+        {% endif %}
+    </td>
             <td>{% if pedido.comprovante %}
               <a href="{{ pedido.comprovante.url }}" target="_blank">Ver comprovante</a>
               {% else %}
@@ -134,5 +143,30 @@ function enviarMensagem(numero) {
   // Abre o link do WhatsApp para enviar mensagem para o número
   window.open(`https://wa.me/${numero}`, '_blank');
 }
+</script>
+
+<script>
+
+    function salvarRastreamento(pedidoId) {
+    const rastreamento = document.getElementById("input-rastreamento").value;
+
+    $.ajax({
+        url: "{% url 'administracao:adicionar_rastreamento' %}",
+        method: "POST",
+        data: {
+            "pedido_id": pedidoId,
+            "rastreamento": rastreamento,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (response) {
+            alert("Rastreamento adicionado com sucesso!");
+            window.location.reload();
+        },
+        error: function (xhr, status, error) {
+            alert("Ocorreu um erro ao adicionar o rastreamento: " + xhr.responseText);
+        }
+    });
+}
+
 </script>
 {% endblock %}

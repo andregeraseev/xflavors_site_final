@@ -71,7 +71,7 @@ class Pedido(models.Model):
     comprovante = models.FileField(upload_to='comprovantes', blank=True, null=True)
     numero_pedido_tiny = models.IntegerField(blank=True, null=True)
     mercado_pago_id = models.IntegerField(blank=True, null=True)
-
+    rastreamento = models.CharField(max_length=30, blank=True, null=True)
     class Meta:
         ordering = ('-data_pedido',)
 
