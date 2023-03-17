@@ -37,12 +37,12 @@
 
 }
 @media (max-width: 768px) {
-  .dropdown-menu {
+  .dropdown-menu-1 {
     transform: translateX(-250px);
   }
 }
 
-    .dropdown-item {
+    .dropdown-item-busca {
     min-width: 300px;
     max-width: 500px;
     white-space: normal;
@@ -113,7 +113,7 @@ $(document).ready(function() {
           if (i == 3) {
     return false;
   } else {
-            let html = '<div class="dropdown-item">';
+            let html = '<div class="dropdown-item drodown-item-busca">';
             html += '<a href="' + result.url + '"><img src="' + result.image_url + '" alt="' + result.name + '" width="50"></a>';
             html += '<div class="product-info">';
             html += '<p class="product-name"><a href="' + result.url + '">' + result.name + '</a></p>';
