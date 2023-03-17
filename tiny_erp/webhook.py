@@ -240,15 +240,22 @@ def categoria_subcategoria(payload):
         else:
             category = categoria_completa
             subcategoria = 'sem_subcategoria'
-        category, created = Category.objects.get_or_create(name=category, description='categoria')
-        subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
-                                                                  category=category)
+
+        if payload['classeProduto'] == "M":
+            pass
+        else:
+            category, created = Category.objects.get_or_create(name=category, description='categoria')
+            subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
+                                                                      category=category)
     except:
-        category = 'Sem Categoria'
-        subcategoria = 'Sem Subcategoria'
-        category, created = Category.objects.get_or_create(name=category, description='categoria')
-        subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
-                                                                  category=category)
+        if payload['classeProduto'] == "M":
+            pass
+        else:
+            category = 'Sem Categoria'
+            subcategoria = 'Sem Subcategoria'
+            category, created = Category.objects.get_or_create(name=category, description='categoria')
+            subcategoria, created = Subcategory.objects.get_or_create(name=subcategoria, description='categoria',
+                                                                      category=category)
     return category, subcategoria
 
 
