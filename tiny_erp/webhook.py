@@ -124,7 +124,7 @@ def print_payload_data(payload):
             print()
     except:
         print("Sem Arvore de Categoria")
-
+    localizacao = payload["localizacao"]
     nome = payload["nome"]
     preco = payload["preco"]
     estoque = payload["estoqueAtual"]
@@ -141,7 +141,8 @@ def print_payload_data(payload):
         salvar_ou_atualizar_materia_prima(nome, estoque, product_id)
     else:
         print("Produto")
-        salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca)
+        salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao,
+                                    marca, localizacao)
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
@@ -368,7 +369,7 @@ def obter_info_estoque_materia_prima(product_id):
 
 
 
-def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca):
+def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca,localizacao):
     print("Nome", nome,
           "Id", product_id,
           "Preco", preco,
@@ -377,7 +378,8 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
           "Estoque", estoque,
           "Image_path", image_path,
           "Descricao", descricao,
-          "Marca", marca)
+          "Marca", marca,
+          "Localizacao",localizacao)
     print("Criando/Atualizando produto")
     try:
         obj, created = Produto.objects.update_or_create(
@@ -391,7 +393,8 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
                 'subcategory': subcategoria,
                 'stock': estoque,
                 'image': image_path,
-                'marca': marca
+                'marca': marca,
+                'localizacao':localizacao
             }
         )
     except ValidationError as e:

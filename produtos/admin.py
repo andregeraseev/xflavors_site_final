@@ -9,7 +9,7 @@ class SubCategoryInline(admin.TabularInline):
     model = Subcategory
 
 class ProdutoAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'price', 'stock','tem_variation')
+    list_display = ('id','name', 'price', 'stock','tem_variation','localizacao')
     search_fields = ('name',)
     actions = ['duplicate_product']
 
