@@ -1,5 +1,6 @@
+
 <div class="d-flex flex-wrap align-items-center">
-    {% if user.is_authenticated %}
+{% if user.is_authenticated %}
     <div class=" text-nowrap">
         <span class="link-no-style text-white">Olá, {{ user.username }}</span>
     </div>
@@ -12,7 +13,7 @@
         </a>
     </div>
 
-</div>
+
 
 {% else %}
 <div class="mx-md-2">

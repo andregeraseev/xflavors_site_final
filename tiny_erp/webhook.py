@@ -389,34 +389,42 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     print(gasto)
 
     pai = Produto.objects.get(id=produtopai)
-    Variation.objects.update_or_create(
-        id=produto['produto']['id'],
-        produto_pai=pai,
-        defaults={'name': produto['produto']['nome'],
-                  'price': produto['produto']['preco'],
-                  'stock': estoque,
-                  'nome_simplificado': nome_simplificado,
-                  'gasto': gasto,
-                  'materia_prima': materia_prima,
-                  'unidade': unidade
-                  }
-    )
-
+    try:
+        Variation.objects.update_or_create(
+            id=produto['produto']['id'],
+            produto_pai=pai,
+            defaults={'name': produto['produto']['nome'],
+                      'price': produto['produto']['preco'],
+                      'stock': estoque,
+                      'nome_simplificado': nome_simplificado,
+                      'gasto': gasto,
+                      'materia_prima': materia_prima,
+                      'unidade': unidade
+                      }
+        )
+    except ValidationError as e:
+        print(f"Erro de validação: {e}")
+    except Exception as e:
+        print(f"Erro inesperado ao atualizar ou criar Variacao: {e}")
 
 def salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima_id):
     print("salvando materia prima")
     print("Nome materia prima" , materia_prima_nome)
     print("Estoque materia prima", estoque)
     print("ID materia prima", materia_prima_id)
-    MateriaPrima.objects.update_or_create(
-        id=materia_prima_id,
+    try:
+        MateriaPrima.objects.update_or_create(
+            id=materia_prima_id,
 
-        defaults={'id': materia_prima_id,
-                  'name': materia_prima_nome,
-                  'stock': estoque,
-                  }
-    )
-
+            defaults={'id': materia_prima_id,
+                      'name': materia_prima_nome,
+                      'stock': estoque,
+                      }
+        )
+    except ValidationError as e:
+        print(f"Erro de validação: {e}")
+    except Exception as e:
+        print(f"Erro inesperado ao atualizar ou criar Materia Prima: {e}")
 
 
 

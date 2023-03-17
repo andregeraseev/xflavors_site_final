@@ -6,7 +6,7 @@
 </form>
 
 <div class="dropdown dropdown-menu-search">
-  <div class="dropdown-menu text-center" id="search-results">
+  <div class="dropdown-menu " id="search-results">
   </div>
 </div>
 
@@ -104,7 +104,7 @@ $(document).ready(function() {
           if (data.message) {
             // Mostra a mensagem e esconde os resultados
             $('#search-results').empty();
-            $('#search-results').append('<p>' + data.message + '</p>');
+            $('#search-results').append('<p class = "text-center">' + data.message + '</p>');
             $('#search-results').show();
           } else {
           // Atualize a lista de resultados
