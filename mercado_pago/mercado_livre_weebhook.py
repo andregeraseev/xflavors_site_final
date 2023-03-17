@@ -9,8 +9,8 @@ import json
 from pedidos.models import Pedido
 
 
-@csrf_exempt
- @require_POST
+# @csrf_exempt
+# @require_POST
 # def mercado_pago_webhook(request):
 #     mp = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
 #     # Verifique se o request é válido
