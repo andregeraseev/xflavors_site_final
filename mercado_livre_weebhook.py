@@ -50,6 +50,7 @@ from pedidos.models import Pedido
 #     # Retorne uma resposta com status 200 para confirmar o recebimento da notificação
 #     return HttpResponse(status=200)
 def mercado_pago_webhook(request):
+    print("WEBHOOKING MERCADO PAGO")
     mp = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
     if not request.body:
         print(1)
