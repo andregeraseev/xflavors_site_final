@@ -287,10 +287,10 @@ def obter_info_produto(product_id,produtopai):
         print(produto['produto']['kit'])
         gasto = produto['produto']['kit']
         materia_prima = gasto[0]['item']['id_produto']
-        materia_prima = produtopai
+
     except KeyError:
         print("Erro ao obter informações do kit e matéria-prima. Usando produto pai como matéria-prima.")
-        materia_prima = produtopai
+        materia_prima = product_id
         gasto = 0
 
     estoque = 0
@@ -407,7 +407,7 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
         print(materia_prima)
     except:
         if gasto == 0:
-            materia_prima = MateriaPrima.objects.get(id=produtopai)
+            materia_prima = MateriaPrima.objects.get(id=produto['produto']['id'])
         else:
             materia_prima = None
 
