@@ -259,28 +259,48 @@ def obter_info_produto(product_id,produtopai):
     print("Obtendo Informacao do produto:", product_id)
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
     token = TINY_ERP_API_KEY
+
+    if not token:
+        print("Erro: TINY_ERP_API_KEY não está configurado.")
+        return
+
     params = {
         'token': token,
         'formato': 'json',
         'id': product_id,
     }
-    response = requests.get(url, params=params)
-    produto= response.json()['retorno']
-    print(response.json()['retorno']['produto']['kit'])
-    gasto = response.json()['retorno']['produto']['kit']
-    materia_prima = gasto[0]['item']['id_produto']
-    estoque = 0
-    nome_simplificado = produto['produto']['grade']
 
     try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao buscar informações do produto: {e}")
+        return
+
+    try:
+        produto = response.json()['retorno']
+    except KeyError:
+        print("Erro ao obter informações do produto.")
+        return
+
+    try:
+        print(produto['produto']['kit'])
         gasto = produto['produto']['kit']
-    except:
-        gasto = 1
-    unidade = produto['produto']['unidade']
+        materia_prima = gasto[0]['item']['id_produto']
+    except KeyError:
+        print("Erro ao obter informações do kit e matéria-prima.")
+        return
+
+    estoque = 0
+    nome_simplificado = produto.get('produto', {}).get('grade', '')
+
+    try:
+        unidade = produto['produto']['unidade']
+    except KeyError:
+        print("Erro ao obter a unidade do produto.")
+        return
 
     obtendo_materia_prima(materia_prima)
-
-
     salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
 
 
