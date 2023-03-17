@@ -290,7 +290,7 @@ def obter_info_produto(product_id,produtopai):
     except KeyError:
         materia_prima = produtopai
         print("Erro ao obter informações do kit e matéria-prima.")
-        return
+        return materia_prima
 
     estoque = 0
     nome_simplificado = produto.get('produto', {}).get('grade', '')
