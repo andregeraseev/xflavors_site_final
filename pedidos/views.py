@@ -1,35 +1,21 @@
 import os
 
-import xflavors
 from enviadores.email import enviar_email_pedido_criado
-from xflavors.settings import MERCADO_PAGO_CLIENT_SECRET
-from xflavors.settings import MERCADO_PAGO_CLIENT_ID
 import mercadopago
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from cart.views import verifica_qunatidade_carrinho_varivel
-from clientes.models import EnderecoEntrega
-from pedidos.models import Pedido
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, DetailView
-from produtos.models import Produto
 from tiny_erp.envia_pedido import enviar_pedido_para_tiny
-from .forms import EnderecoEntregaForm
-from .models import Order, PedidoItem
+from .models import PedidoItem
 from cart.models import CartItem, Cart
 from django.contrib.auth.decorators import login_required
-from clientes.models import EnderecoEntrega
-from clientes.models import Cliente
 
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from clientes.models import EnderecoEntrega
 
 
@@ -58,7 +44,7 @@ def visualizar_pedidos(request):
     context = {'pedidos': pedidos}
     return render(request, 'visualizar_pedidos.html', context)
 
-from django.shortcuts import get_object_or_404
+
 @login_required
 def checkout(request):
     user = request.user
@@ -506,18 +492,10 @@ def atualizar_estoque(item):
     # pedido.save()
 
 
-
-from django.shortcuts import render
-
-from .models import Pedido
-
-
-
 from django.shortcuts import render, get_object_or_404
 from .models import Pedido
 
-from xflavors.settings import MERCADO_PAGO_CLIENT_ID
-from mercado_livre  import cria_preferencia
+from mercado_pago.mercado_livre import cria_preferencia
 
 
 
