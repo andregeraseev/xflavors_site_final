@@ -1,52 +1,50 @@
-<div class="dropdown mx-4 " id="cart-icon">
-                    <a class="dropdown-toggle  link-no-style  cursor-pointer " href="{% url 'cart:carrinho' %}"
-                       id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-shopping-cart text-dark"></i>
-                        <span class="badge badge-danger">{{ total_quantity_cart }}</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end bg-dark text-center  " aria-labelledby="navbarDropdown">
-                        {% for item in cart.cartitem_set.all %}
-                        <a class="dropdown-item d-flex justify-content-between text-white  align-items-center" href="#">
-                            <div class="cart-item-details">
-                                <div class="d-flex align-items-center">
-                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50"
-                                         height="50" class="mr-2">
-                                    <div>
-                                        <h6 class="mx-1">{% if item.variation %} {{ item.variation.name }} {% else %}
-                                            {{ item.product.name }} {% endif %}</h6>
-                                        <p class="mb-0">Quantidade: {{ item.quantity }}</p>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mt-2">
-                                    <div class="mr-2">
-                                        <p class="mb-0">Preço unitário:</p>
-                                        <p class="mb-0">Preço total:</p>
-                                    </div>
-                                    <div>
-                                        <p class="mb-0">R${% if item.variation %}{{ item.variation.price }}{% else %}
-                                            {{item.product.price}}{%endif%}</p>
-                                        <p class="mb-0">R${{ item.total_price }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {% csrf_token %}
-                            <button href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item"
-                                    data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </a>
-                        <div class="dropdown-divider"style="background-color: white;"></div>
-                        {% endfor %}
-                        {% if cart.cartitem_set.count > 0 %}
-<!--                        <div class="dropdown-divider"style="background-color: white;"></div>-->
-                        <div class="d-flex justify-content-between text-white align-items-center m-3">
-                            <h6 class="mb-0">Total:</h6>
-                            <h6 class="mb-0">R${{ cart.total_price }}</h6>
-                        </div>
-                        <a href="{% url 'cart:carrinho' %}" class="btn btn-danger btn-block ">Ver Carrinho</a>
-                        <a href="{% url 'checkout' %}" class="btn btn-danger btn-block my-2">Finalizar Pedido</a>
-                        {% else %}
-                        <p class="dropdown-item text-center text-white">Carrinho vazio.</p>
-                        {% endif %}
+<div class="dropdown mx-4" id="cart-icon">
+    <a class="dropdown-toggle link-no-style cursor-pointer" href="{% url 'cart:carrinho' %}" id="navbarDropdown"
+       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-shopping-cart text-dark"></i>
+        <span class="badge bg-danger">{{ total_quantity_cart }}</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="navbarDropdown">
+        {% for item in cart.cartitem_set.all %}
+        <div class="dropdown-item d-flex justify-content-between text-dark align-items-center bg-light rounded mb-2 p-2">
+            <div class="cart-item-details">
+                <div class="d-flex align-items-center">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50" height="50"
+                         class="mr-2">
+                    <div>
+                        <h6 class="mx-1">{% if item.variation %} {{ item.variation.name }} {% else %}
+                            {{ item.product.name }} {% endif %}</h6>
+                        <p class="mb-0">Quantidade: {{ item.quantity }}</p>
                     </div>
                 </div>
+                <div class="d-flex align-items-center mt-2">
+                    <div class="mr-2">
+                        <p class="mb-0">Preço unitário:</p>
+                        <p class="mb-0">Preço total:</p>
+                    </div>
+                    <div>
+                        <p class="mb-0 mx-5">R${% if item.variation %}{{ item.variation.price }}{% else %}
+                            {{item.product.price}}{%endif%}</p>
+                        <p class="mb-0 mx-5">R${{ item.total_price }}</p>
+                    </div>
+                </div>
+            </div>
+            {% csrf_token %}
+            <button href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item"
+                    data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        {% endfor %}
+        {% if cart.cartitem_set.count > 0 %}
+        <div class="d-flex justify-content-between text-dark align-items-center mb-3">
+            <h6 class="mb-0">Total:</h6>
+            <h6 class="mb-0">R${{ cart.total_price }}</h6>
+        </div>
+        <a href="{% url 'cart:carrinho' %}" class="btn btn-danger btn-block mb-2">Ver Carrinho</a>
+        <a href="{% url 'checkout' %}" class="btn btn-danger btn-block mb-2">Finalizar Pedido</a>
+        {% else %}
+        <p class="dropdown-item text-center text-dark">Carrinho vazio.</p>
+        {% endif %}
+    </div>
+</div>

@@ -1,6 +1,8 @@
 <div id="carousel-2" class="container">
+  <!-- Título -->
   <h3 class="text-center mt-5">Essencias mais vendidas</h3>
   <hr style="border: none; border-top: 1px solid black;">
+  <!-- Carrossel -->
   <div class="card-deck essencia-list2">
     {% for product in essencias_mais_vendidos|slice:":10" %}
     <div class="col product-card">
@@ -23,9 +25,32 @@
           <p class="mb-1" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ product.price }}</p>
           {% endif %}
           <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
-            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
-            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
-          </div>
+                        {% if product.variation_set.exists %}
+                        {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
+                        {% if materia_prima_stock > 10 %}
+                        <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
+                                data-product-id="{{ product.id }}" data-variation-id="">Adicionar
+                        </button>
+                        <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
+                               data-product-id="{{ product.id }}" value="1" min="1"
+                               max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
+                        {% else %}
+                        <button class="btn btn-danger btn-sm w-100 ">Sem estoque</button>
+
+                        {% endif %}
+
+                        {% endwith %}
+                        {% else %}
+                        <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
+                                data-product-id="{{ product.id }}" data-variation-id="">Adicionar
+                        </button>
+                        <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
+                               data-product-id="{{ product.id }}" value="1" min="1"
+                               max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
+
+                        {% endif %}
+
+                    </div>
         </div>
       </div>
     </div>
@@ -134,6 +159,12 @@ slickList1.slick({
         slidesToShow: 3
       }
     },
+     {
+      breakpoint: 776,
+      settings: {
+        slidesToShow: 2
+      }
+    },
     {
       breakpoint: 576,
       settings: {
@@ -153,6 +184,12 @@ slickList2.slick({
   responsive: [
     {
       breakpoint: 992,
+      settings: {
+        slidesToShow: 3
+      }
+    },
+    {
+      breakpoint: 776,
       settings: {
         slidesToShow: 2
       }
