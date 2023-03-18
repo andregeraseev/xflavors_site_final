@@ -75,15 +75,18 @@ def mercado_pago_webhook(request):
     if resource_type == 'payment':
         try:
             result = sdk.payment().get(resource_id)
-            print('result', result)
-            external_reference = result['external_reference']
-            print("ORDER_ID", external_reference)
+
         except Exception as e:
             print(f"Erro ao buscar o pagamento: {e}")
             return JsonResponse({'error': 'Erro ao buscar o pagamento'}, status=500)
 
+        if result['status'] == 200:
+            payment = result['response']
+            print('payment', payment)
 
-
+            # Obtenha a external_reference da resposta
+            external_reference = payment.get("external_reference")
+            print("ORDER_ID", external_reference)
 
     elif resource_type == 'plan':
         plan = sdk.plan().get(resource_id)
