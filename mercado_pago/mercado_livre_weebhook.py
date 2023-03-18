@@ -76,6 +76,8 @@ def mercado_pago_webhook(request):
         try:
             result = sdk.payment().get(resource_id)
             print('result', result)
+            order_id = result['response']['order']['external_reference']
+            print("ORDER_ID", order_id)
         except Exception as e:
             print(f"Erro ao buscar o pagamento: {e}")
             return JsonResponse({'error': 'Erro ao buscar o pagamento'}, status=500)
@@ -84,12 +86,11 @@ def mercado_pago_webhook(request):
 
 
     elif resource_type == 'plan':
-        plan = mp.get(f"/v1/plans/{resource_id}")
+        plan = sdk.plan().get(resource_id)
         print('plan',plan)
     elif resource_type == 'subscription':
-        subscription = mp.get(f"/v1/subscriptions/{resource_id}")
-    elif resource_type == 'invoice':
-        invoice = mp.get(f"/v1/invoices/{resource_id}")
+        subscription = sdk.subscription().get(resource_id)
+
     elif resource_type == 'point_integration_wh':
         # data contains the information related to the notification
         pass
