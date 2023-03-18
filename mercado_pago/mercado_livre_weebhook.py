@@ -73,8 +73,14 @@ def mercado_pago_webhook(request):
     resource_id = data['data']['id']
     print('resource_id',resource_id)
     if resource_type == 'payment':
-        payment = mp.get(f"/v1/payments/{resource_id}")
-        print('payment',payment)
+        try:
+            result = mp.get(f"/v1/payments/{resource_id}")
+            print('result', result)
+        except Exception as e:
+            print(f"Erro ao buscar o pagamento: {e}")
+            return JsonResponse({'error': 'Erro ao buscar o pagamento'}, status=500)
+
+
 
 
     elif resource_type == 'plan':
