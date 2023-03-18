@@ -617,11 +617,13 @@ def success(request):
     external_reference = request.GET.get('external_reference')
     print(payment_id, status, external_reference)
 
+
     pedido = Pedido.objects.get(id=external_reference)
-    pedido.mercado_pago_id = payment_id
-    pedido.status = "Pago"
-    pedido.save()
-    enviar_pedido_para_tiny(pedido)
+    if pedido.status != "Pago":
+        pedido.mercado_pago_id = payment_id
+        pedido.status = "Pago"
+        pedido.save()
+        enviar_pedido_para_tiny(pedido)
 
     return render(request, 'mercado_pago/success.html', {'payment_id': payment_id, 'status': status})
 

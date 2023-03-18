@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import mercadopago
 import json
-
+from tiny_erp.envia_pedido import enviar_pedido_para_tiny
 from pedidos.models import Pedido
 
 
@@ -71,6 +71,7 @@ def mercado_pago_webhook(request):
     resource_type = data['type']
     print('resource_type', resource_type)
     resource_id = data['data']['id']
+
     print('resource_id',resource_id)
     if resource_type == 'payment':
         try:
@@ -93,8 +94,10 @@ def mercado_pago_webhook(request):
                 try:
                     pedido = Pedido.objects.get(id=external_reference)
                     if pedido.status != 'Pago':
+                        pedido.mercado_pago_id = resource_id
                         pedido.status = 'Pago'
                         pedido.save()
+                        enviar_pedido_para_tiny(pedido)
                         print(external_reference, 'PEDIDO, STATUS MUDADO PARA PAGO')
                     else:
                         print(external_reference, 'PEDIDO, Ja esta como pago')
