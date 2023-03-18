@@ -61,6 +61,7 @@ def mercado_pago_webhook(request):
 
     try:
         data = json.loads(request.body)
+        print("DATA",data)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
 
@@ -74,6 +75,8 @@ def mercado_pago_webhook(request):
     if resource_type == 'payment':
         payment = mp.get(f"/v1/payments/{resource_id}")
         print('payment',payment)
+
+
     elif resource_type == 'plan':
         plan = mp.get(f"/v1/plans/{resource_id}")
         print('plan',plan)
