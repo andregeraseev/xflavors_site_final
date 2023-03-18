@@ -45,7 +45,7 @@ def enviar_pedido_para_tiny(pedido):
             nome_item = item.variation.name
             id_item = item.variation.id
         else:
-            item.product.name
+            nome_item = item.product.name
             id_item = item.id
         item_price = float(item.price)
         itens.append({"item":{
