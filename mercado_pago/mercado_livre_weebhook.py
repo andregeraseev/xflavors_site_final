@@ -53,7 +53,7 @@ from pedidos.models import Pedido
 @require_POST
 def mercado_pago_webhook(request):
     print("WEBHOOKING MERCADO PAGO")
-    mp  = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
+    sdk  = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
 
 
     if not request.body:
@@ -74,7 +74,7 @@ def mercado_pago_webhook(request):
     print('resource_id',resource_id)
     if resource_type == 'payment':
         try:
-            result = mp.get(f"/v1/payments/{resource_id}")
+            result = sdk.payment().get(resource_id)
             print('result', result)
         except Exception as e:
             print(f"Erro ao buscar o pagamento: {e}")
