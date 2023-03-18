@@ -86,7 +86,22 @@ def mercado_pago_webhook(request):
 
             # Obtenha a external_reference da resposta
             external_reference = payment.get("external_reference")
-            print("ORDER_ID", external_reference)
+            print("ID do pedido", external_reference)
+
+            # Atualize o status do Pedido com base no status do pagamento
+            if payment['status'] == 'approved':
+                try:
+                    pedido = Pedido.objects.get(id=external_reference)
+                    if pedido.status != 'Pago':
+                        pedido.status = 'Pago'
+                        pedido.save()
+                        print(external_reference, 'PEDIDO, STATUS MUDADO PARA PAGO')
+                    else:
+                        print(external_reference, 'PEDIDO, Ja esta como pago')
+
+
+                except Pedido.DoesNotExist:
+                    return HttpResponse(status=404)
 
     elif resource_type == 'plan':
         plan = sdk.plan().get(resource_id)
