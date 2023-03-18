@@ -56,7 +56,7 @@ def cria_preferencia(request, pedido):
 
 
     preference_response = sdk.preference().create(preference_data)
-    print(preference_response)
+    print("PREFERENCE_RESPONSE:",preference_response )
     preference = preference_response["response"]
 
     return preference['init_point']

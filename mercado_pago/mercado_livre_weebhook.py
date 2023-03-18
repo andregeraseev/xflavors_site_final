@@ -53,46 +53,38 @@ from pedidos.models import Pedido
 @require_POST
 def mercado_pago_webhook(request):
     print("WEBHOOKING MERCADO PAGO")
-    mp = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
+    mp  = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
+
+
     if not request.body:
-        print(1)
         return JsonResponse({'error': 'Request body is empty.'}, status=400)
 
     try:
-        print(2)
         data = json.loads(request.body)
-        print(data)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
 
-    if 'data' not in data or 'id' not in data['data']:
-        print(3)
-        return JsonResponse({'error': 'Missing data or id in the request.'}, status=400)
+    if 'type' not in data or 'data' not in data or 'id' not in data['data']:
+        return JsonResponse({'error': 'Missing required fields.'}, status=400)
 
-    if 'type' not in data:
-        print(4)
-        return JsonResponse({'error': 'Missing type in the request.'}, status=400)
-
-    if data['type'] != 'payment':
-        print(5)
-        return JsonResponse({'error': 'Invalid type. Only "payment" type is supported.'}, status=400)
-
-    resource = mp.get(f"/v1/payments/{data['data']['id']}")
-
-    if 'response' not in resource:
-        print(6)
-        return JsonResponse({'error': 'Missing response object in the API response.'}, status=400)
-
-    payment_status = resource['response']['status']
-
-    order_id = resource['response']['order']['id']
-
-    if payment_status == 'approved':
-        try:
-            pedido = Pedido.objects.get(mercado_pago_id=order_id)
-            pedido.status = 'Pago'
-            pedido.save()
-        except Pedido.DoesNotExist:
-            return JsonResponse({'error': 'Order not found.'}, status=404)
+    resource_type = data['type']
+    print('resource_type', resource_type)
+    resource_id = data['data']['id']
+    print('resource_id',resource_id)
+    if resource_type == 'payment':
+        payment = mp.get(f"/v1/payments/{resource_id}")
+        print('payment',payment)
+    elif resource_type == 'plan':
+        plan = mp.get(f"/v1/plans/{resource_id}")
+        print('plan',plan)
+    elif resource_type == 'subscription':
+        subscription = mp.get(f"/v1/subscriptions/{resource_id}")
+    elif resource_type == 'invoice':
+        invoice = mp.get(f"/v1/invoices/{resource_id}")
+    elif resource_type == 'point_integration_wh':
+        # data contains the information related to the notification
+        pass
+    else:
+        return JsonResponse({'error': 'Invalid resource type.'}, status=400)
 
     return JsonResponse({'success': 'Notification received and processed.'}, status=200)
