@@ -76,8 +76,8 @@ def mercado_pago_webhook(request):
         try:
             result = sdk.payment().get(resource_id)
             print('result', result)
-            order_id = result['response']['order']['external_reference']
-            print("ORDER_ID", order_id)
+            external_reference = result['external_reference']
+            print("ORDER_ID", external_reference)
         except Exception as e:
             print(f"Erro ao buscar o pagamento: {e}")
             return JsonResponse({'error': 'Erro ao buscar o pagamento'}, status=500)
