@@ -43,6 +43,13 @@ class Pedido(models.Model):
         ('Pago', 'Pago'),
         ('Em trânsito', 'Em trânsito'),
         ('Entregue', 'Entregue'),
+        ('Pendente', 'Pendente'),
+        ('Autorizado', 'Autorizado'),
+        ('Em análise', 'Em análise'),
+        ('Em mediação', 'Em mediação'),
+        ('Rejeitado', 'Rejeitado'),
+        ('Reembolsado', 'Reembolsado'),
+        ('Estorno', 'Estorno'),
         ('Cancelado', 'Cancelado'),
     )
     FRETE_CHOICES = (

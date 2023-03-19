@@ -90,21 +90,54 @@ def mercado_pago_webhook(request):
             print("ID do pedido", external_reference)
 
             # Atualize o status do Pedido com base no status do pagamento
-            if payment['status'] == 'approved':
-                try:
-                    pedido = Pedido.objects.get(id=external_reference)
-                    if pedido.status != 'Pago':
-                        pedido.mercado_pago_id = resource_id
-                        pedido.status = 'Pago'
-                        pedido.save()
-                        enviar_pedido_para_tiny(pedido)
-                        print(external_reference, 'PEDIDO, STATUS MUDADO PARA PAGO')
-                    else:
-                        print(external_reference, 'PEDIDO, Ja esta como pago')
+            payment_status = payment['status']
+            try:
+                pedido = Pedido.objects.get(id=external_reference)
+                pedido.mercado_pago_id = resource_id
 
+                if payment_status == 'approved' and pedido.status != 'Pago':
+                    pedido.status = 'Pago'
+                    pedido.save()
+                    enviar_pedido_para_tiny(pedido)
+                    print(external_reference, 'PEDIDO, STATUS MUDADO PARA PAGO')
 
-                except Pedido.DoesNotExist:
-                    return HttpResponse(status=404)
+                elif payment_status == 'pending':
+                    pedido.status = 'Pendente'
+                    pedido.save()
+
+                elif payment_status == 'authorized':
+                    pedido.status = 'Autorizado'
+                    pedido.save()
+
+                elif payment_status == 'in_process':
+                    pedido.status = 'Em análise'
+                    pedido.save()
+
+                elif payment_status == 'in_mediation':
+                    pedido.status = 'Em mediação'
+                    pedido.save()
+
+                elif payment_status == 'rejected':
+                    pedido.status = 'Rejeitado'
+                    pedido.save()
+
+                elif payment_status == 'cancelled':
+                    pedido.status = 'Cancelado'
+                    pedido.save()
+
+                elif payment_status == 'refunded':
+                    pedido.status = 'Reembolsado'
+                    pedido.save()
+
+                elif payment_status == 'charged_back':
+                    pedido.status = 'Estorno'
+                    pedido.save()
+
+                else:
+                    print(f"Status de pagamento não reconhecido: {payment_status}")
+
+            except Pedido.DoesNotExist:
+                return HttpResponse(status=404)
 
     elif resource_type == 'plan':
         plan = sdk.plan().get(resource_id)
