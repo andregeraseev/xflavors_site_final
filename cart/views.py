@@ -43,8 +43,12 @@ def carrinho(request):
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-@login_required
+
 def add_to_cart_carrocel(request):
+    if not request.user.is_authenticated:
+
+        return JsonResponse({'success': False, 'login_required': True,
+                             'error': 'Por favor, faça login ou cadastre-se para adicionar produtos ao carrinho.'})
 
     product_id = request.POST.get('productId')
 
