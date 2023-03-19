@@ -1,6 +1,42 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Ocorreu um erro durante o pagamento</h2>
-<p>Por favor, tente novamente mais tarde ou entre em contato com o suporte.</p>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="bi bi-x-circle-fill text-danger" style="font-size: 4rem;"></i>
+                        <h2 class="card-title mt-3">Ocorreu um erro no pagamento</h2>
+                    </div>
+                    <div class="mt-4">
+                        <p class="lead">Detalhes do pagamento:</p>
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">ID do Pagamento:</th>
+                                        <td>{{ payment_id }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Status do Pagamento:</th>
+                                        <td>{{ status }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">ID do Pedido:</th>
+                                        <td>{{ external_reference }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-primary">Voltar para a página inicial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

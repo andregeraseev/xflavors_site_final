@@ -625,7 +625,8 @@ def success(request):
         pedido.save()
         enviar_pedido_para_tiny(pedido)
 
-    return render(request, 'mercado_pago/success.html', {'payment_id': payment_id, 'status': status})
+    return render(request, 'mercado_pago/success.html', {'payment_id': payment_id, 'status': status,
+                                                         'external_reference': external_reference})
 
 
 
@@ -635,10 +636,15 @@ def failure(request):
     status = request.GET.get('status')
     external_reference = request.GET.get('external_reference')
     print(payment_id, status, external_reference)
-    # Aqui você pode atualizar o status do pedido
-    # ...
+    pedido = Pedido.objects.get(id=external_reference)
+    if pedido.status != "Cancelado":
+        pedido.mercado_pago_id = payment_id
+        pedido.status = "Cancelado"
+        pedido.save()
+        enviar_pedido_para_tiny(pedido)
 
-    return render(request, 'mercado_pago/failure.html', {'payment_id': payment_id, 'status': status})
+    return render(request, 'mercado_pago/failure.html', {'payment_id': payment_id, 'status': status,
+                                                         'external_reference': external_reference})
 
 
 
@@ -649,7 +655,12 @@ def pending(request):
     status = request.GET.get('status')
     external_reference = request.GET.get('external_reference')
     print(payment_id, status, external_reference)
-    # Aqui você pode atualizar o status do pedido
-    # ...
+    pedido = Pedido.objects.get(id=external_reference)
+    if pedido.status != "Pendente":
+        pedido.mercado_pago_id = payment_id
+        pedido.status = "Pendente"
+        pedido.save()
+        enviar_pedido_para_tiny(pedido)
 
-    return render(request, 'mercado_pago/pending.html', {'payment_id': payment_id, 'status': status})
+    return render(request, 'mercado_pago/pending.html', {'payment_id': payment_id, 'status': status,
+                                                         'external_reference': external_reference})
