@@ -45,7 +45,7 @@ def index(request):
             total_quantity_cart = cart.total_quantity()
         except Cart.DoesNotExist:
             pass
-    print(total_quantity_cart)
+
 
     active_banners_menor = BannerMenor.objects.filter(active=True)
     active_banners = Banner.objects.filter(active=True)

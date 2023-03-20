@@ -6,7 +6,12 @@ from pedidos.models import Pedido
 import pandas as pd
 from datetime import datetime, timedelta
 from tiny_erp.envia_pedido import enviar_pedido_para_tiny
+from django.contrib.admin.views.decorators import staff_member_required
 
+
+
+
+@staff_member_required
 def dashboard_adm(request):
     today = datetime.now().date()
     year = request.GET.get('year', today.year)

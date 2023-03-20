@@ -1,3 +1,7 @@
 from django.shortcuts import render
 
-# Create your views here.
+def termos(request):
+    return render(request, 'rodape/termos.html')
+
+def envio(request):
+    return render(request, 'rodape/envio.html')

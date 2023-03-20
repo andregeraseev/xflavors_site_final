@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
 from clientes import views
+from frontend.views import termos, envio
 from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search, pagina_search
 from .views import index
 from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
@@ -14,7 +15,7 @@ from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco
 from mercado_pago.mercado_livre_weebhook import mercado_pago_webhook
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('termos/', views.termos, name='termos'),
+
     path('cart/', include('cart.urls', namespace='cart')),
     path('pedidos/', include('pedidos.urls', namespace='pedidos')),
     path('administracao/', include('administracao.urls', namespace='administracao')),
@@ -68,6 +69,9 @@ urlpatterns = [
     path('webhooks/tiny_webhook_stock/', tiny_webhook_stock_update, name='tiny_webhook_stock_update'),
 
 
+#     Termos
+    path('termos/', termos, name='termos'),
+    path('envio/', envio, name='envio'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

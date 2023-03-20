@@ -207,5 +207,3 @@ def editar_endereco_dashboard(request):
     endereco = get_object_or_404(EnderecoEntrega, pk=endereco_id, cliente=request.user.cliente)
     return render(request, 'editar_endereco_dashboard.html', {'endereco': endereco})
 
-def termos(request):
-    return render(request, 'termos.html')

@@ -25,3 +25,15 @@ def cart(request):
         except Cart.DoesNotExist:
             pass
     return {'cart': cart }
+
+def total_quantity_cart(request):
+    cart = None
+    total_quantity_cart = 0
+
+    if request.user.is_authenticated:
+        try:
+            cart = Cart.objects.get(user=request.user)
+            total_quantity_cart = cart.total_quantity()
+        except Cart.DoesNotExist:
+            pass
+    return {'total_quantity_cart': total_quantity_cart}

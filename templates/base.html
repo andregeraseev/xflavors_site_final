@@ -17,54 +17,71 @@
 {% include 'partials/_navbar.html' %}
 
 
-  <div class="container">
+  <div class="container mt-5">
   {% block content %}{% endblock %}
   </div>
-
-<main class="flex-grow-1">
-    <!-- conteúdo do main -->
-  </main>
-<footer class="bg-light pt-3 pb-3">
-  <div class="container text-center">
-    <span class="align-middle me-2"><i class="far fa-registered"></i></span>
-    <span class="text-uppercase fw-bold fs-5 align-middle">Xflavors</span>
-    <p class="mt-2 mb-2 fs-6">Todos os sabores em um único lugar</p>
-    <a href="{% url 'termos' %}" class="text-decoration-none text-dark fw-bold">Termos e Condições</a>
-  </div>
+<main class="flex-grow-1 text-white mt-5" style="background-color: #808080">
+    <div class="container">
+        <div class="row">
+            <!-- conteúdo do main -->
+            <div class="col-md-4">
+                <h2>Informações</h2>
+                <p><a href="{% url 'termos' %}" class="text-decoration-none text-white fw-bold">Termos e Condições</a></p>
+                <a href="{% url 'envio' %}" class="text-decoration-none text-white fw-bold">Informações de envio</a>
+            </div>
+            <div class="col-md-4">
+                <h2>Entre em Contato</h2>
+                <p>Cel: (12)981298667</p>
+                <p>Email: xflavors@gmail.com</p>
+            </div>
+            <div class="col-md-4">
+                <h2>Links Uteis</h2>
+                <p><a href="{% url 'dashboard' %}" class="text-decoration-none text-white fw-bold">Dashboard</a></p>
+                <p><a href="{% url 'cart:carrinho' %}" class="text-decoration-none text-white fw-bold">Carrinho</a></p>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="bg-dark text-white p-2 ">
+    <div class="container d-flex justify-content-between align-items-end">
+        <div>
+            <span class="align-middle"><i class="far fa-registered"></i></span>
+            <span class="text-uppercase fw-bold fs-5 align-middle">Xflavors</span>
+        </div>
+        <span class=" fs-6 align-middle"><a href="https://www.linkedin.com/in/andregeraseev/" class="text-decoration-none text-white fw-bold">
+Desenvolvido por Agerasev</a></span>
+    </div>
 </footer>
+
 <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
 
-html, body {
-  height: 100%;
-  margin: 0;
-}
+    body {
+        display: flex;
+        flex-direction: column;
+    }
 
-body {
-  display: flex;
-  flex-direction: column;
-}
+    main {
+        flex-grow: 1; /* o conteúdo principal ocupa todo o espaço disponível */
+        padding: 20px;
+    }
 
-main {
-  flex-grow: 1; /* o conteúdo principal ocupa todo o espaço disponível */
-  padding: 20px;
-}
+    footer {
+        margin-top: auto; /* empurra o rodapé para o final da página */
+        height: 50px; /* define a altura do seu footer */
+    }
 
-footer {
-  margin-top: auto; /* empurra o rodapé para o final da página */
-  height: 50px; /* define a altura do seu footer */
-}
+    footer a {
+        color: #ffffff;
+    }
 
-footer {
-  margin-top: auto;
-}
-
-footer a {
-  color: #c00;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
+    footer a:hover {
+        text-decoration: underline;
+    }
 </style>
+
 </body>
 </html>
