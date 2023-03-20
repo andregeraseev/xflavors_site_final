@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bem-vindo ao XFlavors</title>
+  <style>
+    /* Estilos de exemplo, personalize conforme sua necessidade */
+    body {
+      background-color: #f7f7f7;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.5;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://xflavors.pythonanywhere.com/static/imagens/xflavors_logo_comprido.png" alt="XFlavors Logo">
+    <h1>Pedido criado com sucesso!</h1>
+    <p>Olá {{ nome }}, muito obrigado por realizar um pedido.</p>
+    <p>O numero do seu pedido é: #{{ pedido_id }}.</p>
+    <p>Logo vamos ter mais atualizaçoes do seu pedido e vamos enviar para seu dashboard e tambem por email. </p>
+    <p>Atenciosamente,<br>A equipe XFlavors</p>
+  </div>
+</body>
+</html>
