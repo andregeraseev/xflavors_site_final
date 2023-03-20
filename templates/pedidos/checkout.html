@@ -318,7 +318,7 @@ $(document).ready(function() {
 
 
 
-    alert('CRIANDO PEDIDO.');
+<!--    alert('CRIANDO PEDIDO.');-->
     // Obtém o valor do subtotal
     var subtotal = parseFloat($('#subtotal').text().replace('R$ ', ''));
 
@@ -335,6 +335,7 @@ $(document).ready(function() {
     var freteSelecionado = $('input[name=frete]:checked').val();
 
     // Envia uma requisição AJAX para criar o pedido com o status "aguardando pagamento"
+    $('#loading').show();
     $.ajax({
       url: '{% url "criar_pedido" %}',
       type: 'POST',
@@ -348,25 +349,27 @@ $(document).ready(function() {
       },
       dataType: 'json',
       success: function(data) {
-      alert('sucesso?.');
+<!--      alert('sucesso?.');-->
 
 
       if (data.success) {
-      alert('Pedido criado.');
+      $('#loading').hide();
+<!--      alert('Pedido criado.');-->
       var pedido_id = data.pedido_id;
       console.log('pedido_id:', pedido_id);
 
         // Constrói a URL de redirecionamento
-        alert('criando url');
+<!--        alert('criando url');-->
         var url_pagamento = `/pagina_pagamento/`+pedido_id;
         console.log('URL de pagamento:', url_pagamento);
-        alert('redirecionando');
+<!--        alert('redirecionando');-->
         // Redireciona o usuário para a página de pagamento
         window.location.href = url_pagamento;
 
               }
 
   else {
+        $('#loading').hide();
     // Adiciona a classe CSS "linha-estoque-insuficiente" na linha do item com estoque insuficiente
     for (var i = 0; i < data.errors.length; i++) {
         var itemId = data.errors[i].item_id;
@@ -378,11 +381,13 @@ $(document).ready(function() {
   '<span aria-hidden="true">&times;</span>' +
 '</button>');
     }
+    $('#loading').hide();
     alert('Erro ao criar o pedido.');
     console.log('ERROS:', data.errors);
 }
     },
       error: function(response) {
+        $('#loading').hide();
         alert('Erro ao criar o pedido.');
       }
     });

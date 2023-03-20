@@ -71,6 +71,7 @@ def verificar_email(request):
 
 
 def cadastro(request):
+    print("AQUIIIII")
     if request.method == 'POST':
         full_name = request.POST['full_name']
         email = request.POST['email']

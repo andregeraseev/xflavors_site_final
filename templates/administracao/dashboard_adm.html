@@ -3,7 +3,43 @@
 
 {% block content %}
 <div class="container-fluid">
+
   <h2>Pedidos</h2>
+
+    <div class="form-group m-2">
+  <label for="filtro-status">Filtrar por status:</label>
+  <select class="form-control" id="filtro-status">
+    <option value="">Todos</option>
+    <option value="Aguardando Pagamento">Aguardando Pagamento</option>
+    <option value="Pago">Pago</option>
+    <option value="Em Trânsito">Em Trânsito</option>
+    <option value="Entregue">Entregue</option>
+    <option value="Cancelado">Cancelado</option>
+  </select>
+</div>
+<!--filtro search-->
+    <!-- Adicione os botões de opção de coluna -->
+<div class="btn-group" data-toggle="buttons">
+  <label class="btn btn-secondary active">
+    <input type="radio" name="coluna" value="0" checked> ID Pedido
+  </label>
+  <label class="btn btn-secondary">
+    <input type="radio" name="coluna" value="1"> Nome
+  </label>
+<label class="btn btn-secondary">
+    <input type="radio" name="coluna" value="2"> Telefone
+  </label>
+<label class="btn btn-secondary">
+    <input type="radio" name="coluna" value="5"> Rastreamento
+  </label>
+<label class="btn btn-secondary">
+    <input type="radio" name="coluna" value="8"> Id Tiny
+  </label>
+<label class="btn btn-secondary">
+    <input type="radio" name="coluna" value="10"> ID MercadoPago
+  </label>
+</div>
+<!--    fim-->
   <div class="table-responsive">
     <table class="table table-striped table-hover" id="tabela-pedidos">
       <thead>
@@ -92,57 +128,88 @@
 </table>
   </div>
 </div>
+
+
+
+
+
+<!-- Adicione o evento de mudança de valor aos botões de opção de coluna -->
+<script>
+
+</script>
+
+
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script>
-  $(document).ready(function() {
-    // Inicializa a tabela DataTables com opções personalizadas
-    $('#tabela-pedidos').DataTable({
-      // Define o idioma dos textos exibidos na tabela
-      "language": {
-        "sEmptyTable": "Nenhum registro encontrado",
-        "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-        "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
-        "sInfoFiltered": "(Filtrados de _MAX_ registros)",
-        "sInfoPostFix": "",
-        "sInfoThousands": ".",
-        "sLengthMenu": "_MENU_ resultados por página",
-        "sLoadingRecords": "Carregando...",
-        "sProcessing": "Processando...",
-        "sZeroRecords": "Nenhum registro encontrado",
-        "sSearch": "Pesquisar",
-        "oPaginate": {
-          "sNext": "Próximo",
-          "sPrevious": "Anterior",
-          "sFirst": "Primeiro",
-          "sLast": "Último"
-        },
-        "oAria": {
-          "sSortAscending": ": Ordenar colunas de forma ascendente",
-          "sSortDescending": ": Ordenar colunas de forma descendente"
-        }
+$(document).ready(function() {
+  var tabelaPedidos = $('#tabela-pedidos').DataTable({
+    "language": {
+      "sEmptyTable": "Nenhum registro encontrado",
+      "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+      "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+      "sInfoPostFix": "",
+      "sInfoThousands": ".",
+      "sLengthMenu": "_MENU_ resultados por página",
+      "sLoadingRecords": "Carregando...",
+      "sProcessing": "Processando...",
+      "sZeroRecords": "Nenhum registro encontrado",
+      "sSearch": "Pesquisar",
+      "oPaginate": {
+        "sNext": "Próximo",
+        "sPrevious": "Anterior",
+        "sFirst": "Primeiro",
+        "sLast": "Último"
       },
-      // Define as opções do menu de seleção de número de resultados por página
-      "lengthMenu": [[20, 50, 100], [20, 50, 100]],
-      // Habilita a ordenação nas colunas marcadas com data-orderable="true"
-      columnDefs: [
-        { orderable: true, targets: '_all' }
-      ],
-      // Define a ordem padrão de ordenação
-      order: [[0, 'des']],
-      // Define as colunas que devem ser incluídas na pesquisa
-
-    });
+      "oAria": {
+        "sSortAscending": ": Ordenar colunas de forma ascendente",
+        "sSortDescending": ": Ordenar colunas de forma descendente"
+      }
+    },
+    "lengthMenu": [[20, 50, 100], [20, 50, 100]],
+    columnDefs: [
+      { orderable: true, targets: '_all' }
+    ],
+    order: [[0, 'desc']]
   });
+
+  var selectedColumn = 1; // Inicia com a coluna 1 (nome) selecionada por padrão
+
+  // Adiciona o evento de mudança de valor ao filtro dropdown
+  $('#filtro-status').on('change', function() {
+    var filtroStatus = '^' + this.value;
+    tabelaPedidos.columns(4).search(filtroStatus, true, false).draw();
+  });
+
+  // Adiciona o evento de mudança de valor aos botões de opção de coluna
+  $('input[type=radio][name=coluna]').change(function() {
+    selectedColumn = $(this).val();
+    tabelaPedidos.search('').columns().search('').draw();
+  });
+
+  // Adiciona o evento de mudança de valor ao input de pesquisa
+  $('#tabela-pedidos_filter input').on('keyup', function() {
+    var pesquisa = this.value;
+    $('#filtro-status').val('');
+
+    // Inclui a coluna selecionada no filtro de pesquisa
+    tabelaPedidos.column(selectedColumn).search(pesquisa).draw();
+  });
+});
+
 </script>
+
 
 
 
 
 <script>
   function marcarComoPago(pedidoId) {
+    $('#loading').show();
     $.ajax({
       url: "{% url 'administracao:atualizar_status' %}",
       method: "POST",
+
       data: {
         "pedido_id": pedidoId,
         "novo_status": "Pago",
@@ -150,14 +217,24 @@
       },
       success: function(response) {
         alert("Status do pedido atualizado com sucesso!");
+        $('#loading').hide();
         window.location.reload();
+
       },
       error: function(xhr, status, error) {
+        $('#loading').hide();
         alert("Ocorreu um erro ao atualizar o status do pedido: " + xhr.responseText);
       }
     });
   }
 </script>
+
+
+
+
+
+
+
 <script>
 function enviarMensagem(numero) {
   // Formata o número para o formato do WhatsApp
