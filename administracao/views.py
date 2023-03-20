@@ -60,6 +60,7 @@ def atualizar_status(request):
 
 @csrf_exempt
 def adicionar_rastreamento(request):
+    print('adicionando rastreio')
     if request.method == 'POST':
         pedido_id = request.POST.get('pedido_id')
         rastreamento = request.POST.get('rastreamento')

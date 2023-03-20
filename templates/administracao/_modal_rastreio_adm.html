@@ -10,14 +10,39 @@
                             <form id="rastreamentoForm-{{ pedido.id }}">
                                 <div class="form-group">
                                     <input type="text" id="input-rastreamento" placeholder="Código de rastreamento"/>
-<!--                                    <button onclick="salvarRastreamento({{ pedido.id }})">Salvar</button>-->
+                                    <button onclick="salvarRastreamento({{ pedido.id }})">Salvar</button>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" onclick="salvarRastreamento({{ pedido.id }})">Salvar</button>
+<!--                            <button type="button" class="btn btn-primary" onclick="salvarRastreamento({{ pedido.id }})">Salvar</button>-->
                         </div>
                     </div>
                 </div>
             </div>
+
+<script>
+
+    function salvarRastreamento(pedidoId) {
+    const rastreamento = document.getElementById("input-rastreamento").value;
+
+    $.ajax({
+        url: "{% url 'administracao:adicionar_rastreamento' %}",
+        method: "POST",
+        data: {
+            "pedido_id": pedidoId,
+            "rastreamento": rastreamento,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (response) {
+            alert("Rastreamento adicionado com sucesso!");
+            window.location.reload();
+        },
+        error: function (xhr, status, error) {
+            alert("Ocorreu um erro ao adicionar o rastreamento: " + xhr.responseText);
+        }
+    });
+}
+
+</script>
