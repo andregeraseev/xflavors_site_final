@@ -105,6 +105,7 @@ TEMPLATES = [
                 'xflavors.context_processors.categorias',
                 'xflavors.context_processors.cart',
                 'xflavors.context_processors.subcategoria',
+                'xflavors.context_processors.total_quantity_cart',
             ],
             'libraries': {
                 'custom_filters': 'templates.filters.custom_filters',

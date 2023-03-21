@@ -11,9 +11,9 @@ class Cliente(models.Model):
     # relacionamento um-para-um com o modelo de usuário do Django
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # CPF único do cliente
-    cpf = models.CharField(max_length=11, unique=True)
+    cpf = models.CharField(max_length=11, blank=True, null=True)
     # número de celular do cliente
-    celular = models.CharField(max_length=20)
+    celular = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.user.username

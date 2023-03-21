@@ -3,61 +3,67 @@
 {% block content %}
 <div class="container my-5">
   <h1 class="text-center">Carrinho</h1>
+  <div id="carrinho-table">
   <div id="container_carrinho" class="table-responsive">
     <table class="table table-striped">
       <thead>
-        <tr>
-          <th>Produto</th>
-          <th>Preço</th>
-          <th>Quantidade</th>
-          <th>Total</th>
-          <th></th>
-        </tr>
+      <tr>
+        <th>Produto</th>
+        <th>Preço</th>
+        <th>Quantidade</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
       </thead>
       <tbody id="carrinho-tbody">
-        {% for item in itens %}
-        <tr>
-          <td>{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.name }} {% endif %}</td>
-          <td>R${%if item.variation %}{{ item.variation.price }}{% else %}{{ item.product.price }}{% endif %}</td>
-          <td>
-            <form>
-              <div class="d-flex justify-content-between align-items-center">
-                {% csrf_token %}
-                <input type="number" class="form-control form-control-sm quantity" value="{{ item.quantity }}">
-                <a href="#" class="btn btn-primary btn-sm update-item" data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}" data-toggle="tooltip" title="Atualizar item">
-                  <i class="fas fa-sync-alt"></i>
-                </a>
-              </div>
-            </form>
-          </td>
-          <td>R${%if item.variation %}{{ item.quantity|multiplicar:item.variation.price }}{% else %}{{ item.quantity|multiplicar:item.product.price }} {% endif %}</td>
-          <td>
-            <a href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item" data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}">
-              <i class="fas fa-trash"></i>
-            </a>
-          </td>
-        </tr>
-            {% empty %}
+      {% for item in itens %}
+      <tr>
+        <td>{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.name }} {% endif %}</td>
+        <td>R${%if item.variation %}{{ item.variation.price }}{% else %}{{ item.product.price }}{% endif %}</td>
+        <td>
+          <form>
+            <div class="d-flex justify-content-between align-items-center">
+              {% csrf_token %}
+              <input type="number" class="form-control form-control-sm quantity" value="{{ item.quantity }}">
+              <a href="#" class="btn btn-primary btn-sm update-item" data-product-id="{{ item.product.id }}"
+                 data-variation-id="{{ item.variation.id }}" data-toggle="tooltip" title="Atualizar item">
+                <i class="fas fa-sync-alt"></i>
+              </a>
+            </div>
+          </form>
+        </td>
+        <td>R${%if item.variation %}{{ item.quantity|multiplicar:item.variation.price }}{% else %}{{
+          item.quantity|multiplicar:item.product.price }} {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item"
+             data-product-id="{{ item.product.id }}" data-variation-id="{{ item.variation.id }}">
+            <i class="fas fa-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
       <p>Carrinho vazio</p>
-            {% endfor %}
-              </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="3"></td>
-      <td>R${{ total }}</td>
-      <td>
+      {% endfor %}
+      </tbody>
+      <tfoot>
+      <tr>
+        <td colspan="3"></td>
+        <td>R${{ total }}</td>
+        <td>
 
-      </td>
-    </tr>
-  </tfoot>
-</table>
-<div class="text-center">
-    <a href="{% url 'cart:clear_cart' %}" class="btn d-block d-sm-inline-block btn-danger">Limpar carrinho</a>
-  <a href="{% url 'home' %}" class="btn btn-primary d-block d-sm-inline-block ">Continuar comprando</a>
-  <a href="{% url 'checkout' %}" class="btn btn-success d-block d-sm-inline-block">Finalizar compra</a>
-</div>
-
+        </td>
+      </tr>
+      </tfoot>
+    </table>
+    <div class="text-center">
+      <a href="{% url 'cart:clear_cart' %}" class="btn d-block d-sm-inline-block btn-danger">Limpar carrinho</a>
+      <a href="{% url 'home' %}" class="btn btn-primary d-block d-sm-inline-block ">Continuar comprando</a>
+      <a href="{% url 'checkout' %}" class="btn btn-success d-block d-sm-inline-block">Finalizar compra</a>
     </div>
+
+  </div>
+  </div>
 </div>
 <script>
   $(document).ready(function() {
@@ -79,7 +85,7 @@
         },
         success: function(data) {
           console.log(data);
-          location.reload(); // recarrega a página quando a requisição é bem sucedida
+          $('#carrinho-table').load(document.URL + ' #carrinho-table'); // recarrega a página quando a requisição é bem sucedida
         },
         error: function(error) {
           console.log(error);
@@ -112,7 +118,7 @@ $(document).ready(function() {
       success: function(data) {
         console.log(data);
         if (data.success) {
-          location.reload(); // recarrega a página quando a requisição é bem sucedida
+           location.reload(); // recarrega a página quando a requisição é bem sucedida
           // Exibe uma mensagem de sucesso
 
         $('#alert_success').show();

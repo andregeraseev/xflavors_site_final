@@ -12,7 +12,7 @@ from cart.models import CartItem
 class PedidoItem(models.Model):
 
     # Relacionamento com a classe Produto, representando o produto adicionado ao pedido
-    product = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    product = models.ForeignKey(Produto, on_delete=models.SET_NULL, null=True, blank=True)
     # Quantidade do produto adicionado ao pedido
     quantity = models.PositiveIntegerField(default=0)
     # Método para calcular o preço total do item, multiplicando a quantidade pelo preço unitário do produto
@@ -64,8 +64,8 @@ class Pedido(models.Model):
 
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    endereco_entrega = models.ForeignKey(EnderecoEntrega, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    endereco_entrega = models.ForeignKey(EnderecoEntrega, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Aguardando pagamento')
     data_pedido = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)

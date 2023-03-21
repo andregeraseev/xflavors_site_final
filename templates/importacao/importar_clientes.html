@@ -1,0 +1,13 @@
+<!-- import_clientes.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<progress id="progress-bar" max="100" value="0"></progress>
+
+  <h1>Importar Clientes</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar</button>
+  </form>
+{% endblock %}

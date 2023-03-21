@@ -13,6 +13,10 @@ from tiny_erp.webhook_rastreio import tiny_rastreio
 from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,\
     pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending
 from mercado_pago.mercado_livre_weebhook import mercado_pago_webhook
+from Importador.clientes import ImportClientesView
+
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -75,6 +79,9 @@ urlpatterns = [
     path('termos/', termos, name='termos'),
     path('envio/', envio, name='envio'),
 
+
+# importacao
+    path('importar/', ImportClientesView.as_view(), name='importar'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

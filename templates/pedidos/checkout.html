@@ -13,8 +13,12 @@
       <button id="editar-endereco" data-endereco-id="{{ endereco_primario.id }}" class="btn btn-primary mb-3">Alterar Endereço</button>
       <div id="editar-endereco-container" data-endereco-id="{{ endereco_primario.id }}"></div>
     </div>
+    {% else %}
+    <p>Você não tem um endereço de entrega cadastrado.</p>
+    {% endif %}
 
     <h4>Outros endereços:</h4>
+    {% if endereco %}
     <select name="endereco_entrega" class="form-select mb-4" id="endereco_entrega">
       <option selected>Selecione um novo endereço</option>
       {% for e in endereco %}
