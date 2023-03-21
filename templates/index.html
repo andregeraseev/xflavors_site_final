@@ -1,11 +1,18 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
 
-
-{% include 'partials/_banners.html' %}
+<!-- Carregar CSS do Slick Carousel -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" xmlns="http://www.w3.org/1999/html"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
+<!-- Carregar JavaScript do Slick Carousel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<!-- Container principal -->
 {% include 'partials/_carrosel.html' %}
 {% include 'partials/_carrosel3.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/carrocel.css' %}">
+<script src="{% static 'js/carrocel.js' %}"></script>
 
 
 {% endblock %}

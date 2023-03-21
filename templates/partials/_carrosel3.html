@@ -1,71 +1,97 @@
-<div id="carousel-2" class="container">
-  <!-- Título -->
-  <h3 class="text-center mt-5">Essencias mais vendidas</h3>
-  <hr style="border: none; border-top: 1px solid black;">
-  <!-- Carrossel -->
-  <div class="card-deck essencia-list2">
-    {% for product in essencias_mais_vendidos|slice:":10" %}
-    <div class="col product-card">
-      <div class="card ">
-        <a href="{% url 'product_detail' product.slug %}">
-          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top">
-        </a>
-        <div class="card-body" style="height: 220px;">
-          <h5 class="card-title" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
+<div class="carousel-container">
+    <div id="carousel-2" class="container">
+      <!-- Título -->
+      <h3 class="text-center mt-5">Essencias mais vendidas</h3>
+      <hr style="border: none; border-top: 1px solid black;">
 
-          <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small>
-          {% if product.variation_set.exists %}
-          <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}">
-            {% for variation in product.variation_set.all %}
-            <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{ variation.nome_simplificado }} - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}</option>
-            {% endfor %}
-          </select>
-          <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
-          {% else %}
-          <p class="mb-1" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ product.price }}</p>
-          {% endif %}
-          <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
+      <!-- Carrossel -->
+      <div class="card-deck essencia-list2">
+        {% for product in essencias_mais_vendidos|slice:":10" %}
+        <div class="col product-card">
+          <div class="card ">
+            <a href="{% url 'product_detail' product.slug %}">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top">
+            </a>
+            <div class="card-body" style="height: 220px;">
+              <h5 class="card-title"
+                  style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;"
+                  onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
+
+                        <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small>
                         {% if product.variation_set.exists %}
-                        {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
-                        {% if materia_prima_stock > 10 %}
-                        <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
-                                data-product-id="{{ product.id }}" data-variation-id="">Adicionar
-                        </button>
-                        <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
-                               data-product-id="{{ product.id }}" value="1" min="1"
-                               max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
+                        <select name="variation" class="variation-select form-select form-control-sm w-100"
+                                data-product-id="{{ product.id }}">
+                            {% for variation in product.variation_set.all %}
+                            <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{variation.nome_simplificado }}
+                                - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
                         {% else %}
-                        <button class="btn btn-danger btn-sm w-100 ">Sem estoque</button>
-
+                        <p class="mb-1"
+                           style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            R${{ product.price }}</p>
                         {% endif %}
+                        <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
+                            {% if product.variation_set.exists %}
+                            {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
+                            {% if materia_prima_stock > 10 %}
+                            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
+                                    data-product-id="{{ product.id }}" data-variation-id="">Adicionar
+                            </button>
+                            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
+                                   data-product-id="{{ product.id }}" value="1" min="1"
+                                   max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
+                            {% else %}
+                            <button class="btn btn-danger btn-sm w-100 ">Sem estoque</button>
 
-                        {% endwith %}
-                        {% else %}
-                        <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
-                                data-product-id="{{ product.id }}" data-variation-id="">Adicionar
-                        </button>
-                        <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
-                               data-product-id="{{ product.id }}" value="1" min="1"
-                               max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
+                            {% endif %}
 
-                        {% endif %}
+                            {% endwith %}
+                            {% else %}
+                            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
+                                    data-product-id="{{ product.id }}" data-variation-id="">Adicionar
+                            </button>
+                            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
+                                   data-product-id="{{ product.id }}" value="1" min="1"
+                                   max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
 
+                            {% endif %}
+
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            {% endfor %}
+
+
         </div>
-      </div>
     </div>
-    {% endfor %}
-  </div>
 </div>
+
+
+
+
+
+
+
+
+
+
 
 <script>
 
 
+$(document).ready(function() {
 // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
 $('#carousel-2 .variation-select').change(function() {
   let productId = $(this).data('product-id');
   let selectedVariationId = $(this).val();
   let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+
+
 
   // Atualiza o preço exibido
   $('#carousel-2 #price'+productId).text('R$ ' + selectedVariationPrice);
@@ -73,7 +99,7 @@ $('#carousel-2 .variation-select').change(function() {
   // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
   $('.add-to-cart-button-2[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
 }).trigger('change'); // Dispara o evento 'change' após a página ser carregada
-
+});
 
 
 // Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
@@ -139,92 +165,4 @@ $('.add-to-cart-button-2').click(function() {
 
 
 
-</script>
-<script>
-// Seleciona o elemento com a classe 'essencia-list' e aplica o plugin slick()
-let slickList1 = $('#carousel .slick-list');
-let slickList2 = $('#carousel-2 .essencia-list2');
-
-slickList1.slick({
-  slidesToShow: 4,
-  slidesToScroll: 1,
-  arrows: true,
-  infinite: true,
-  autoplay: false,
-  // Define a configuração do número de slides exibidos em diferentes tamanhos de tela
-  responsive: [
-    {
-      breakpoint: 992,
-      settings: {
-        slidesToShow: 3
-      }
-    },
-     {
-      breakpoint: 776,
-      settings: {
-        slidesToShow: 2
-      }
-    },
-    {
-      breakpoint: 576,
-      settings: {
-        slidesToShow: 1
-      }
-    }
-  ]
-});
-
-slickList2.slick({
-  slidesToShow: 4,
-  slidesToScroll: 1,
-  arrows: true,
-  infinite: true,
-  autoplay: false,
-  // Define a configuração do número de slides exibidos em diferentes tamanhos de tela
-  responsive: [
-    {
-      breakpoint: 992,
-      settings: {
-        slidesToShow: 3
-      }
-    },
-    {
-      breakpoint: 776,
-      settings: {
-        slidesToShow: 2
-      }
-    },
-    {
-      breakpoint: 576,
-      settings: {
-        slidesToShow: 1
-      }
-    }
-  ]
-});
-
-// Seleciona os elementos com a classe 'prev-btn' e 'next-btn' e adiciona um listener para as ações de clique, que chama os métodos do plugin slick()
-let prevBtn = $('.prev-btn');
-let nextBtn = $('.next-btn');
-
-prevBtn.click(function() {
-  slickList1.slick('slickPrev');
-  slickList2.slick('slickPrev');
-});
-
-nextBtn.click(function() {
-  slickList1.slick('slickNext');
-  slickList2.slick('slickNext');
-});
-
-// Adiciona um listener para o evento 'afterChange' do plugin slick() que define a classe 'slick-disabled' nos botões 'prev-btn' e 'next-btn' com base na posição do slide atual
-slickList1.on('afterChange', function(event, slick, currentSlide) {
-  prevBtn.toggleClass('slick-disabled', currentSlide === 0);
-  nextBtn.toggleClass('slick-disabled', currentSlide === slick.slideCount - 1);
-});
-
-slickList2.on('afterChange', function(event, slick, currentSlide) {
-  prevBtn.toggleClass('slick-disabled', currentSlide === 0);
-  nextBtn.toggleClass('slick-disabled', currentSlide === slick.slideCount - 1);
-});
 </script>
