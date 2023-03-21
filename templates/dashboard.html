@@ -41,6 +41,9 @@
                                 <button id="editar-endereco" data-endereco-id="{{ endereco.id }}"
                                         class="btn btn-primary me-2">Editar
                                 </button>
+                                <button id="excluir-endereco" data-endereco-id="{{ endereco.id }}"
+                                        class="btn btn-danger">Excluir
+                                </button>
                             </div>
                         </li>
                         {% empty %}
@@ -105,6 +108,41 @@
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+
+$(document).ready(function() {
+
+  $('.card-body').on('click', '#excluir-endereco', function(e) {
+    e.preventDefault();
+    var enderecoId = $(this).data('endereco-id');
+    var confirmacao = confirm('Tem certeza que deseja excluir este endereço?');
+    if (confirmacao) {
+      $.ajax({
+        url: '{% url "excluir_endereco_dashboard" %}',
+        type: 'POST',
+        data: {
+          'endereco_id': enderecoId,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+          if (response.success) {
+            window.location.reload();
+          } else {
+            alert(response.message);
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+        }
+      });
+    }
+  });
+});
+
+
+</script>
 
 
 <script>

@@ -8,7 +8,7 @@
         <a class="link-no-style mx-2 text-white" href="{% url 'dashboard' %}">Minha Conta<i class=" mx-1 fas fa-address-card"></i></a>
     </div>
     <div class="mx-md-2">
-        <a class="link-no-style  text-white" href="{% url 'logout' %}">
+        <a class="link-no-style  text-white" id="logout-link" href="{% url 'logout' %}">
             Logout<i class="mx-1 fas fa-sign-out-alt"></i>
         </a>
     </div>
@@ -17,7 +17,7 @@
 
 {% else %}
 <div class="mx-md-2">
-    <a class="link-no-style text-white mx-2" href="{% url 'login' %}">
+    <a class="link-no-style text-white mx-2"   href="{% url 'login' %}">
         <i class="fas fa-sign-in-alt"></i> Login
     </a>
 </div>
@@ -31,3 +31,15 @@
 
 
 </div>
+
+<script>
+$(document).ready(function() {
+  $('#logout-link').on('click', function(e) {
+    e.preventDefault();
+    var confirmacao = confirm('Tem certeza que deseja sair da sua conta?');
+    if (confirmacao) {
+      window.location.href = $(this).attr('href');
+    }
+  });
+});
+</script>

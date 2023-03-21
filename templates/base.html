@@ -25,21 +25,21 @@
   <div class="container mt-5">
   {% block content %}{% endblock %}
   </div>
-<main class="flex-grow-1 text-white mt-5" style="background-color: #808080">
+<main class="flex-grow-1 text-white mt-5" style="background-color: #cc0000">
     <div class="container">
         <div class="row justify-content-center px-md-0  px-sm-0 px-lg-5">
             <div class="col-sm-12 col-md-3 col-lg-3 mb-4 m-md-0 mx-lg-4">
-                <h2 class="mb-4">Informações</h2>
+                <h4 class="mb-4">Informações</h4>
                 <p><a href="{% url 'termos' %}" class="text-decoration-none text-white fw-bold">Termos e Condições</a></p>
                 <p><a href="{% url 'envio' %}" class="text-decoration-none text-white fw-bold">Informações de envio</a></p>
             </div>
             <div class="col-sm-12 col-md-3 col-lg-3 m-4 m-md-0 mx-lg-4">
-                <h2 class="mb-4">Entre em Contato</h2>
+                <h4 class="mb-4">Entre em Contato</h4>
                 <p>Cel: (12)981298667</p>
                 <p>Email: xflavors@gmail.com</p>
             </div>
             <div class="col-sm-12 col-md-3 col-lg-3 m-md-0 mx-lg-4">
-                <h2 class="mb-4">Links Uteis</h2>
+                <h4 class="mb-4">Links Uteis</h4>
                 <p><a href="{% url 'dashboard' %}" class="text-decoration-none text-white fw-bold">Dashboard</a></p>
                 <p><a href="{% url 'cart:carrinho' %}" class="text-decoration-none text-white fw-bold">Carrinho</a></p>
             </div>
@@ -53,7 +53,7 @@
             <span class="align-middle"><i class="far fa-registered"></i></span>
             <span class="text-uppercase fw-bold fs-5 align-middle">Xflavors</span>
         </div>
-        <span class=" fs-6 align-middle"><a href="https://www.linkedin.com/in/andregeraseev/" class="text-decoration-none text-white fw-bold">
+        <span class=" fs-6 align-middle" ><a href="https://www.linkedin.com/in/andregeraseev/" class="text-decoration-none text-white fw-bold" style="font-size: 12px;">
 Desenvolvido por Agerasev</a></span>
     </div>
 </footer>
@@ -70,6 +70,7 @@ Desenvolvido por Agerasev</a></span>
     }
 
     main {
+        font-size: 14px;
         flex-grow: 1; /* o conteúdo principal ocupa todo o espaço disponível */
         padding: 20px;
     }

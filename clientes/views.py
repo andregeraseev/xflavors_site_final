@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
 
 from cart.models import Cart
@@ -208,3 +208,19 @@ def editar_endereco_dashboard(request):
     endereco = get_object_or_404(EnderecoEntrega, pk=endereco_id, cliente=request.user.cliente)
     return render(request, 'editar_endereco_dashboard.html', {'endereco': endereco})
 
+
+
+
+
+@login_required
+@require_POST
+def excluir_endereco_dashboard(request):
+    endereco_id = request.POST.get('endereco_id')
+    try:
+        endereco = EnderecoEntrega.objects.get(id=endereco_id, cliente=request.user.cliente)
+        endereco.delete()
+        return JsonResponse({'success': True})
+    except EnderecoEntrega.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Endereço não encontrado.'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
