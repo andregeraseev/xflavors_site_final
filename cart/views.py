@@ -251,8 +251,16 @@ def remove_item(request):
             return JsonResponse({'status': 'error', 'message': 'Item não encontrado no carrinho'})
     return JsonResponse({'status': 'error', 'message': 'Carrinho não encontrado'})
 
-
+@login_required
 def clear_cart(request):
-    pedido = Order.objects.get_or_create_from_request(request)
-    pedido.itens.all().delete()
-    return redirect('carrinho:carrinho')
+    # Obtém o carrinho do usuário atual
+    cart = Cart.objects.get(user=request.user)
+    # Remove todos os itens do carrinho
+    cart.cartitem_set.all().delete()
+    # Redireciona o usuário para a página do carrinho vazio
+    return redirect('cart:carrinho')
+#
+# @login_required
+# def limpar_carrinho(request):
+#
+#     return redirect('carrinho_vazio')
