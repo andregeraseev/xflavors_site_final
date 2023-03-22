@@ -55,6 +55,8 @@ class Produto(models.Model):
     peso = models.DecimalField(max_digits=10, decimal_places=2, default=0.04)
     marca = models.CharField(max_length=50, blank=True, null=True)
     localizacao = models.CharField(max_length=100, blank=True, null=True, default="Sem localizacao")
+    num_vendas = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     def save(self, *args, **kwargs):
         """
         Sobrescreve o método de salvar para atribuir o valor ao campo slug
@@ -93,6 +95,8 @@ class Variation(models.Model):
     materia_prima = models.ForeignKey(MateriaPrima,on_delete=models.CASCADE, blank=True, null=True)
     gasto = models.PositiveIntegerField(default=1)
     unidade= models.CharField(max_length=100, default='unidade')
+    num_vendas = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return self.name

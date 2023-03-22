@@ -437,6 +437,9 @@ def criar_pedido(request):
 
             try:
                 atualizar_estoque(item)
+                print(item.quantity)
+                pedido_item.atualizar_vendas()
+
             except ValueError as e:
                 print(e)
                 errors.append({'item_id': item.id, 'message': str(e)})

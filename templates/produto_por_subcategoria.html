@@ -4,6 +4,21 @@
 
 
 
+<!-- Adiciona um select para escolher a ordenação dos produtos -->
+<form action="" method="get" class="d-flex justify-content-end">
+  <div class="form-group">
+    <label for="ordenacao-select" class="sr-only">Ordenar por:</label>
+    <select class="form-control form-control-sm" id="ordenacao-select" name="ordenacao">
+      <option value="">Ordenar por:</option>
+      <option value="alfabetica">Nome (A-Z)</option>
+      <option value="alfabetica_decrescente">Nome (Z-A)</option>
+      <option value="preco-crescente">Preço (menor para maior)</option>
+      <option value="preco-decrescente">Preço (maior para menor)</option>
+      <option value="mais-vendidos">Mais vendidos</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-sm btn-danger ml-2">Aplicar</button>
+</form>
 
 
 <div class="container">

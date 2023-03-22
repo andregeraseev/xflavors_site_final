@@ -76,15 +76,42 @@ def import_products_view(request):
 
 
 def produto_por_subcategoria(request, category_id, subcategory_id):
+    # Busca todas as categorias e subcategorias para exibir no template
     category = Category.objects.all()
     subcategoria = Subcategory.objects.all()
+
+    # Filtra a categoria e subcategoria selecionada
     category_filter = get_object_or_404(Category, pk=category_id)
     subcategory = get_object_or_404(Subcategory, pk=subcategory_id)
+
+    # Filtra os produtos pela categoria e subcategoria selecionada
     produtos = Produto.objects.filter(category=category_filter, subcategory=subcategory)
+
+    # Ordenação dos produtos
+    ordenacao = request.GET.get('ordenacao')
+    if ordenacao == 'alfabetica':
+        # Ordena em ordem alfabética pelo nome
+        produtos = produtos.order_by('name')
+    elif ordenacao == 'alfabetica_decrescente':
+        # Ordena em ordem alfabética pelo nome
+        produtos = produtos.order_by('-name')
+    elif ordenacao == 'preco-crescente':
+        # Ordena em ordem crescente pelo preço
+        produtos = produtos.order_by('price')
+    elif ordenacao == 'preco-decrescente':
+        # Ordena em ordem decrescente pelo preço
+        produtos = produtos.order_by('-price')
+    elif ordenacao == 'mais-vendidos':
+        # Ordena pelo número de vendas dos produtos, do maior para o menor
+        produtos = produtos.order_by('-num_vendas')
+
+    # Paginação dos produtos
     produtos_por_pagina = 20
     paginator = Paginator(produtos, produtos_por_pagina)
     pagina_numero = request.GET.get('pagina')
     pagina = paginator.get_page(pagina_numero)
+
+    # Quantidade total de produtos no carrinho
     total_quantity_cart = 0
     if request.user.is_authenticated:
         try:
@@ -93,17 +120,19 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
         except Cart.DoesNotExist:
             pass
 
+    # Contexto para ser exibido no template
     context = {
         'category_filter': category_filter,
-         'subcategory': subcategory,
-         'produtos': produtos,
-         'pagina': pagina,
+        'subcategory': subcategory,
+        'produtos': produtos,
+        'pagina': pagina,
         'total_quantity_cart': total_quantity_cart,
-        'subcategoria': subcategoria,
+        'subcategoria': subcategory,
         'category': category,
     }
-    return render(request, 'produto_por_subcategoria.html', context)
 
+    # Renderiza o template 'produto_por_subcategoria.html' com o contexto
+    return render(request, 'produto_por_subcategoria.html', context)
 
 def product_detail(request, slug):
     # Obter o produto

@@ -24,6 +24,16 @@ class PedidoItem(models.Model):
             return self.quantity * self.variation.price
         return self.quantity * self.product.price
 
+
+    def atualizar_vendas(self):
+        if self.product:
+            self.product.num_vendas += self.quantity
+            self.product.save()
+        if self.variation:
+            self.variation.num_vendas += self.quantity
+            self.variation.save()
+
+
     def __str__(self):
         product_name = self.product.name
         if self.variation:
@@ -85,6 +95,8 @@ class Pedido(models.Model):
     def atualizar_status(self, novo_status):
         self.status = novo_status
         self.save()
+
+
 
     def __str__(self):
         return f"Pedido {self.id}"
