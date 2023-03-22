@@ -22,16 +22,62 @@
         <td>{{ pedido.data_pedido|date:"d/m/Y" }}</td>
         <td>R${{ pedido.total|floatformat:2 }}</td>
         <td class="pedido-status" data-status="{{ pedido.status }}"></td>
-        {% if pedido.metodo_de_pagamento == "Pix" %}
-        {% if pedido.comprovante %}
-        <td> <a href="{{ pedido.comprovante.url }}">Ver comprovante: <i class="far fa-eye"></i></a></td>
-        {% else %}
-        <td>Nenhum comprovante enviado</td>
-        {% endif %}
-        {% else %}
-        <td>Seu pedido nao precisa de comprovante</td>
 
-        {% endif %}
+
+<!--        COMPORVANTE PIX-->
+
+{% if pedido.metodo_de_pagamento == "Pix" %}
+{% if pedido.comprovante %}
+<td>
+<a href="{{ pedido.comprovante.url }}">Ver comprovante: <i class="far fa-eye"></i></a>
+</td>
+{% else %}
+<td>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Modalcomprovante{{pedido.id}}">
+  Enviar Comprovante
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="Modalcomprovante{{pedido.id}}" tabindex="-1" role="dialog" aria-labelledby="comprovanteModalLabel{{ pedido.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" >Enviar comprovante do pedido {{pedido.id}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      </div>
+        <form action="{% url 'paga_pix' %}" method="post" enctype="multipart/form-data">
+            <div class="modal-body">
+
+                {% csrf_token %}
+                <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
+                <div class="form-group">
+                    <label for="comprovante{{ pedido.id }}" class="botao-comprovante"
+                           id="botao-comprovante{{ pedido.id }}">Selecione o comprovante</label>
+                    <input type="file" name="comprovante" id="comprovante{{ pedido.id }}" accept="image/*" required
+                           style="display:none;" onchange="updateLabel(this, '{{ pedido.id }}')">
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+    </td>
+
+{% endif %}
+
+{% else %}
+<td>Seu pedido não precisa de comprovante</td>
+{% endif %}
+<!--FIM COMPROVANTE PIX -->
         <td><a href="{% url 'detalhes_pedido' pedido.id %}"><i class="far fa-eye"></i></a></td>
        <td>{% if pedido.rastreamento %}<a href="https://www2.correios.com.br/sistemas/rastreamento/?objetos={{ pedido.rastreamento }}" target="_blank"> {{ pedido.rastreamento }}</a>{% else %} Sem Rastreio {% endif %}</td>
 
@@ -88,8 +134,26 @@ $(document).ready(function() {
 });
 </script>
 
+<script>
+function updateLabel(input, pedido_id) {
+  var fileName = input.value.split('\\').pop();
+  document.getElementById('botao-comprovante'+ pedido_id).innerHTML = fileName;
+}
 
+</script>
 
+<style>
+
+        .botao-comprovante {
+background-color: #008CBA;
+color: #fff;
+font-size: 16px;
+padding: 10px 20px;
+border-radius: 5px;
+cursor: pointer;
+}
+
+      </style>
 
 
 <style>
