@@ -14,10 +14,14 @@ class Cliente(models.Model):
     cpf = models.CharField(max_length=11, blank=True, null=True)
     # número de celular do cliente
     celular = models.CharField(max_length=20, blank=True, null=True)
+    #numero de celular possui whatsapp
+    whatsapp = models.BooleanField(default=True)
     #ultimo login do cliente
     last_login = models.DateTimeField(verbose_name='last login', blank=True, null=True)
     # criacao do cliente
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    # cliente aceita receber email de propaganda
+    propaganda = models.BooleanField(default=True)
     def __str__(self):
         return self.user.username
 

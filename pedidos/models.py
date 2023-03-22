@@ -89,6 +89,7 @@ class Pedido(models.Model):
     numero_pedido_tiny = models.IntegerField(blank=True, null=True)
     mercado_pago_id = models.IntegerField(blank=True, null=True)
     rastreamento = models.CharField(max_length=30, blank=True, null=True)
+    producao = models.BooleanField(default=False)
     class Meta:
         ordering = ('-data_pedido',)
 
@@ -96,6 +97,9 @@ class Pedido(models.Model):
         self.status = novo_status
         self.save()
 
+    def mudar_producao(self):
+        self.producao = not self.producao
+        self.save()
 
 
     def __str__(self):

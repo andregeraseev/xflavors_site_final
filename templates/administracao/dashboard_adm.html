@@ -55,6 +55,7 @@
           <th data-orderable="true">Id Tiny</th>
           <th data-orderable="true">Meio de Pagamento</th>
           <th data-orderable="true">ID MercadoPago</th>
+            <th data-orderable="true">Prod</th>
         </tr>
       </thead>
       <tbody>
@@ -118,8 +119,12 @@
             <td>{{ pedido.numero_pedido_tiny }}</td>
             <td>{{ pedido.metodo_de_pagamento }}</td>
             <td>{{pedido.mercado_pago_id}}</td>
-            </tr>
+
+<td> {% if pedido.producao %}<button type="button" class="btn btn-danger" onclick="toggleProducao({{ pedido.id }})">Produção</button><td>            </tr>
+      {% else %} <button type="button" class="btn btn-primary" onclick="toggleProducao({{ pedido.id }})">Aguardando</button><td>
+       {% endif %}
         {% empty %}
+
           <tr>
             <td colspan="5">Não há pedidos para o período selecionado.</td>
 </tr>
@@ -271,5 +276,24 @@ function enviarMensagem(numero) {
 
 </script>
 
+<!--BOTAO PRODUCAO-->
+<script>
+function toggleProducao(pedidoId) {
+  $.ajax({
+    url: "{% url 'administracao:producao' %}",
+    type: "POST",
+    data: {
+      "pedido_id": pedidoId,
+      csrfmiddlewaretoken: "{{ csrf_token }}"
+    },
+    success: function(response) {
+      console.log(response);
+    },
+    error: function(xhr, status, error) {
+      console.log(error);
+    }
+  });
+}
+</script>
 {% endblock %}
 

@@ -73,3 +73,14 @@ def adicionar_rastreamento(request):
         except Pedido.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Pedido não encontrado'})
     return JsonResponse({'status': 'error', 'message': 'Método inválido'})
+
+from django.http import JsonResponse
+
+def producao(request):
+    if request.method == "POST":
+        pedido_id = request.POST.get("pedido_id")
+        pedido = Pedido.objects.get(id=pedido_id)
+        pedido.mudar_producao()
+        return JsonResponse({"success": True})
+    else:
+        return JsonResponse({"success": False})

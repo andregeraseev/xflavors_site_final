@@ -32,8 +32,8 @@
             </div>
           </form>
         </td>
-        <td>R${%if item.variation %}{{ item.quantity|multiplicar:item.variation.price }}{% else %}{{
-          item.quantity|multiplicar:item.product.price }} {% endif %}
+        <td>R${%if item.variation %}{{ item.quantity|multiplicar:item.variation.price }}{% else %}
+          {{ item.quantity|multiplicar:item.product.price }} {% endif %}
         </td>
         <td>
           <a href="{% url 'cart:remove_item' %}" class="btn btn-danger btn-sm remove-item"
