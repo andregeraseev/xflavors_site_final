@@ -5,7 +5,8 @@ from .models import Cliente, EnderecoEntrega
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
-    list_display = ('user', 'celular', 'cpf')
+    list_display = ('user', 'celular', 'cpf','last_login', 'created_at')
+    search_fields = ('user__username','celular','cpf',)
 
 @admin.register(EnderecoEntrega)
 class EnderecoEntrega(admin.ModelAdmin):

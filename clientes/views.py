@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
-
+from django.utils import timezone
 from cart.models import Cart
 from enviadores.email import enviar_email_confirmacao
 
@@ -31,6 +31,12 @@ def login_view(request):
             user = authenticate(request, username=user.username, password=password)
         if user is not None:
             login(request, user)
+
+            # Atualiza last_login do Cliente
+            cliente = Cliente.objects.get(user=request.user)
+            cliente.last_login = timezone.now()
+            cliente.save()
+
             return redirect('home')
         else:
             context = {'error': 'Email ou senha inválidos!'}
