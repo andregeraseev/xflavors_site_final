@@ -26,7 +26,7 @@
 
 <!--        COMPORVANTE PIX-->
 
-{% if pedido.metodo_de_pagamento == "Pix" %}
+{% if pedido.metodo_de_pagamento == "Pix"  or pedido.metodo_de_pagamento == "Deposito" %} %}
 {% if pedido.comprovante %}
 <td>
 <a href="{{ pedido.comprovante.url }}">Ver comprovante: <i class="far fa-eye"></i></a>

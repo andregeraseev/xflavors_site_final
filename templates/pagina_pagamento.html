@@ -7,7 +7,10 @@
       <h2>Pagamento</h2>
       <p>Seu pedido foi criado com sucesso! O número do pedido é {{ pedido_id }}.</p>
       <p>O método de pagamento escolhido foi {{ metodo_de_pagamento }}, siga as instruções abaixo para realizar o pagamento:</p>
-          {% if metodo_de_pagamento == 'Pix' %}
+
+
+<!--      PIX-->
+      {% if metodo_de_pagamento == 'Pix' %}
       <h3>Dados de pagamento</h3>
       <p>Para pagar com Pix, utilize a opção de transferência via Pix em seu aplicativo
         ou internet banking e insira a chave Pix.
@@ -31,6 +34,41 @@
         </div>
         <button type="submit" class="btn btn-primary">Enviar comprovante</button>
       </form>
+{% endif %}
+<!--      DEPOSITO-->
+
+Agência:
+
+
+
+
+      {% if metodo_de_pagamento == 'Deposito' %}
+      <h3>Dados de pagamento</h3>
+      <p>Para pagar via depósito bancário, faça uma transferência para a seguinte conta bancária:</p>
+      <p>Banco: Nu Pagamentos S.A. (260)</p>
+      <p>Agência: 0001</p>
+      <p>Conta Corrente: 27794362-7</p>
+      <p>CNPJ: 30059334/0001-00</p>
+      <p>Titular da conta: André Moreira Geraseev</p>
+      <h3>Enviar comprovante de pagamento</h3>
+      <p>Por favor, envie o comprovante de pagamento para que possamos confirmar o seu pedido.</p>
+      <form action="{% url 'paga_pix' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="pedido_id" value="{{ pedido_id }}">
+        <div class="form-group">
+          <label for="comprovante" class="botao-comprovante" id="botao-comprovante">Selecione o comprovante</label>
+<input type="file" name="comprovante" id="comprovante" accept="image/*" required style="display:none;" onchange="updateLabel(this)">
+
+
+
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar comprovante</button>
+      </form>
+{% endif %}
+
+
+
+
 
 
       <script>
@@ -64,7 +102,7 @@ function copyToClipboard(text) {
   alert("Chave Pix copiada para a área de transferência!");
 }
 </script>
-  {% endif %}
+
 
   {% if metodo_de_pagamento == 'MercadoPago' %}
     <h3>Mercado Pago</h3>
