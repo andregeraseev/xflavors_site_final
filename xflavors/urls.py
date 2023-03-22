@@ -14,7 +14,8 @@ from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco
     pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending
 from mercado_pago.mercado_livre_weebhook import mercado_pago_webhook
 from Importador.clientes import ImportClientesView
-
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -82,6 +83,13 @@ urlpatterns = [
 
 # importacao
     path('importar/', ImportClientesView.as_view(), name='importar'),
+
+# resetpassword
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('accounts/', include('django.contrib.auth.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
