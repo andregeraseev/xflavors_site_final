@@ -342,7 +342,7 @@ def verifica_carrinho_2(item_id, user):
         fechamento = 2
         try:
             verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
-                                                 materia_prima_id, product,fechamento)
+                                                 materia_prima_id, product,fechamento, update=True)
 
         except ValueError as e:
             raise ValueError(str(e))
