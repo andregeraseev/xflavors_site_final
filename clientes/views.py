@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -75,6 +76,19 @@ def verificar_email(request):
                 return JsonResponse({'success':True,'existe': False})
     return JsonResponse({'existe': False})
 
+
+@csrf_exempt
+def verificar_nome(request):
+    print('Verificando nome')
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        print(name)
+        if User.objects.filter(username=name).exists():
+            return JsonResponse({'existe': True})
+        else:
+            return JsonResponse({'existe': False})
+    else:
+        return JsonResponse({'error': 'Método não permitido'})
 
 def cadastro(request):
     print("AQUIIIII")

@@ -10,7 +10,9 @@
         <div class="form-group">
             <label for="full-name">Nome completo:</label>
             <input type="text" class="form-control" id="full-name" name="full_name">
+            <div id="name-feedback" class="invalid-feedback"></div>
         </div>
+
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
@@ -214,18 +216,24 @@ $(document).ready(function(){
 <script>
 
 $("#password, #password-confirm").on("input", function() {
-    var password = $("#password").val();
-    var confirmPassword = $("#password-confirm").val();
-    if (password !== confirmPassword) {
-      $("#password-confirm").addClass("is-invalid");
-      $("#password-confirm").removeClass("is-valid");
-      $("#password-feedback").html("As senhas não coincidem.");
-    } else {
-      $("#password-confirm").addClass("is-valid");
-      $("#password-confirm").removeClass("is-invalid");
-      $("#password-feedback").html("");
-    }
-  });
+  var password = $("#password").val();
+  var confirmPassword = $("#password-confirm").val();
+  var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+
+  if (password !== confirmPassword) {
+    $("#password-confirm").addClass("is-invalid");
+    $("#password-confirm").removeClass("is-valid");
+    $("#password-feedback").html("As senhas não coincidem.");
+  } else if (!passwordRegex.test(password)) {
+    $("#password-confirm").addClass("is-invalid");
+    $("#password-confirm").removeClass("is-valid");
+    $("#password-feedback").html("A senha deve ter pelo menos 8 caracteres, uma letra maiúscula e um número.");
+  } else {
+    $("#password-confirm").addClass("is-valid");
+    $("#password-confirm").removeClass("is-invalid");
+    $("#password-feedback").html("");
+  }
+});
 
   $(document).ready(function() {
   $("#email").on("input", function() {
@@ -263,6 +271,39 @@ $("#password, #password-confirm").on("input", function() {
   });
 });
 
+
+
+$(document).ready(function() {
+  $("#full-name").on("input", function() {
+    var name = $(this).val();
+    console.log(name);
+    // Verifica se o nome do cliente é único
+    $.ajax({
+      url: "{% url 'verificar_nome' %}",
+      method: "POST",
+      data: {
+        'name': name,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      dataType: 'json',
+      success: function(data) {
+        if (data.existe) {
+          $("#full-name").removeClass("is-valid");
+          $("#full-name").addClass("is-invalid");
+          $("#name-feedback").html("Este nome já está cadastrado.");
+        } else if (name.length < 5) {
+          $("#full-name").removeClass("is-valid");
+          $("#full-name").addClass("is-invalid");
+          $("#name-feedback").html("O nome deve ter no mínimo 5 caracteres.");
+        } else {
+          $("#full-name").removeClass("is-invalid");
+          $("#full-name").addClass("is-valid");
+          $("#name-feedback").html("");
+        }
+      }
+    });
+  });
+});
 
 
 </script>
