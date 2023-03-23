@@ -52,7 +52,7 @@
         {% if item.product.localizacao == localizacao %}
             <tr>
 
-                <td style="width: 50%;">{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.nome }} {% endif %}</td>
+                <td style="width: 50%;">{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.name }} {% endif %}</td>
                 <td>{{ item.quantity }}</td>
                 <td>R$ {{ item.price }}</td>
                 <td>{{ item.product.localizacao }}</td>
