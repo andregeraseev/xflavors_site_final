@@ -1,0 +1,135 @@
+{% extends 'base_pagamento.html' %}
+
+{% block content %}
+<button onclick="window.print()" class="print-button">Imprimir</button>
+  <div class="container">
+    <div class="row printable-area">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-5">
+                <h5>Detalhes do pedido</h5>
+                <p><strong>Número do pedido:</strong> {{ pedido.id }}</p>
+                <p><strong>Status:</strong> {{ pedido.status }}</p>
+                <p><strong>Data do pedido:</strong> {{ pedido.data_pedido }}</p>
+              </div>
+              <div class="col-md-5">
+                <h5>Endereço de entrega</h5>
+                <p>{{ pedido.endereco_entrega.cliente }}</p>
+                <p>{{ pedido.endereco_entrega.rua }}, {{ pedido.endereco_entrega.numero }}</p>
+                <p>{{ pedido.endereco_entrega.complemento }}</p>
+                <p>{{ pedido.endereco_entrega.bairro }}, {{ pedido.endereco_entrega.cidade }} - {{ pedido.endereco_entrega.estado }}</p>
+                <p>{{ pedido.endereco_entrega.cep }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h5>Itens do pedido</h5>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Localização</th>
+                    <th>Valor Total</th>
+                  </tr>
+                </thead>
+                <tbody class="printable-area">
+                  <tbody>
+{% for localizacao in localizacoes %}
+    <tr class="localizacao" style="border-top: 3px solid black;">
+        <td colspan="6">{{ localizacao }}</td>
+    </tr>
+    {% for item in itens %}
+        {% if item.product.localizacao == localizacao %}
+            <tr>
+
+                <td style="width: 50%;">{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.nome }} {% endif %}</td>
+                <td>{{ item.quantity }}</td>
+                <td>R$ {{ item.price }}</td>
+                <td>{{ item.product.localizacao }}</td>
+                <td>R$ {{ item.valor_total }}</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+</tbody>
+
+
+
+                </tbody>
+              </table>
+            </div>
+            <p><strong>Subtotal:</strong> R$ {{ pedido.subtotal }}</p>
+            <p><strong>Frete:</strong> {{ pedido.frete }} - R$ {{ pedido.valor_frete }}</p>
+            <p><strong>Total:</strong> R$ {{ pedido.total }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<style>
+@media print {
+  body {
+    font-size: 10pt;
+  }
+
+  .localizacao {
+    background-color: #ccc;
+    font-weight: bold;
+
+    border-top: 2px solid black;
+  }
+}
+@media print {
+  .col-md-5 {
+    width: 50%;
+  }
+  h5, p {
+    font-size: 12px;
+  }
+}
+@media print {
+  .print-button {
+    display: none;
+  }
+  .printable-area {
+    font-size: 10pt;
+
+  }
+}
+</style>
+
+<script>
+
+
+  <button onclick="imprimirTabela()">Imprimir Itens do Pedido</button>
+
+<script>
+function imprimirTabela() {
+  var tabela = document.querySelector('.table');
+  var janelaImpressao = window.open('', '', 'width=800,height=600');
+  janelaImpressao.document.write('<html><head><title>Itens do Pedido</title>');
+
+  janelaImpressao.document.write('</head><body>');
+  janelaImpressao.document.write(tabela.outerHTML);
+  janelaImpressao.document.write('</body></html>');
+  janelaImpressao.document.close();
+  janelaImpressao.focus();
+  janelaImpressao.print();
+  janelaImpressao.close();
+}
+</script>
+
+</script>
+{% endblock %}

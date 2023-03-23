@@ -44,6 +44,29 @@ def dashboard_adm(request):
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 
+def pedido_detail(request, pedido_id):
+    pedido = Pedido.objects.get(id=pedido_id)
+    itens = pedido.itens.all().order_by('product__localizacao', 'product__name')
+
+    localizacoes = []
+    for item in itens:
+        if item.product.localizacao not in localizacoes:
+            localizacoes.append(item.product.localizacao)
+
+    context = {'pedido': pedido, 'itens': itens, 'localizacoes':localizacoes}
+    return render(request, 'administracao/pedido_detail.html', context)
+@csrf_exempt
+def enviar_tiny(request):
+    if request.method == "POST":
+        pedido_id = request.POST.get("pedido_id")
+        pedido = Pedido.objects.get(id=pedido_id)
+
+        enviar_pedido_para_tiny(pedido)
+        return HttpResponse("OK")
+    else:
+        return HttpResponse("Método não permitido")
+
+
 
 @csrf_exempt
 def atualizar_status(request):
