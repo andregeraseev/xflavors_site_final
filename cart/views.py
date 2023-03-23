@@ -110,7 +110,7 @@ def verifica_estoque_produto_com_variacao(quantity, variation, cart, update=Fals
 
     if quantity * variation.gasto > variation.materia_prima.stock:
         raise ValueError(
-            f"Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} unidades disponíveis.")
+            f"Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis.")
 
     existing_items = CartItem.objects.filter(cart=cart, variation__materia_prima=variation.materia_prima)
 
@@ -118,10 +118,13 @@ def verifica_estoque_produto_com_variacao(quantity, variation, cart, update=Fals
     total_quantity = total_quantity_in_cart
     print(total_quantity, 'quantidade_total')
     if not update:
-        print(" verificando adicao")
         total_quantity += quantity * variation.gasto
+    else:
+        total_quantity += (quantity - cart.cartitem_set.get(variation=variation).quantity) * variation.gasto
 
+    print(total_quantity, variation.materia_prima.stock)
     if total_quantity > variation.materia_prima.stock:
+
         raise ValueError(
             f"Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis e tem {total_quantity_in_cart} mls no seu carrinho.")
 

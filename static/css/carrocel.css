@@ -25,9 +25,9 @@
 
   /* Estilo para as setas de navegação */
   .slick-arrow {
-	z-index: 1; /* definir camada */
-	width: 150px; /* largura */
-	height: 300px; /* altura */
+	z-index: 100; /* definir camada */
+	width: 15px; /* largura */
+	height: 15px; /* altura */
 
   }
 
@@ -42,13 +42,13 @@
 
   /* Posicionamento da seta "próximo" */
   .slick-next {
-	right: -30px; /* posicionar à direita */
+	right: 60px; /* posicionar à direita */
 
   }
 
   /* Posicionamento da seta "anterior" */
   .slick-prev {
-	left: -30px; /* posicionar à esquerda */
+	left: 15px; /* posicionar à esquerda */
 
   }
 

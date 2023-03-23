@@ -1,5 +1,5 @@
 {% extends 'base_pagamento.html' %}
-
+{% load static %}
 {% block content %}
 <div class="row">
   <div class="col-12 col-md-6">
@@ -53,18 +53,22 @@
     <h2 class="mb-4">Formas de Pagamento</h2>
     <form action="" method="POST">
       {% csrf_token %}
-            <div class="form-check mb-4">
-        <input type="radio" name="metodo_pagamento" id="pagamento-mercadopago" value="MercadoPago" class="form-check-input">
-        <label for="pagamento-mercadopago" class="form-check-label">Mercado Pago</label>
-      </div>
-      <div class="form-check mb-4">
-        <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="Pix" class="form-check-input">
-        <label for="pagamento-pix" class="form-check-label">Pix</label>
-      </div>
-      <div class="form-check mb-4">
-        <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="Deposito" class="form-check-input">
-        <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
-      </div>
+            <div class="form-check mb-2 d-flex align-items-center">
+    <input type="radio" name="metodo_pagamento" id="pagamento-mercadopago" value="MercadoPago" class="form-check-input">
+    <label for="pagamento-mercadopago" class="form-check-label"><img src="{% static '/imagens/mercado_pago_pagamentos.png' %}" alt="Descrição da imagem" width="200"></label>
+</div>
+<div class="form-check mb-2 d-flex align-items-center">
+    <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="Pix" class="form-check-input">
+    <label for="pagamento-pix" class="form-check-label"><img src="{% static '/imagens/logo-pix-png-1024x1024.png' %}" alt="Descrição da imagem" width="200"></label>
+</div>
+<div class="form-check mb-2 d-flex align-items-center">
+    <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="Deposito" class="form-check-input">
+    <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
+</div>
+
+
+
+
       <button id="ir-para-meios-de-pagamento" class="btn btn-danger my-2">Fechar Pedido</button>
     </form>
     </div>
