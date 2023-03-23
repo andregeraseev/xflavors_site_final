@@ -116,7 +116,7 @@ def verifica_estoque_produto_com_variacao(quantity, variation, cart, update=Fals
 
     total_quantity_in_cart = sum(existing_item.quantity * existing_item.variation.gasto for existing_item in existing_items)
     total_quantity = total_quantity_in_cart
-    print(total_quantity, 'quantidade_total')
+    # print(total_quantity, 'quantidade_total')
     if not update:
         total_quantity += quantity * variation.gasto
     else:
@@ -138,7 +138,7 @@ def verifica_estoque_produto_sem_variacao(quantity, product, cart, update=False)
     total_quantity_in_cart = sum(existing_item.quantity for existing_item in existing_items)
     total_quantity = total_quantity_in_cart
     if not update:
-        print(" verificando adicao")
+        # print(" verificando adicao")
         total_quantity += quantity
 
     if total_quantity > product.stock:
@@ -148,10 +148,10 @@ def verifica_estoque_produto_sem_variacao(quantity, product, cart, update=False)
 
 def verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart, materia_prima_id, product, fechamento=1, update=False):
     if variation:
-        print(" verificando quantidade variacao")
+        # print(" verificando quantidade variacao")
         verifica_estoque_produto_com_variacao(quantity, variation, cart, update)
     else:
-        print(" verificando quantidade produto")
+        # print(" verificando quantidade produto")
         verifica_estoque_produto_sem_variacao(quantity, product, cart, update)
 
 
@@ -182,7 +182,7 @@ def cria_item_carrinho(cart,product,variation,quantity):
 
 
 def update_item(request):
-    print('UPDATE_ITEM')
+    # print('UPDATE_ITEM')
     cart = get_object_or_404(Cart, user=request.user)
     product_id = request.POST.get('product_id', None)
     variation_id = request.POST.get('variation_id', None)
@@ -238,7 +238,7 @@ def remove_item(request):
     cart = get_object_or_404(Cart, user=request.user)
     product_id= request.POST.get('product_id', 1)
     variation_id = request.POST.get('variation_id', None)
-    print('aqui',variation_id)
+    # print('aqui',variation_id)
     if cart:
         try:
             if variation_id:

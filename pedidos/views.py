@@ -310,18 +310,18 @@ def cotacao_frete_correios(request):
 
 
 def verifica_carrinho_2(item_id, user):
-    print('VERIFICANDO CARRINHO')
+    # print('VERIFICANDO CARRINHO')
     cart = Cart.objects.get(user=user)
 
     item_id = int(item_id)
-    print('item_id', item_id)
+    # print('item_id', item_id)
     try:
-        print('tentativa')
+        # print('tentativa')
         item = CartItem.objects.get(id=item_id, cart=cart)
         if item.variation:
             variation =item.variation
             quantidade_materia_prima = item.variation.materia_prima.stock
-            print(quantidade_materia_prima, 'quantidade_materiaprima')
+            # print(quantidade_materia_prima, 'quantidade_materiaprima')
             materia_prima_id = item.variation.materia_prima.id
 
         else:
@@ -331,14 +331,14 @@ def verifica_carrinho_2(item_id, user):
 
 
         quantity= item.quantity
-        print(quantity,'quantidade')
+        # print(quantity,'quantidade')
 
 
         product = item.product
-        if item.variation:
-            print(item.variation, 'ITEMMSSSSSSSS')
-        else:
-            print(item.product, 'ITEMMSSSSSSSS')
+        # if item.variation:
+        #     print(item.variation, 'ITEMMSSSSSSSS')
+        # else:
+            # print(item.product, 'ITEMMSSSSSSSS')
         fechamento = 2
         try:
             verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,

@@ -50,11 +50,11 @@ def logout_view(request):
     return redirect('home')
 
 def verificar_cpf(request):
-    print("VERIFICANDO CPF")
+    # print("VERIFICANDO CPF")
     if request.method == 'POST':
         cpf = request.POST['cpf']
         existe = Cliente.objects.filter(cpf=cpf).exists()
-        print("CPF JA CADASTRADO")
+        # print("CPF JA CADASTRADO")
         return JsonResponse({'existe': existe})
     else:
         return JsonResponse({'erro': 'Requisição inválida'})
@@ -62,27 +62,27 @@ def verificar_cpf(request):
 from django.core.mail import send_mail
 
 def verificar_email(request):
-    print('VERIFICANDO EMAIL')
+
     if request.method == 'POST':
-        print('VERIFICANDO POST')
+
 
         email = request.POST.get('email', None)
         if email:
             if User.objects.filter(email=email).exists():
-                print('Existe email')
+
                 return JsonResponse({'success':True, 'existe': True})
             else:
-                print('Nao existe email')
+
                 return JsonResponse({'success':True,'existe': False})
     return JsonResponse({'existe': False})
 
 
 @csrf_exempt
 def verificar_nome(request):
-    print('Verificando nome')
+
     if request.method == 'POST':
         name = request.POST.get('name')
-        print(name)
+
         if User.objects.filter(username=name).exists():
             return JsonResponse({'existe': True})
         else:
@@ -91,7 +91,7 @@ def verificar_nome(request):
         return JsonResponse({'error': 'Método não permitido'})
 
 def cadastro(request):
-    print("AQUIIIII")
+
     if request.method == 'POST':
         full_name = request.POST['full_name']
         email = request.POST['email']
@@ -109,7 +109,7 @@ def cadastro(request):
         # Verifica se já existe um usuário com o e-mail fornecido
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Este e-mail já está cadastrado.')
-            print('EMAIL JA CADASTRADO')
+
             return redirect('cadastro')
 
         user = User.objects.create_user(username=full_name, email=email, password=password)
