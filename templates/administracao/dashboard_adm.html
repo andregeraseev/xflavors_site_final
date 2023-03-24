@@ -246,68 +246,76 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
 <script>
-$(document).ready(function() {
-   $('#tabela-pedidos').DataTable({
-    "language": {
-      "sEmptyTable": "Nenhum registro encontrado",
-      "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-      "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
-      "sInfoFiltered": "(Filtrados de _MAX_ registros)",
-      "sInfoPostFix": "",
-      "sInfoThousands": ".",
-      "sLengthMenu": "_MENU_ resultados por página",
-      "sLoadingRecords": "Carregando...",
-      "sProcessing": "Processando...",
-      "sZeroRecords": "Nenhum registro encontrado",
-      "sSearch": "Pesquisar",
-      "oPaginate": {
-        "sNext": "Próximo",
-        "sPrevious": "Anterior",
-        "sFirst": "Primeiro",
-        "sLast": "Último"
-      },
-      "oAria": {
-        "sSortAscending": ": Ordenar colunas de forma ascendente",
-        "sSortDescending": ": Ordenar colunas de forma descendente"
-      }
-    },
-    "lengthMenu": [[20, 50, 100], [20, 50, 100]],
-    columnDefs: [
-      { orderable: true, targets: '1' }
-    ],
-    order: [[1, 'desc']]
-  });
+    $("#tabela-pedidos").DataTable({
 
-  var selectedColumn = 1; // Inicia com a coluna 1 (nome) selecionada por padrão
-
-  // Adiciona o evento de mudança de valor ao filtro dropdown
-  $('#filtro-status').on('change', function() {
-    var filtroStatus = '^' + this.value;
-    tabelaPedidos.columns(3).search(filtroStatus, true, false).draw();
-  });
-  $('#filtro-prod').on('change', function() {
-    var filtroProd = '^' + this.value;
-    tabelaPedidos.columns(8).search(filtroProd, true, false).draw();
-  });
-
-  // Adiciona o evento de mudança de valor aos botões de opção de coluna
-  $('input[type=radio][name=coluna]').change(function() {
-    selectedColumn = $(this).val();
-    tabelaPedidos.search('').columns().search('').draw();
-  });
-
-  // Adiciona o evento de mudança de valor ao input de pesquisa
-  $('#tabela-pedidos_filter input').on('keyup', function() {
-    var pesquisa = this.value;
-    $('#filtro-status').val('');
-    $('#filtro-prod').val('');
-    // Inclui a coluna selecionada no filtro de pesquisa
-    tabelaPedidos.column(selectedColumn).search(pesquisa).draw();
-  });
 });
 
 </script>
+
+<!--<script>-->
+<!--$(document).ready(function() {-->
+<!--   $('#tabela-pedidos').DataTable({-->
+<!--    "language": {-->
+<!--      "sEmptyTable": "Nenhum registro encontrado",-->
+<!--      "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",-->
+<!--      "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",-->
+<!--      "sInfoFiltered": "(Filtrados de _MAX_ registros)",-->
+<!--      "sInfoPostFix": "",-->
+<!--      "sInfoThousands": ".",-->
+<!--      "sLengthMenu": "_MENU_ resultados por página",-->
+<!--      "sLoadingRecords": "Carregando...",-->
+<!--      "sProcessing": "Processando...",-->
+<!--      "sZeroRecords": "Nenhum registro encontrado",-->
+<!--      "sSearch": "Pesquisar",-->
+<!--      "oPaginate": {-->
+<!--        "sNext": "Próximo",-->
+<!--        "sPrevious": "Anterior",-->
+<!--        "sFirst": "Primeiro",-->
+<!--        "sLast": "Último"-->
+<!--      },-->
+<!--      "oAria": {-->
+<!--        "sSortAscending": ": Ordenar colunas de forma ascendente",-->
+<!--        "sSortDescending": ": Ordenar colunas de forma descendente"-->
+<!--      }-->
+<!--    },-->
+<!--    "lengthMenu": [[20, 50, 100], [20, 50, 100]],-->
+<!--    columnDefs: [-->
+<!--      { orderable: true, targets: '1' }-->
+<!--    ],-->
+<!--    order: [[1, 'desc']]-->
+<!--  });-->
+
+<!--  var selectedColumn = 1; // Inicia com a coluna 1 (nome) selecionada por padrão-->
+
+<!--  // Adiciona o evento de mudança de valor ao filtro dropdown-->
+<!--  $('#filtro-status').on('change', function() {-->
+<!--    var filtroStatus = '^' + this.value;-->
+<!--    tabelaPedidos.columns(3).search(filtroStatus, true, false).draw();-->
+<!--  });-->
+<!--  $('#filtro-prod').on('change', function() {-->
+<!--    var filtroProd = '^' + this.value;-->
+<!--    tabelaPedidos.columns(8).search(filtroProd, true, false).draw();-->
+<!--  });-->
+
+<!--  // Adiciona o evento de mudança de valor aos botões de opção de coluna-->
+<!--  $('input[type=radio][name=coluna]').change(function() {-->
+<!--    selectedColumn = $(this).val();-->
+<!--    tabelaPedidos.search('').columns().search('').draw();-->
+<!--  });-->
+
+<!--  // Adiciona o evento de mudança de valor ao input de pesquisa-->
+<!--  $('#tabela-pedidos_filter input').on('keyup', function() {-->
+<!--    var pesquisa = this.value;-->
+<!--    $('#filtro-status').val('');-->
+<!--    $('#filtro-prod').val('');-->
+<!--    // Inclui a coluna selecionada no filtro de pesquisa-->
+<!--    tabelaPedidos.column(selectedColumn).search(pesquisa).draw();-->
+<!--  });-->
+<!--});-->
+
+<!--</script>-->
 
 
 
