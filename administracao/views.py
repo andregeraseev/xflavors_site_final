@@ -115,7 +115,7 @@ def adicionar_rastreamento(request):
         try:
             pedido = Pedido.objects.get(id=pedido_id)
             pedido.rastreamento = rastreamento
-            pedido.atualizar_status("Em trânsito")
+            pedido.atualizar_status("Enviado")
             pedido.save()
             return JsonResponse({'status': 'success'})
         except Pedido.DoesNotExist:

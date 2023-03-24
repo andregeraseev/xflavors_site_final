@@ -51,6 +51,7 @@ class Pedido(models.Model):
         ('Aguardando pagamento', 'Aguardando pagamento'),
         ('Em processamento', 'Em processamento'),
         ('Pago', 'Pago'),
+        ('Enviado', 'Enviado'),
         ('Em trânsito', 'Em trânsito'),
         ('Entregue', 'Entregue'),
         ('Pendente', 'Pendente'),
