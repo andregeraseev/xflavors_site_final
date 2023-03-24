@@ -67,8 +67,8 @@
             <thead>
             <tr>
 
-                <th>Check</th>
-                <th data-orderable="true">ID do Pedido</th>
+                <th>[]</th>
+                <th data-orderable="true">#</th>
                 <th data-orderable="true">Cliente</th>
                 <th >Status</th>
                 <th>Rastreamento</th>
@@ -89,10 +89,7 @@
                 </td>
 
                 <!-- ID do pedido -->
-                <td> <strong style="font-size: 16px;">#{{ pedido.id }}</strong>
-
-                    <br>
-                        <button class="btn btn-sm btn-primary " style="font-size: 10px;">Observações</button>
+                <td> <strong style="font-size: 16px;">{{ pedido.id }}</strong>
                 </td>
 
                 <td>{{ pedido.user }}<br>
@@ -198,6 +195,8 @@
                     <button type="button" class="btn btn-sm btn-secondary rounded-pill" onclick="toggleProducao({{ pedido.id }})">Não
                     </button>
                     {% endif %}
+                     <br>
+                        <button class="btn btn-sm btn-primary " style="font-size: 10px;">Observações</button>
 
                 </td>
 
