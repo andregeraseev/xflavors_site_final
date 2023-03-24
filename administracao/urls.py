@@ -14,7 +14,7 @@ path('adicionar-rastreamento/', adicionar_rastreamento, name='adicionar_rastream
 path('producao/', producao, name='producao'),
 path('enviar_tiny/', enviar_tiny, name='enviar_tiny'),
 path('pedido_detail/<int:pedido_id>', pedido_detail, name='pedido_detail'),
-path('imprimir-selecionados/', imprimir_selecionados, name='imprimir_selecionados'),
+path('imprimir_selecionados/', imprimir_selecionados, name='imprimir_selecionados'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
