@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 from tiny_erp.envia_pedido import enviar_pedido_para_tiny
 from django.contrib.admin.views.decorators import staff_member_required
 import json
-
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 
 
 @staff_member_required
@@ -41,10 +42,7 @@ def dashboard_adm(request):
     }
     return render(request, 'administracao/dashboard_adm.html', context)
 
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
-
-
+@staff_member_required
 def imprimir_selecionados(request):
     if request.method == 'POST':
         ids = json.loads(request.POST['pedidos_id'])
@@ -58,13 +56,13 @@ def imprimir_selecionados(request):
                 if item.product.localizacao not in localizacoes:
                     localizacoes.append(item.product.localizacao)
             context['pedidos'].append({'pedido': pedido, 'itens': itens, 'localizacoes': localizacoes})
-            print(context)
+            # print(context)
         return render(request, 'administracao/imprimir_selecionados.html', context)
     else:
         return HttpResponseBadRequest('Método não permitido')
 
 
-
+@staff_member_required
 def pedido_detail(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)
     itens = pedido.itens.all().order_by('product__localizacao', 'product__name')
@@ -77,8 +75,7 @@ def pedido_detail(request, pedido_id):
     context = {'pedido': pedido, 'itens': itens, 'localizacoes':localizacoes}
     return render(request, 'administracao/pedido_detail.html', context)
 
-
-@csrf_exempt
+@staff_member_required
 def enviar_tiny(request):
     if request.method == "POST":
         pedido_id = request.POST.get("pedido_id")
@@ -90,10 +87,10 @@ def enviar_tiny(request):
         return HttpResponse("Método não permitido")
 
 
-
+@staff_member_required
 @csrf_exempt
 def atualizar_status(request):
-    print('atualizando Status')
+
     if request.method == "POST":
         pedido_id = request.POST.get("pedido_id")
         novo_status = request.POST.get("novo_status")
@@ -108,13 +105,13 @@ def atualizar_status(request):
     else:
         return HttpResponse("Método não permitido")
 
-@csrf_exempt
+@staff_member_required
 def adicionar_rastreamento(request):
-    print('adicionando rastreio')
+    # print('adicionando rastreio')
     if request.method == 'POST':
         pedido_id = request.POST.get('pedido_id')
         rastreamento = request.POST.get('rastreamento')
-        print(rastreamento)
+        # print(rastreamento)
         try:
             pedido = Pedido.objects.get(id=pedido_id)
             pedido.rastreamento = rastreamento
@@ -125,8 +122,8 @@ def adicionar_rastreamento(request):
             return JsonResponse({'status': 'error', 'message': 'Pedido não encontrado'})
     return JsonResponse({'status': 'error', 'message': 'Método inválido'})
 
-from django.http import JsonResponse
 
+@staff_member_required
 def producao(request):
     if request.method == "POST":
         pedido_id = request.POST.get("pedido_id")

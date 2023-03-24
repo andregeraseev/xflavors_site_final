@@ -40,23 +40,21 @@
     <!-- Adicione os botões de opção de coluna -->
     <div class="btn-group" data-toggle="buttons">
         <label class="btn btn-secondary active">
-            <input type="radio" name="coluna" value="0" checked> ID Pedido
+            <input type="radio" name="coluna" value="1" checked> ID Pedido
         </label>
         <label class="btn btn-secondary">
-            <input type="radio" name="coluna" value="1"> Nome
+            <input type="radio" name="coluna" value="2"> Nome
         </label>
+
         <label class="btn btn-secondary">
-            <input type="radio" name="coluna" value="2"> Telefone
-        </label>
-        <label class="btn btn-secondary">
-            <input type="radio" name="coluna" value="5"> Rastreamento
+            <input type="radio" name="coluna" value="4"> Rastreamento
         </label>
         <label class="btn btn-secondary">
             <input type="radio" name="coluna" value="7"> Id Tiny
         </label>
-        <label class="btn btn-secondary">
-            <input type="radio" name="coluna" value="8"> Prod
-        </label>
+<!--        <label class="btn btn-secondary">-->
+<!--            <input type="radio" name="coluna" value="8"> Prod-->
+<!--        </label>-->
     </div>
 
 
@@ -388,6 +386,7 @@ function enviarMensagem(numero) {
         url: "{% url 'administracao:adicionar_rastreamento' %}",
         method: "POST",
         data: {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
             "pedido_id": pedidoId,
             "rastreamento": rastreamento,
             csrfmiddlewaretoken: '{{ csrf_token }}'
@@ -416,6 +415,7 @@ function toggleProducao(pedidoId) {
     },
     success: function(response) {
       console.log(response);
+      window.location.reload();
     },
     error: function(xhr, status, error) {
       console.log(error);
