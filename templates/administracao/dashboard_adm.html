@@ -247,11 +247,22 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 
 <script>
+  $(document).ready(function() {
+    $("#filtro-status, #filtro-prod").on("change", function() {
+      var filtro_status = $("#filtro-status").val();
+      var filtro_prod = $("#filtro-prod").val();
+      $("#tabela-pedidos").DataTable().column(3).search(filtro_status).column(8).search(filtro_prod).draw();
+    });
+
     $("#tabela-pedidos").DataTable({
-
-});
-
+       "columnDefs": [
+    { "searchable": true, "targets": [1, 2, 4] }, // torna as colunas 1 e 2 pesquisáveis
+    { "searchable": false, "targets": [0, 5, 6, 7, 9] }, // torna as outras colunas não pesquisáveis
+  ]
+    });
+  });
 </script>
+
 
 <!--<script>-->
 <!--$(document).ready(function() {-->
