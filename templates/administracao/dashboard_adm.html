@@ -34,10 +34,10 @@
             <input type="radio" name="coluna" value="5"> Rastreamento
         </label>
         <label class="btn btn-secondary">
-            <input type="radio" name="coluna" value="8"> Id Tiny
+            <input type="radio" name="coluna" value="7"> Id Tiny
         </label>
         <label class="btn btn-secondary">
-            <input type="radio" name="coluna" value="10"> Prod
+            <input type="radio" name="coluna" value="8"> Prod
         </label>
     </div>
 
@@ -55,14 +55,13 @@
                 <th>Check</th>
                 <th data-orderable="true">ID do Pedido</th>
                 <th data-orderable="false">Cliente</th>
-                <th data-orderable="true">Telefone</th>
-                <th data-orderable="false">Whats</th>
+
+
                 <th data-orderable="true">Status</th>
                 <th data-orderable="false">Rastreamento</th>
                 <th data-orderable="false">Comprovante</th>
                 <th data-orderable="true">Total</th>
                 <th data-orderable="true">Id Tiny</th>
-                <th data-orderable="true">Meio de Pagamento</th>
                 <th data-orderable="true">Prod</th>
                 <th data-orderable="true">Ver</th>
             </tr>
@@ -77,25 +76,33 @@
                 </td>
 
                 <!-- ID do pedido -->
-                <td>{{ pedido.id }}</td>
-                <td>{{ pedido.user }}</td>
-                <td>{{ pedido.user.cliente.celular }}</td>
+                <td> <strong style="font-size: 16px;">#{{ pedido.id }}</strong>
 
-                <!-- Botão do WhatsApp com link para o celular do cliente -->
-                <td>
-                    <a href="https://api.whatsapp.com/send?phone={{ pedido.user.cliente.celular }}&text=Olá, estou entrando em contato sobre o pedido {{ pedido.id }}"
+                    <br>
+                        <button class="btn btn-sm btn-primary " style="font-size: 10px;">Observações</button>
+                </td>
+
+                <td>{{ pedido.user }}<br>
+                    <span style="font-size: 8px;"><a href="https://api.whatsapp.com/send?phone={{ pedido.user.cliente.celular }}&text=Olá, estou entrando em contato sobre o pedido {{ pedido.id }}"
                        target="_blank">
                         <i class="fab fa-whatsapp fa-lg"></i>
-                    </a>
+                    </a></span>
+                    <span style="font-size: 10px;">{{pedido.user.cliente.celular }}</span><br>
+                    <span style="font-size: 12px;">{{ pedido.metodo_de_pagamento }}</span>
+
+
                 </td>
+
+
+
+
+
 
                 <!-- Coluna de status -->
                 <td>
                     {{ pedido.status }}
-                    {% if pedido.status != "Pago" %}
-                    <button class="btn btn-sm btn-success" onclick="marcarComoPago({{ pedido.id }})">Marcar como pago
-                    </button>
-                    {% endif %}
+
+
                 </td>
 
                 <!-- Coluna de rastreamento -->
@@ -151,7 +158,12 @@
                     {% endif %}
                 </td>
 
-                <td>{{ pedido.total }}</td>
+                <td style="font-size: 12px;">
+                    Total:R${{pedido.total }}<br>
+                    Produtos:R${{pedido.subtotal }}<br>
+                    Frete:R${{pedido.valor_frete }}
+
+                </td>
                 <td> {% if not pedido.numero_pedido_tiny %}
                     <button class="btn btn-sm btn-success" onclick="EnviarTiny({{ pedido.id }})">Enviar</button>
                     {% else %}
@@ -160,23 +172,40 @@
                 </td>
 
 
-                <td>{{ pedido.metodo_de_pagamento }}</td>
+
 
 
                 <!-- Coluna de produção -->
 
                 <td>
                     {% if pedido.producao %}
-                    <button type="button" class="btn btn-danger" onclick="toggleProducao({{ pedido.id }})">Produção
+                    <button type="button" class="btn btn-sm btn-success rounded-pill" onclick="toggleProducao({{ pedido.id }})">Sim
                     </button>
                     {% else %}
-                    <button type="button" class="btn btn-primary" onclick="toggleProducao({{ pedido.id }})">Aguardando
+                    <button type="button" class="btn btn-sm btn-secondary rounded-pill" onclick="toggleProducao({{ pedido.id }})">Não
                     </button>
                     {% endif %}
+
                 </td>
 
-                <td><a class="link-no-style text-black mx-2" href="{% url 'administracao:pedido_detail' pedido.id %}">ver</a>
+
+                  <td>
+                  <a class="link-no-style text-black mx-2" href="{% url 'administracao:pedido_detail' pedido.id %}">
+                    <button class="btn btn-sm" style="border-radius: 0px; background-color: #d8d8d8;"><i class="far fa-eye text-dark"  ></i></button>
+                  </a>
+
+
+                    {% if pedido.status != "Pago" %}
+                     <button class="btn btn-sm btn-success" style="border-radius: 0px;" onclick="marcarComoPago({{ pedido.id }})"title="Marcar como pago">
+                         <i class="fas fa-dollar-sign"></i>
+                    </button>
+                    {% endif %}
+                      <br><span  style="font-size: 10px;">{{ pedido.data_pedido|date:"d/m/Y H:i" }}</span>
+
+
                 </td>
+
+
                 {% empty %}
 
             <tr>
@@ -240,7 +269,7 @@ $(document).ready(function() {
   // Adiciona o evento de mudança de valor ao filtro dropdown
   $('#filtro-status').on('change', function() {
     var filtroStatus = '^' + this.value;
-    tabelaPedidos.columns(4).search(filtroStatus, true, false).draw();
+    tabelaPedidos.columns(3).search(filtroStatus, true, false).draw();
   });
 
   // Adiciona o evento de mudança de valor aos botões de opção de coluna
