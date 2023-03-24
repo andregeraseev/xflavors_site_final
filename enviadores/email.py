@@ -44,13 +44,13 @@ def enviar_email_pedido_criado(destinatario, nome, pedido_id):
 
 def enviar_email_rastreio(destinatario, nome, pedido_id, rastreio):
     print('enviado email rastreio')
-    assunto = 'Pedido Criado'
+    assunto = 'Pedido Enviado'
     mensagem = f'Olá {nome}, \n\nSeu pedido #{pedido_id} foi criado com sucesso.'
     remetente = 'xflavors@gmail.com'
     # send_mail(assunto, mensagem, remetente, [destinatario], fail_silently=False)
 
     # Define o conteúdo do e-mail em HTML e texto puro
-    html_content = render_to_string('emails/pedido.html', {'nome': nome,'pedido_id':pedido_id, "rastreio": rastreio })
+    html_content = render_to_string('emails/rastreio.html', {'nome': nome,'pedido_id':pedido_id, "rastreio": rastreio })
     text_content = strip_tags(html_content)
 
     # Cria a mensagem

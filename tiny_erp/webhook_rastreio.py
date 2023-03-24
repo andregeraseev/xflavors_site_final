@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from enviadores.email import enviar_email_rastreio
 from pedidos.models import Pedido
 from produtos.models import Produto, Subcategory
 from produtos.models import Category, Subcategory, Variation,MateriaPrima
@@ -45,6 +46,14 @@ def tiny_rastreio(request):
         except:
             return HttpResponse(json.dumps({'error': 'Erro ao rastreio no pedido salvar pedido'}), status=400,
                                 content_type="application/json")
+
+        try:
+            destinatario = pedido.user.email
+            nome= pedido.user.username
+            rastreio = pedido.rastreamento
+            enviar_email_rastreio(destinatario, nome, pedido_id, rastreio)
+        except:
+            print("erro ao enviar email")
 
 
         return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
