@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from tiny_erp.envia_pedido import enviar_pedido_para_tiny
 from django.contrib.admin.views.decorators import staff_member_required
-
+import json
 
 
 
@@ -42,7 +42,28 @@ def dashboard_adm(request):
     return render(request, 'administracao/dashboard_adm.html', context)
 
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+
+
+def imprimir_selecionados(request):
+    if request.method == 'POST':
+        ids = json.loads(request.POST['pedidos_id'])
+        ids = list(map(int, ids)) # converte os ids para inteiros
+        pedidos = Pedido.objects.filter(id__in=ids) # utiliza id__in para filtrar pelos ids
+        context = {'pedidos': []}
+        for pedido in pedidos:
+            itens = pedido.itens.all().order_by('product__localizacao', 'product__name')
+            localizacoes = []
+            for item in itens:
+                if item.product.localizacao not in localizacoes:
+                    localizacoes.append(item.product.localizacao)
+            context['pedidos'].append({'pedido': pedido, 'itens': itens, 'localizacoes': localizacoes})
+            print(context)
+        return render(request, 'administracao/imprimir_selecionados.html', context)
+    else:
+        return HttpResponseBadRequest('Método não permitido')
+
+
 
 def pedido_detail(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)

@@ -9,18 +9,20 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-5">
-                <h5>Detalhes do pedido</h5>
-                <p><strong>Número do pedido:</strong> {{ pedido.id }}</p>
-                <p><strong>Status:</strong> {{ pedido.status }}</p>
-                <p><strong>Data do pedido:</strong> {{ pedido.data_pedido }}</p>
+                <strong style="font-size: 20px">Detalhes do pedido</strong>
+                  <br><strong style="font-size: 32px">{{ pedido.frete }}</strong>
+
+                <br><strong>Número do pedido:</strong> {{ pedido.id }}
+                <br><strong>Status:</strong> {{ pedido.status }}
+                <br><strong>Data do pedido:</strong> {{ pedido.data_pedido }}
               </div>
               <div class="col-md-5">
-                <h5>Endereço de entrega</h5>
-                <p>{{ pedido.endereco_entrega.cliente }}</p>
-                <p>{{ pedido.endereco_entrega.rua }}, {{ pedido.endereco_entrega.numero }}</p>
-                <p>{{ pedido.endereco_entrega.complemento }}</p>
-                <p>{{ pedido.endereco_entrega.bairro }}, {{ pedido.endereco_entrega.cidade }} - {{ pedido.endereco_entrega.estado }}</p>
-                <p>{{ pedido.endereco_entrega.cep }}</p>
+                <strong style="font-size: 20px">Endereço de Entrega</strong>
+                <br> <strong style="font-size: 22px">{{ pedido.endereco_entrega.cliente }}</strong>
+                <br>{{ pedido.endereco_entrega.rua }}, {{ pedido.endereco_entrega.numero }}
+                {% if pedido.endereco_entrega.complemento %} <br><strong>complemento:</strong>{{ pedido.endereco_entrega.complemento }} {% endif %}
+                <br>{{ pedido.endereco_entrega.bairro }}, {{ pedido.endereco_entrega.cidade }} - {{ pedido.endereco_entrega.estado }}
+                <br>{{ pedido.endereco_entrega.cep }}
               </div>
             </div>
           </div>
@@ -31,14 +33,14 @@
           <div class="card-body">
             <h5>Itens do pedido</h5>
             <div class="table-responsive">
-              <table class="table">
+              <table class="table table-striped">
                 <thead>
                   <tr>
 
                     <th>Produto</th>
                     <th>Quantidade</th>
                     <th>Preço Unitário</th>
-                    <th>Localização</th>
+<!--                    <th>Localização</th>-->
                     <th>Valor Total</th>
                   </tr>
                 </thead>
@@ -55,7 +57,7 @@
                 <td style="width: 50%;">{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.name }} {% endif %}</td>
                 <td>{{ item.quantity }}</td>
                 <td>R$ {{ item.price }}</td>
-                <td>{{ item.product.localizacao }}</td>
+<!--                <td>{{ item.product.localizacao }}</td>-->
                 <td>R$ {{ item.valor_total }}</td>
             </tr>
         {% endif %}
@@ -82,32 +84,42 @@
 @media print {
   body {
     font-size: 10pt;
-  }
+    margin: 0;
 
-  .localizacao {
-    background-color: #ccc;
-    font-weight: bold;
-
-    border-top: 2px solid black;
   }
-}
-@media print {
-  .col-md-5 {
+ .col-md-5 {
     width: 50%;
   }
   h5, p {
     font-size: 12px;
   }
-}
-@media print {
-  .print-button {
+   .print-button {
     display: none;
   }
   .printable-area {
     font-size: 10pt;
 
   }
+  table {
+    width: 100%;
+  }
+  .printable-area {
+  min-width: 800px;
 }
+.printable-area {
+  margin-left: -70px;
+}
+
+}
+
+  .localizacao {
+    background-color: #ccc;
+    font-weight: bold;
+    border-top: 2px solid black;
+  }
+
+
+
 </style>
 
 <script>
