@@ -365,13 +365,17 @@ def criar_pedido(request):
     total = float(request.POST['total'])
     frete_selecionado = request.POST['frete_selecionado']
     metodo_pagamento = request.POST['metodo_pagamento']
+    observacao = request.POST['observacao']
+    print(observacao)
+
+
     print(metodo_pagamento, 'CRIAR PEDIDO')
     # endereco_de_entrega_id = request.POST['endereco_de_entrega']
     # endereco_de_entrega = EnderecoEntrega.objects.get(id=endereco_de_entrega_id)
     endereco_entrega = EnderecoEntrega.objects.filter(cliente=user.cliente, primario=True).first()
     # Obter o carrinho atual do usuário
     cart = Cart.objects.get(user=request.user)
-    print('SUBTOTAL',subtotal)
+    # print('SUBTOTAL',subtotal)
 
     items = cart.cartitem_set.all()
     if items:
@@ -401,7 +405,8 @@ def criar_pedido(request):
             subtotal=subtotal,
             valor_frete=frete,
             total=total,
-            metodo_de_pagamento=metodo_pagamento
+            metodo_de_pagamento=metodo_pagamento,
+            observacoes = observacao
         )
 
         print(pedido.metodo_de_pagamento, "METODO DE PAGAMENTO")
@@ -504,14 +509,8 @@ from mercado_pago.mercado_livre import cria_preferencia
 
 def pagina_pagamento(request, pedido_id):
 
-
-
     pedido = get_object_or_404(Pedido, id=pedido_id)
-
-
     itens = PedidoItem.objects.filter(pedido=pedido)
-
-
 
     print(itens)
     for item in itens:
@@ -520,18 +519,16 @@ def pagina_pagamento(request, pedido_id):
         print(item.product)
         print(pedido.metodo_de_pagamento)
 
-    mercadolivre_url = cria_preferencia(request, pedido)
+    mercadolivre_url = "sem url"
+    if pedido.metodo_de_pagamento == "MercadoPago":
+        mercadolivre_url = cria_preferencia(request, pedido)
+        print(mercadolivre_url, ' PREFERENCE_IDDDDD')
+    print(mercadolivre_url, ' URL MERCADO LIVRE')
 
-    # ENVIA PEDIDO PARA O Tiny
-    # enviado_para_tiny = enviar_pedido_para_tiny(pedido)
-
-    mercadolivre_url = mercadolivre_url
-    print(mercadolivre_url, ' PREFERENCE_IDDDDD')
+    pedido.salvar_link_mercado_pago( mercadolivre_url)
 
     context = {
         'mercadolivre_url': mercadolivre_url,
-
-
         'itens': itens,
         'pedido_id': pedido.id,
         'subtotal': pedido.subtotal,
@@ -580,12 +577,6 @@ def paga_pix(request):
 
 def payment_success(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)
-
-
-
-
-
-
 
     return render(request, 'pagamento_sucesso.html', {
         'pedido': pedido,

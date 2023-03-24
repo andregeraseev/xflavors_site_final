@@ -24,6 +24,9 @@
                 <br>{{ pedido.endereco_entrega.bairro }}, {{ pedido.endereco_entrega.cidade }} - {{ pedido.endereco_entrega.estado }}
                 <br>{{ pedido.endereco_entrega.cep }}
               </div>
+                <div class="col-md-12">
+                {% if pedido.observacoes %}<br><strong>Observação do cliente:</strong> {{ pedido.observacoes }}{% endif %}
+            </div>
             </div>
           </div>
         </div>

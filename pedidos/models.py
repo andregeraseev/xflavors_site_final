@@ -90,6 +90,9 @@ class Pedido(models.Model):
     mercado_pago_id = models.IntegerField(blank=True, null=True)
     rastreamento = models.CharField(max_length=30, blank=True, null=True)
     producao = models.BooleanField(default=False)
+    observacoes = models.TextField(blank=True, null=True) # campo de observacoes do cliente
+    observacoes_internas = models.TextField(blank=True, null=True) # campo de observacoes internar
+    link_mercado_pago = models.CharField(max_length=400, blank=True, null=True) # link para pagar via mercado pago
     class Meta:
         ordering = ('-data_pedido',)
 
@@ -99,6 +102,18 @@ class Pedido(models.Model):
 
     def mudar_producao(self):
         self.producao = not self.producao
+        self.save()
+
+    def adicionar_observacao(self, observacao):
+        self.observacoes = observacao
+        self.save()
+
+    def adicionar_observacao_interna(self, observacao_interna):
+        self.observacoes_internas = observacao_interna
+        self.save()
+
+    def salvar_link_mercado_pago(self, link_mercado_pago):
+        self.link_mercado_pago = link_mercado_pago
         self.save()
 
 

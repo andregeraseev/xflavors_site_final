@@ -77,6 +77,12 @@
 
 
 <div id="tabela_pedido" class="table-responsive col-12 col-md-6">
+
+  <h3 class="mb-4">Observação</h3>
+<textarea name="observacao" class="form-control mb-3" rows="3"></textarea>
+
+
+
   <h3>Detalhes do Pedido</h3>
 
 <script>
@@ -342,12 +348,16 @@ $(document).ready(function() {
     // Obtém o método de frete selecionado
     var freteSelecionado = $('input[name=frete]:checked').val();
 
+    // Obtém a observação digitada pelo usuário
+    var observacao = $('textarea[name=observacao]').val();
+
     // Envia uma requisição AJAX para criar o pedido com o status "aguardando pagamento"
     $('#loading').show();
     $.ajax({
       url: '{% url "criar_pedido" %}',
       type: 'POST',
       data: {
+        'observacao' : observacao,
         'subtotal': subtotal,
         'frete': frete,
         'total': total,
