@@ -76,6 +76,8 @@ def pedido_detail(request, pedido_id):
 
     context = {'pedido': pedido, 'itens': itens, 'localizacoes':localizacoes}
     return render(request, 'administracao/pedido_detail.html', context)
+
+
 @csrf_exempt
 def enviar_tiny(request):
     if request.method == "POST":
@@ -91,13 +93,17 @@ def enviar_tiny(request):
 
 @csrf_exempt
 def atualizar_status(request):
+    print('atualizando Status')
     if request.method == "POST":
         pedido_id = request.POST.get("pedido_id")
         novo_status = request.POST.get("novo_status")
         pedido = Pedido.objects.get(id=pedido_id)
         pedido.atualizar_status(novo_status)
 
-        enviar_pedido_para_tiny(pedido)
+        if pedido.status=='Pago':
+            enviar_pedido_para_tiny(pedido)
+
+
         return HttpResponse("OK")
     else:
         return HttpResponse("Método não permitido")
@@ -112,6 +118,7 @@ def adicionar_rastreamento(request):
         try:
             pedido = Pedido.objects.get(id=pedido_id)
             pedido.rastreamento = rastreamento
+            pedido.atualizar_status("Em trânsito")
             pedido.save()
             return JsonResponse({'status': 'success'})
         except Pedido.DoesNotExist:
