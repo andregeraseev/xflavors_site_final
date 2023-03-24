@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bem-vindo ao XFlavors</title>
+  <style>
+    /* Estilos de exemplo, personalize conforme sua necessidade */
+    body {
+      background-color: #f7f7f7;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.5;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://xflavors.pythonanywhere.com/static/imagens/xflavors_logo_comprido.png" alt="XFlavors Logo">
+    <h1>Pedido enviado!</h1>
+    <p>Olá {{ nome }},</p>
+    <p>Gostaríamos de informar que seu pedido #{{ pedido_id }} foi enviado com sucesso!</p>
+    <p>Para acompanhar o andamento da entrega, utilize o número de rastreamento: {{ rastreio }},
+      através do site dos Correios: <a href="https://rastreamento.correios.com.br/app/index.php" target="_blank">Correios</a>.</p>
+    <p>Caso tenha alguma dúvida, não hesite em entrar em contato conosco.</p>
+    <p>Atenciosamente,<br>A equipe XFlavors</p>
+</div>
+  </div>
+</body>
+</html>
