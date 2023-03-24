@@ -1,0 +1,135 @@
+{% extends 'base_imprimir.html' %}
+
+{% block content %}
+
+
+
+<button onclick="window.print()" class="print-button">Imprimir</button>
+{% for pedido in pedidos %}
+  <div class="container">
+    <div class="row printable-area">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-5">
+                <strong style="font-size: 20px">Detalhes do pedido</strong>
+                  <br><strong style="font-size: 32px">{{ pedido.pedido.frete }}</strong>
+
+                <br><strong>Número do pedido:</strong> {{ pedido.pedido.id }}
+                <br><strong>Status:</strong> {{ pedido.pedido.status }}
+                <br><strong>Data do pedido:</strong> {{ pedido.pedido.data_pedido }}
+              </div>
+              <div class="col-md-5">
+                <strong style="font-size: 20px">Endereço de Entrega</strong>
+                <br> <strong style="font-size: 22px">{{ pedido.pedido.endereco_entrega.cliente }}</strong>
+                <br>{{ pedido.pedido.endereco_entrega.rua }}, {{ pedido.pedido.endereco_entrega.numero }}
+                {% if pedido.pedido.endereco_entrega.complemento %} <br><strong>complemento:</strong>{{ pedido.pedido.endereco_entrega.complemento }} {% endif %}
+                <br>{{ pedido.pedido.endereco_entrega.bairro }}, {{ pedido.pedido.endereco_entrega.cidade }} - {{ pedido.pedido.endereco_entrega.estado }}
+                <br>{{ pedido.pedido.endereco_entrega.cep }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h5>Itens do pedido</h5>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Valor Total</th>
+                  </tr>
+                </thead>
+                <tbody class="printable-area">
+                  <tbody>
+                    {% for localizacao in pedido.localizacoes %}
+
+
+                        <tr class="localizacao" style="border-top: 3px solid black;">
+                            <td colspan="6">{{ localizacao }}</td>
+                        </tr>
+                            {% for item in pedido.itens.all %}
+                            {% if item.product.localizacao == localizacao %}
+                          <tr>
+                            <td style="width: 50%;">{% if item.variation %} {{ item.variation.name }} {% else %} {{ item.product.name }} {% endif %}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>R$ {{ item.price }}</td>
+                            <td>R$ {{ item.valor_total }}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    {% empty %}
+                      <tr>
+                        <td colspan="4" style="text-align: center;">Não há itens com essa localização neste pedido.</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </tbody>
+              </table>
+            </div>
+            <p><strong>Subtotal:</strong> R$ {{ pedido.pedido.subtotal }}</p>
+            <p><strong>Frete:</strong> {{ pedido.pedido.frete }} - R$ {{ pedido.pedido.valor_frete }}</p>
+            <p><strong>Total:</strong> R$ {{ pedido.pedido.total }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+<style>
+@media print {
+  body {
+    font-size: 10pt;
+    margin: 0;
+
+  }
+ .col-md-5 {
+    width: 50%;
+  }
+  h5, p {
+    font-size: 12px;
+  }
+   .print-button {
+    display: none;
+  }
+  .container {
+    page-break-after: always;
+  }
+  .printable-area {
+    font-size: 10pt;
+
+  }
+  table {
+    width: 100%;
+  }
+  .printable-area {
+  min-width: 800px;
+}
+.printable-area {
+  margin-left: 0px;
+
+}
+
+}
+
+  .localizacao {
+    background-color: #ccc;
+    font-weight: bold;
+    border-top: 2px solid black;
+  }
+
+
+
+</style>
+
+
+
+{% endblock %}
