@@ -519,11 +519,12 @@ def pagina_pagamento(request, pedido_id):
         print(item.product)
         print(pedido.metodo_de_pagamento)
 
-    mercadolivre_url = "sem url"
-    if pedido.metodo_de_pagamento == "MercadoPago":
+
+    try:
         mercadolivre_url = cria_preferencia(request, pedido)
-        print(mercadolivre_url, ' PREFERENCE_IDDDDD')
-    print(mercadolivre_url, ' URL MERCADO LIVRE')
+    except:
+        mercadolivre_url = "sem url"
+        raise ValueError('Problema para criar link do mercado Pago')
 
     pedido.salvar_link_mercado_pago( mercadolivre_url)
 
