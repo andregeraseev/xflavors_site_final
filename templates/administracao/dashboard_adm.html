@@ -69,14 +69,14 @@
 
                 <th>Check</th>
                 <th data-orderable="true">ID do Pedido</th>
-                <th data-orderable="false">Cliente</th>
-                <th data-orderable="true">Status</th>
-                <th data-orderable="false">Rastreamento</th>
-                <th data-orderable="false">Comprovante</th>
-                <th data-orderable="true">Total</th>
-                <th data-orderable="true">Id Tiny</th>
+                <th data-orderable="true">Cliente</th>
+                <th >Status</th>
+                <th>Rastreamento</th>
+                <th>Comprovante</th>
+                <th>Total</th>
+                <th>Id Tiny</th>
                 <th data-orderable="true">Prod</th>
-                <th data-orderable="true">Ver</th>
+                <th >Ver</th>
             </tr>
             </thead>
             <tbody>
@@ -243,10 +243,12 @@
 </script>
 
 
-<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 <script>
 $(document).ready(function() {
-  var tabelaPedidos = $('#tabela-pedidos').DataTable({
+   $('#tabela-pedidos').DataTable({
     "language": {
       "sEmptyTable": "Nenhum registro encontrado",
       "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -272,7 +274,7 @@ $(document).ready(function() {
     },
     "lengthMenu": [[20, 50, 100], [20, 50, 100]],
     columnDefs: [
-      { orderable: true, targets: '_all' }
+      { orderable: true, targets: '1' }
     ],
     order: [[1, 'desc']]
   });
