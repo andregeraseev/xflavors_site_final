@@ -37,32 +37,6 @@
 
 </div>
 
-<!--SELECT DO SEARCH-->
-
-
-<!--&lt;!&ndash;filtro search&ndash;&gt;-->
-<!--    &lt;!&ndash; Adicione os botões de opção de coluna &ndash;&gt;-->
-<!--    <div class="btn-group" data-toggle="buttons">-->
-<!--        <label class="btn btn-secondary active">-->
-<!--            <input type="radio" name="coluna" value="1" checked> ID Pedido-->
-<!--        </label>-->
-<!--        <label class="btn btn-secondary">-->
-<!--            <input type="radio" name="coluna" value="2"> Nome-->
-<!--        </label>-->
-
-<!--        <label class="btn btn-secondary">-->
-<!--            <input type="radio" name="coluna" value="4"> Rastreamento-->
-<!--        </label>-->
-<!--        <label class="btn btn-secondary">-->
-<!--            <input type="radio" name="coluna" value="7"> Id Tiny-->
-<!--        </label>-->
-<!--&lt;!&ndash;        <label class="btn btn-secondary">&ndash;&gt;-->
-<!--&lt;!&ndash;            <input type="radio" name="coluna" value="8"> Prod&ndash;&gt;-->
-<!--&lt;!&ndash;        </label>&ndash;&gt;-->
-<!--    </div>-->
-<!--FIM DO SELECT DO SEARCH-->
-
-    <!--    fim-->
     <!--    imprimir-->
     <button id="imprimir-selecionados">Imprimir selecionados</button>
     <table class="table table-striped table-hover dataTable display" id="tabela-pedidos">
@@ -71,7 +45,7 @@
             <thead>
             <tr>
 
-                <th>[]</th>
+                <th><input type="checkbox" id="selecionar-todos" /></th>
                 <th data-orderable="true">#</th>
                 <th data-orderable="true">Cliente</th>
                 <th >Status</th>
@@ -468,6 +442,16 @@ $(document).ready(function() {
     });
 });
 </script>
+
+<script>
+$(document).ready(function() {
+  // Seleciona todos os checkboxes quando o novo checkbox for clicado
+  $('#selecionar-todos').click(function() {
+    $('input[type=checkbox][name=selecionar_pedido]').prop('checked', $(this).prop('checked'));
+  });
+});
+</script>
+
 
 
 {% endblock %}

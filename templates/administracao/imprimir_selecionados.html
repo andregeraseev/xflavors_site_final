@@ -18,7 +18,7 @@
 
                 <br><strong>Número do pedido:</strong> {{ pedido.pedido.id }}
                 <br><strong>Status:</strong> {{ pedido.pedido.status }}
-                <br><strong>Data do pedido:</strong> {{ pedido.pedido.data_pedido }}
+                <br><strong>Data do pedido:</strong> {{ pedido.pedido.data_pedido|date:"d/m/Y H:i" }}
               </div>
               <div class="col-md-5">
                 <strong style="font-size: 20px">Endereço de Entrega</strong>
@@ -35,7 +35,7 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-body">
-            <h5>Itens do pedido</h5>
+
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead>
@@ -74,9 +74,11 @@
                 </tbody>
               </table>
             </div>
-            <p><strong>Subtotal:</strong> R$ {{ pedido.pedido.subtotal }}</p>
-            <p><strong>Frete:</strong> {{ pedido.pedido.frete }} - R$ {{ pedido.pedido.valor_frete }}</p>
-            <p><strong>Total:</strong> R$ {{ pedido.pedido.total }}</p>
+            <div style="font-size: 12px">
+            <strong>Subtotal:</strong> R$ {{ pedido.pedido.subtotal }}<br>
+            <strong>Frete:</strong> R$ {{ pedido.pedido.valor_frete }}<br>
+            <strong>Total:</strong> R$ {{ pedido.pedido.total }}<br>
+            </div>
           </div>
         </div>
       </div>
