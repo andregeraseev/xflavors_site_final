@@ -1,6 +1,8 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
+
+from pedidos.models import Pedido
 from produtos.models import Produto, Subcategory
 from produtos.models import Category, Subcategory, Variation,MateriaPrima
 
@@ -25,6 +27,7 @@ def tiny_rastreio(request):
         print(payload)
         dados = payload['dados']
         codigo = dados['codigoRastreio']
+        pedido_id = dados['idPedidoEcommerce']
         print(codigo)
         # Aqui você pode obter mais informações sobre o envio
         # ...
@@ -33,6 +36,16 @@ def tiny_rastreio(request):
         response_data = {
             'success': True
         }
+
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+            pedido.rastreamento = codigo
+            pedido.save()
+        except:
+            return HttpResponse(json.dumps({'error': 'Erro ao rastreio no pedido salvar pedido'}), status=400,
+                                content_type="application/json")
+
+
         return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
     else:
         return HttpResponse(json.dumps({'error': 'Falha ao decodificar JSON'}), status=400,
