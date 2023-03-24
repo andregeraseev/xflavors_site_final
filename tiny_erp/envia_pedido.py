@@ -110,7 +110,7 @@ def enviar_pedido_para_tiny(pedido):
       "obs": observacao,
       "forma_envio": "c",
       "forma_frete": forma_frete,
-      "id_ecommerce": 11162,
+      "id_ecommerce" : 11162,
   }
 }
 

@@ -20,10 +20,11 @@ def tiny_rastreio(request):
 
 
     # Processa o evento de código de rastreio
+    "AQUIIIIIII"
     if payload['tipo'] == 'rastreio':
         print(payload)
         dados = payload['dados']
-        codigo = dados['codigo']
+        codigo = dados['codigoRastreio']
         print(codigo)
         # Aqui você pode obter mais informações sobre o envio
         # ...
