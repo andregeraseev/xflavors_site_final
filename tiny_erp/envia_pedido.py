@@ -26,7 +26,7 @@ def enviar_pedido_para_tiny(pedido):
     cidade = pedido.endereco_entrega.cidade
     uf = pedido.endereco_entrega.estado
     forma_frete = "SEDEX CONTRATO AG (03220)" if pedido.frete == "Sedex" else "PAC CONTRATO AG (03298)"
-
+    observacao = pedido.observacoes
     if pedido.status == "Pago":
         status= "aprovado"
     else:
@@ -107,8 +107,10 @@ def enviar_pedido_para_tiny(pedido):
       "numero_pedido_ecommerce": id_pedido,
       "situacao": status,
       "obs_internas": "XFLAVORS",
+      "obs": observacao,
       "forma_envio": "c",
       "forma_frete": forma_frete,
+      "ecommerce": "11162",
   }
 }
 
