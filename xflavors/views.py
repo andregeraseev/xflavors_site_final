@@ -25,7 +25,7 @@ def index(request):
     ).order_by('-count')
 
     essencias_mais_vendidos = Produto.objects.filter(
-        pk__in=products_in_orders, category__name='Essencias'
+        pk__in=products_in_orders, category__name='Flavors'
     ).annotate(
         count=Sum('pedidoitem__quantity')
     ).order_by('-count')[:10]
