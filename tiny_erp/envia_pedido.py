@@ -1,3 +1,5 @@
+import os
+
 import requests
 import json
 
@@ -11,6 +13,7 @@ def enviar_pedido_para_tiny(pedido):
     # Informações necessárias para criar o pedido no TinyERP
 
     empresa = 'xflavors'
+
     nome = pedido.user.username
     codigo_cliente = pedido.user.id
     telefone = pedido.user.cliente.celular
@@ -25,9 +28,10 @@ def enviar_pedido_para_tiny(pedido):
     cep =  pedido.endereco_entrega.cep
     cidade = pedido.endereco_entrega.cidade
     uf = pedido.endereco_entrega.estado
-    forma_frete = "PAC CONTRATO AG (03298)" if pedido.frete == "PAC" else "SEDEX CONTRATO AG (03220)"
+    forma_frete = "SEDEX CONTRATO AG (03220)" if pedido.frete == "sedex" else "PAC CONTRATO AG (03298)"
     print(forma_frete)
     observacao = pedido.observacoes
+    id_ecommerce = os.getenv('NUMERO_ECOMMERC_TINY')
     if pedido.status == "Pago":
         status= "aprovado"
     else:
@@ -111,7 +115,7 @@ def enviar_pedido_para_tiny(pedido):
       "obs": observacao,
       "forma_envio": "c",
       "forma_frete": forma_frete,
-      "id_ecommerce" : 11162,
+      "id_ecommerce" : id_ecommerce,
   }
 }
     print(forma_frete)
