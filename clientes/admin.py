@@ -10,4 +10,7 @@ class ClienteAdmin(admin.ModelAdmin):
 
 @admin.register(EnderecoEntrega)
 class EnderecoEntrega(admin.ModelAdmin):
-    list_display = ('cliente','cep', 'rua', 'numero', 'cidade', 'bairro', 'estado', 'complemento')
+    list_display = ('cliente','cep', 'rua', 'numero', 'cidade', 'bairro', 'estado', 'complemento' , 'primario')
+    search_fields = ('cliente__user__username',)
+    list_editable = ('primario',)
+    list_filter = ('primario',)

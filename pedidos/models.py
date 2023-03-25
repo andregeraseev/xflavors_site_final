@@ -41,6 +41,16 @@ class PedidoItem(models.Model):
         return f'{self.quantity} x {product_name} '
 
 
+class EnderecoPedido(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    nome = models.CharField(max_length=100)
+    rua = models.CharField(max_length=100)
+    numero = models.CharField(max_length=20)
+    complemento = models.CharField(max_length=100, blank=True, null=True)
+    bairro = models.CharField(max_length=100)
+    cidade = models.CharField(max_length=100)
+    estado = models.CharField(max_length=2)
+    cep = models.CharField(max_length=8)
 
 
 
@@ -76,7 +86,7 @@ class Pedido(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    endereco_entrega = models.ForeignKey(EnderecoEntrega, on_delete=models.SET_NULL, null=True, blank=True)
+    endereco_entrega = models.ForeignKey(EnderecoPedido, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Aguardando pagamento')
     data_pedido = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
@@ -120,7 +130,6 @@ class Pedido(models.Model):
 
     def __str__(self):
         return f"Pedido {self.id}"
-
 
 
 

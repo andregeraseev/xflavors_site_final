@@ -11,7 +11,7 @@ from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from tiny_erp.envia_pedido import enviar_pedido_para_tiny
-from .models import PedidoItem
+from .models import PedidoItem, EnderecoPedido
 from cart.models import CartItem, Cart
 from django.contrib.auth.decorators import login_required
 
@@ -138,15 +138,19 @@ def editar_endereco(request):
 
 @login_required
 def atualizar_endereco_entrega(request):
+    print("atualizando endereco")
     if request.method == 'POST':
+
         endereco_id = request.POST.get('endereco_id')
         cliente = request.user.cliente
         # Define o endereço selecionado como primário
         endereco = EnderecoEntrega.objects.get(id=endereco_id)
+        print(endereco)
         endereco.primario = True
         endereco.save()
         # Definir os outros endereços como não primários
-        outros_enderecos = EnderecoEntrega.objects.exclude(id=endereco_id)
+        outros_enderecos = EnderecoEntrega.objects.filter(cliente=cliente).exclude(id=endereco_id)
+        print("outros enderecos", outros_enderecos)
         for e in outros_enderecos:
             e.primario = False
             e.save()
@@ -393,13 +397,25 @@ def criar_pedido(request):
             return JsonResponse(data)
 
 
+        endereco_pedido= EnderecoPedido.objects.create(
+            user=user,
+            nome = user.username,
+            rua = endereco_entrega.rua,
+            numero = endereco_entrega.numero,
+            complemento = endereco_entrega.complemento,
+            bairro = endereco_entrega.bairro,
+            cidade = endereco_entrega.cidade,
+            estado = endereco_entrega.estado,
+            cep = endereco_entrega.cep
+        )
+        endereco_pedido.save()
 
 
         # Criar uma nova instância de Pedido
         print('CRIANDO PEDIDO')
         pedido = Pedido.objects.create(
             user=request.user,
-            endereco_entrega=endereco_entrega,
+            endereco_entrega=endereco_pedido,
             status='Aguardando pagamento',
             frete=frete_selecionado,
             subtotal=subtotal,
@@ -485,7 +501,7 @@ def atualizar_estoque(item):
     produto = item.product
     variacao = item.variation
     quantidade = item.quantity
-    print('TIRANDOOOOOO')
+    # print('TIRANDOOOOOO')
     if variacao:
         estoque = variacao.materia_prima.stock
         if estoque < quantidade:
@@ -501,13 +517,6 @@ def atualizar_estoque(item):
 
 
 
-
-    # Adicionar os itens do carrinho ao pedido
-    # print(cart, 'CARINHOO')
-    # for item in cart.cartitem_set.all():
-    #     print(item)
-    #     pedido.itens.add(item)
-    # pedido.save()
 
 
 from django.shortcuts import render, get_object_or_404
