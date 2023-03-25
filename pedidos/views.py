@@ -455,12 +455,22 @@ def criar_pedido(request):
         cart.cartitem_set.all().delete()
         print(pedido.id, 'PEDIDO ID')
 
-        # envia email
-        destinatario= user.email
-        nome= user.username
-        pedido_id = pedido.id
-        enviar_email_pedido_criado(destinatario, nome, pedido_id)
+        try:
+            mercadolivre_url = cria_preferencia(request, pedido)
+        except:
+            mercadolivre_url = "sem url"
+            raise ValueError('Problema para criar link do mercado Pago')
 
+        pedido.salvar_link_mercado_pago(mercadolivre_url)
+
+        # envia email
+        try:
+            destinatario= user.email
+            nome= user.username
+            pedido= pedido
+            enviar_email_pedido_criado(destinatario, nome, pedido)
+        except:
+            raise ValueError('Problema para enviar o email')
 
 
 
@@ -520,16 +530,10 @@ def pagina_pagamento(request, pedido_id):
         print(pedido.metodo_de_pagamento)
 
 
-    try:
-        mercadolivre_url = cria_preferencia(request, pedido)
-    except:
-        mercadolivre_url = "sem url"
-        raise ValueError('Problema para criar link do mercado Pago')
 
-    pedido.salvar_link_mercado_pago( mercadolivre_url)
 
     context = {
-        'mercadolivre_url': mercadolivre_url,
+        'mercadolivre_url': pedido.link_mercado_pago,
         'itens': itens,
         'pedido_id': pedido.id,
         'subtotal': pedido.subtotal,
@@ -636,7 +640,7 @@ def failure(request):
         pedido.mercado_pago_id = payment_id
         pedido.status = "Cancelado"
         pedido.save()
-        enviar_pedido_para_tiny(pedido)
+
 
     return render(request, 'mercado_pago/failure.html', {'payment_id': payment_id, 'status': status,
                                                          'external_reference': external_reference})
@@ -655,7 +659,7 @@ def pending(request):
         pedido.mercado_pago_id = payment_id
         pedido.status = "Pendente"
         pedido.save()
-        enviar_pedido_para_tiny(pedido)
+
 
     return render(request, 'mercado_pago/pending.html', {'payment_id': payment_id, 'status': status,
                                                          'external_reference': external_reference})

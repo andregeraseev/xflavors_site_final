@@ -24,15 +24,15 @@ def enviar_email_confirmacao(destinatario, nome):
     # send_mail(assunto, html_content, remetente, [destinatario], fail_silently=False)
 
 
-def enviar_email_pedido_criado(destinatario, nome, pedido_id):
+def enviar_email_pedido_criado(destinatario, nome, pedido ):
     print('enviado email')
     assunto = 'Pedido Criado'
-    mensagem = f'Olá {nome}, \n\nSeu pedido #{pedido_id} foi criado com sucesso.'
+    mensagem = f'Olá {nome}, \n\nSeu pedido #{pedido} foi criado com sucesso.'
     remetente = 'xflavors@gmail.com'
     # send_mail(assunto, mensagem, remetente, [destinatario], fail_silently=False)
 
     # Define o conteúdo do e-mail em HTML e texto puro
-    html_content = render_to_string('emails/pedido.html', {'nome': nome,'pedido_id':pedido_id })
+    html_content = render_to_string('emails/pedido.html', {'nome': nome,'pedido':pedido })
     text_content = strip_tags(html_content)
 
     # Cria a mensagem
