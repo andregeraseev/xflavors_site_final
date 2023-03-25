@@ -25,7 +25,7 @@ def enviar_pedido_para_tiny(pedido):
     cep =  pedido.endereco_entrega.cep
     cidade = pedido.endereco_entrega.cidade
     uf = pedido.endereco_entrega.estado
-    forma_frete = "SEDEX CONTRATO AG (03220)" if pedido.frete == "Sedex" else "PAC CONTRATO AG (03298)"
+    forma_frete = "PAC CONTRATO AG (03298)" if pedido.frete == "PAC" else "SEDEX CONTRATO AG (03220)"
     observacao = pedido.observacoes
     if pedido.status == "Pago":
         status= "aprovado"
