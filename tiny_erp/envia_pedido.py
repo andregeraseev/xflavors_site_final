@@ -26,6 +26,7 @@ def enviar_pedido_para_tiny(pedido):
     cidade = pedido.endereco_entrega.cidade
     uf = pedido.endereco_entrega.estado
     forma_frete = "PAC CONTRATO AG (03298)" if pedido.frete == "PAC" else "SEDEX CONTRATO AG (03220)"
+    print(forma_frete)
     observacao = pedido.observacoes
     if pedido.status == "Pago":
         status= "aprovado"
@@ -113,6 +114,7 @@ def enviar_pedido_para_tiny(pedido):
       "id_ecommerce" : 11162,
   }
 }
+    print(forma_frete)
 
     # Envia o pedido para o TinyERP via API
     url = 'https://api.tiny.com.br/api2/pedido.incluir.php'
