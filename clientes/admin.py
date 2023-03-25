@@ -10,7 +10,7 @@ class ClienteAdmin(admin.ModelAdmin):
 
 @admin.register(EnderecoEntrega)
 class EnderecoEntrega(admin.ModelAdmin):
-    EnderecoEntrega.objects.all().update(primario=True)
+
     list_display = ('cliente','cep', 'rua', 'numero', 'cidade', 'bairro', 'estado', 'complemento' , 'primario')
     search_fields = ('cliente__user__username',)
     list_editable = ('primario',)
