@@ -532,7 +532,7 @@ def pagina_pagamento(request, pedido_id):
     itens = PedidoItem.objects.filter(pedido=pedido)
 
     if pedido.user != request.user:
-        redirect('home')
+        return redirect('home')
 
     else:
 

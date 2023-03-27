@@ -9,7 +9,7 @@
         {% csrf_token %}
         <div class="form-group">
             <label for="full-name">Nome completo:</label>
-            <input type="text" class="form-control" id="full-name" name="full_name">
+            <input type="text" class="form-control" id="full-name" name="full_name" maxlength="50" pattern="[a-zA-Z ]+" title="Por favor, insira apenas letras e espaços">
             <div id="name-feedback" class="invalid-feedback"></div>
         </div>
 
