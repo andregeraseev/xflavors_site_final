@@ -29,7 +29,7 @@ def index(request):
     ).annotate(
         count=Sum('pedidoitem__quantity')
     ).order_by('-count')[:10]
-
+    print("essencias",essencias_mais_vendidos)
 
 
     category = Category.objects.all()
