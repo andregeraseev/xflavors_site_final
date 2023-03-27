@@ -143,12 +143,12 @@ def product_detail(request, slug):
 
     # Obtenha todos os pedidos que contêm o item em questão
     # Obtenha todos os pedidos que contêm o produto em questão
-    orders = Pedido.objects.filter(itens__in=pedido_itens, status="Pago").order_by().values_list('itens', flat=True).distinct()
-
+    orders = Pedido.objects.filter(itens__in=pedido_itens, status="Pago").order_by().values_list('id', flat=True).distinct()
+    print(("ORDERS",orders))
     # Obtenha todos os outros itens que aparecem nos mesmos pedidos que o item em questão
     related_item_ids = PedidoItem.objects.filter(pedido__in=orders).exclude(product=produto).annotate(
         count=Count('product')).order_by('-count')
-
+    print(related_item_ids, "ITENS")
     related_items = Produto.objects.filter(pedidoitem__in=related_item_ids).distinct()[:4]
     print(related_items, "RELATED ITENS")
     # Ordene o dicionário pelos valores em ordem decrescente para obter os itens mais comuns
