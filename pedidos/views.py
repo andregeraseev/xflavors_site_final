@@ -312,7 +312,7 @@ def cotacao_frete_correios(request):
         return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
 
 
-
+@login_required()
 def verifica_carrinho_2(item_id, user):
     # print('VERIFICANDO CARRINHO')
     cart = Cart.objects.get(user=user)
@@ -497,6 +497,7 @@ def criar_pedido(request):
         e='Nao foram encontrados items no carrinho'
         return JsonResponse({'success': False, 'error': str(e)})
 
+@login_required()
 def atualizar_estoque(item):
     produto = item.product
     variacao = item.variation
@@ -525,44 +526,49 @@ from .models import Pedido
 from mercado_pago.mercado_livre import cria_preferencia
 
 
-
+@login_required()
 def pagina_pagamento(request, pedido_id):
 
     pedido = get_object_or_404(Pedido, id=pedido_id)
     itens = PedidoItem.objects.filter(pedido=pedido)
 
-    print(itens)
-    for item in itens:
-        print(item.quantity)
-        print(item.variation)
-        print(item.product)
-        print(pedido.metodo_de_pagamento)
+    if pedido.user != request.user:
+        redirect('home')
+
+    else:
+
+        print(itens)
+        for item in itens:
+            print(item.quantity)
+            print(item.variation)
+            print(item.product)
+            print(pedido.metodo_de_pagamento)
 
 
 
 
-    context = {
-        'mercadolivre_url': pedido.link_mercado_pago,
-        'itens': itens,
-        'pedido_id': pedido.id,
-        'subtotal': pedido.subtotal,
-        'tipo_frete': pedido.frete,
-        'valor_frete': pedido.valor_frete,
-        'total': pedido.total,
-        'frete_selecionado': request.GET.get('frete_selecionado'),
-        'metodo_de_pagamento': pedido.metodo_de_pagamento,
-    }
-    return render(request, 'pagina_pagamento.html', context)
+        context = {
+            'mercadolivre_url': pedido.link_mercado_pago,
+            'itens': itens,
+            'pedido_id': pedido.id,
+            'subtotal': pedido.subtotal,
+            'tipo_frete': pedido.frete,
+            'valor_frete': pedido.valor_frete,
+            'total': pedido.total,
+            'frete_selecionado': request.GET.get('frete_selecionado'),
+            'metodo_de_pagamento': pedido.metodo_de_pagamento,
+        }
+        return render(request, 'pagina_pagamento.html', context)
 
 
 
-
+@login_required()
 def confirmacao_pedido(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)
 
     return render(request, 'pedidos/confirmacao_pedido.html', {'pedido': pedido})
 
-
+@login_required()
 def paga_pix(request):
     if request.method == 'POST':
         pedido_id = request.POST.get('pedido_id')
@@ -588,6 +594,7 @@ def paga_pix(request):
         'pedido_id': pedido_id,
         'metodo_de_pagamento': metodo_de_pagamento,
     })
+
 
 def payment_success(request, pedido_id):
     pedido = Pedido.objects.get(id=pedido_id)
