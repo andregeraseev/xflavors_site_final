@@ -33,9 +33,8 @@ class PedidoItem(models.Model):
             self.variation.num_vendas += self.quantity
             self.variation.save()
 
-
     def __str__(self):
-        product_name = self.product.name
+        product_name = 'Nenhum produto' if self.product is None else self.product.name
         if self.variation:
             product_name += f' ({self.variation.name})'
         return f'{self.quantity} x {product_name} '
