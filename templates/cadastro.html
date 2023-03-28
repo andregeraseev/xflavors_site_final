@@ -218,7 +218,7 @@ $(document).ready(function(){
 $("#password, #password-confirm").on("input", function() {
   var password = $("#password").val();
   var confirmPassword = $("#password-confirm").val();
-  var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+  var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])[a-zA-Z0-9\W_]{8,}$/;
 
   if (password !== confirmPassword) {
     $("#password-confirm").addClass("is-invalid");
@@ -227,7 +227,7 @@ $("#password, #password-confirm").on("input", function() {
   } else if (!passwordRegex.test(password)) {
     $("#password-confirm").addClass("is-invalid");
     $("#password-confirm").removeClass("is-valid");
-    $("#password-feedback").html("A senha deve ter pelo menos 8 caracteres, uma letra maiúscula e um número.");
+    $("#password-feedback").html("A senha deve ter pelo menos 8 caracteres, uma letra maiúscula, um número e um caractere especial.");
   } else {
     $("#password-confirm").addClass("is-valid");
     $("#password-confirm").removeClass("is-invalid");
