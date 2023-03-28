@@ -48,35 +48,35 @@
 
 
 
-
+<!--FORMAS DE PAGAMENTO-->
 
     <h2 class="mb-4">Formas de Pagamento</h2>
     <form action="" method="POST">
       {% csrf_token %}
-            <div class="form-check mb-2 d-flex align-items-center">
-    <input type="radio" name="metodo_pagamento" id="pagamento-mercadopago" value="MercadoPago" class="form-check-input">
-    <label for="pagamento-mercadopago" class="form-check-label"><img src="{% static '/imagens/mercado_pago_pagamentos.png' %}" alt="Descrição da imagem" width="200"></label>
-</div>
-<div class="form-check mb-2 d-flex align-items-center">
-    <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="Pix" class="form-check-input">
-    <label for="pagamento-pix" class="form-check-label"><img src="{% static '/imagens/logo-pix-png-1024x1024.png' %}" alt="Descrição da imagem" width="200"></label>
-</div>
-<div class="form-check mb-2 d-flex align-items-center">
-    <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="Deposito" class="form-check-input">
-    <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
-</div>
-
-
-
+      <div class="form-check mb-0 d-flex align-items-center">
+        <input type="radio" name="metodo_pagamento" id="pagamento-mercadopago" value="MercadoPago"
+               class="form-check-input">
+        <label for="pagamento-mercadopago" class="form-check-label"><img
+                src="{% static '/imagens/mercado_pago_pagamentos.png' %}" alt="Descrição da imagem" width="180"></label>
+      </div>
+      <div class="form-check mb-0 d-flex align-items-center">
+        <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="Pix" class="form-check-input">
+        <label for="pagamento-pix" class="form-check-label"><img
+                src="{% static '/imagens/logo-pix-png-1024x1024.png' %}" alt="Descrição da imagem" width="180"></label>
+      </div>
+      <div class="form-check mb-0 d-flex align-items-center">
+        <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="Deposito" class="form-check-input">
+        <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
+      </div>
 
       <button id="ir-para-meios-de-pagamento" class="btn btn-danger my-2">Fechar Pedido</button>
     </form>
-    </div>
+  </div>
 
 
+  <!--FIM   FORMAS DE PAGAMENTO-->
 
-
-<div id="tabela_pedido" class="table-responsive col-12 col-md-6">
+  <div id="tabela_pedido" class="table-responsive col-12 col-md-6">
 
   <h3 class="mb-4">Observação</h3>
 <textarea name="observacao" class="form-control mb-3" rows="3"></textarea>
@@ -96,6 +96,7 @@ function fecharAlerta(id) {
       </div>
     </div>
     {% endfor %}
+  <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
   <table class="table table-sm">
 
     <thead>
@@ -131,16 +132,17 @@ function fecharAlerta(id) {
       </tr>
     </tfoot>
   </table>
+    </div>
 </div>
 </div>
 
-<div class="col-6">
+<div class="col-12">
   <div class="text-center mt-4">
     <div class="d-inline-block">
-      <a href="{% url 'cart:carrinho' %}" class="btn btn-danger">Voltar Carrinho</a>
+      <a href="{% url 'cart:carrinho' %}" class="btn btn-dark">Voltar Carrinho</a>
     </div>
     <div class="d-inline-block ml-3">
-      <a href="{% url 'home' %}" class="btn btn-success">Voltar para Home</a>
+      <a href="{% url 'home' %}" class="btn btn-dark">Voltar para Home</a>
     </div>
   </div>
 </div>
