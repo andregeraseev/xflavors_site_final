@@ -531,33 +531,28 @@ def pagina_pagamento(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     itens = PedidoItem.objects.filter(pedido=pedido)
 
-    if pedido.user != request.user:
-        return redirect('home')
-
-    else:
-
-        print(itens)
-        for item in itens:
-            print(item.quantity)
-            print(item.variation)
-            print(item.product)
-            print(pedido.metodo_de_pagamento)
+    print(itens)
+    for item in itens:
+        print(item.quantity)
+        print(item.variation)
+        print(item.product)
+        print(pedido.metodo_de_pagamento)
 
 
 
 
-        context = {
-            'mercadolivre_url': pedido.link_mercado_pago,
-            'itens': itens,
-            'pedido_id': pedido.id,
-            'subtotal': pedido.subtotal,
-            'tipo_frete': pedido.frete,
-            'valor_frete': pedido.valor_frete,
-            'total': pedido.total,
-            'frete_selecionado': request.GET.get('frete_selecionado'),
-            'metodo_de_pagamento': pedido.metodo_de_pagamento,
-        }
-        return render(request, 'pagina_pagamento.html', context)
+    context = {
+        'mercadolivre_url': pedido.link_mercado_pago,
+        'itens': itens,
+        'pedido_id': pedido.id,
+        'subtotal': pedido.subtotal,
+        'tipo_frete': pedido.frete,
+        'valor_frete': pedido.valor_frete,
+        'total': pedido.total,
+        'frete_selecionado': request.GET.get('frete_selecionado'),
+        'metodo_de_pagamento': pedido.metodo_de_pagamento,
+    }
+    return render(request, 'pagina_pagamento.html', context)
 
 
 
