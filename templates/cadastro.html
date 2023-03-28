@@ -273,38 +273,44 @@ $("#password, #password-confirm").on("input", function() {
 
 
 
-$(document).ready(function() {
-  $("#full-name").on("input", function() {
-    var name = $(this).val();
-    console.log(name);
-    // Verifica se o nome do cliente é único
-    $.ajax({
-      url: "{% url 'verificar_nome' %}",
-      method: "POST",
-      data: {
-        'name': name,
-        'csrfmiddlewaretoken': '{{ csrf_token }}'
-      },
-      dataType: 'json',
-      success: function(data) {
-        if (data.existe) {
-          $("#full-name").removeClass("is-valid");
-          $("#full-name").addClass("is-invalid");
-          $("#name-feedback").html("Este nome já está cadastrado.");
-        } else if (name.length < 5) {
-          $("#full-name").removeClass("is-valid");
-          $("#full-name").addClass("is-invalid");
-          $("#name-feedback").html("O nome deve ter no mínimo 5 caracteres.");
-        } else {
-          $("#full-name").removeClass("is-invalid");
-          $("#full-name").addClass("is-valid");
-          $("#name-feedback").html("");
-        }
+
+  $(document).ready(function() {
+    $("#full-name").on("input", function() {
+      var name = $(this).val();
+      console.log(name);
+      if (name.length > 50) {
+        $("#full-name").removeClass("is-valid");
+        $("#full-name").addClass("is-invalid");
+        $("#name-feedback").html("O nome deve ter no máximo 50 caracteres.");
+      } else if (!/^[a-zA-Z ]+$/.test(name)) {
+        $("#full-name").removeClass("is-valid");
+        $("#full-name").addClass("is-invalid");
+        $("#name-feedback").html("Por favor, insira apenas letras e espaços.");
+      } else {
+        // Verifica se o nome do cliente é único
+        $.ajax({
+          url: "{% url 'verificar_nome' %}",
+          method: "POST",
+          data: {
+            'name': name,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          dataType: 'json',
+          success: function(data) {
+            if (data.existe) {
+              $("#full-name").removeClass("is-valid");
+              $("#full-name").addClass("is-invalid");
+              $("#name-feedback").html("Este nome já está cadastrado.");
+            } else {
+              $("#full-name").removeClass("is-invalid");
+              $("#full-name").addClass("is-valid");
+              $("#name-feedback").html("");
+            }
+          }
+        });
       }
     });
   });
-});
-
 
 </script>
 
