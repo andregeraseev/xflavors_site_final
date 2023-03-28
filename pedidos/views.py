@@ -528,8 +528,13 @@ from mercado_pago.mercado_livre import cria_preferencia
 
 def pagina_pagamento(request, pedido_id):
 
+
     pedido = get_object_or_404(Pedido, id=pedido_id)
     itens = PedidoItem.objects.filter(pedido=pedido)
+
+    if pedido.user != request.user:
+        return redirect('home')
+
 
     print(itens)
     for item in itens:
