@@ -71,8 +71,10 @@ class Produto(models.Model):
         return self.category
 
     def __str__(self):
-        produto_nome = self.itempedido_set.first().produto.name if self.itempedido_set.first().produto else "Produto não encontrado"
-        return f"{self.cliente.first_name} {self.cliente.last_name} - {produto_nome}"
+        """
+        Retorna o nome do produto
+        """
+        return self.name
 
     def get_absolute_url(self):
         """
