@@ -33,7 +33,7 @@
         <td class="pedido-status" data-status="{{ pedido.status }}">{{ pedido.status }}</td>
 
 
-<!--        COMPORVANTE PIX-->
+<!--        Info-->
 
 {% if pedido.metodo_de_pagamento == "Pix"  or pedido.metodo_de_pagamento == "Deposito" %}
 {% if pedido.comprovante %}
@@ -85,6 +85,13 @@
     </td>
 
 {% endif %}
+{% elif pedido.metodo_de_pagamento == "MercadoPago" %}
+   {% if pedido.status == "Aguardando pagamento" %}
+   <td><a href="{{pedido.link_mercado_pago}}" class="btn btn-primary">Link Mercado Pago</a></td>
+
+    {% else %}
+   <td>ID MP: {{pedido.mercado_pago_id }}</td>
+    {% endif %}
 
 {% else %}
 <td>Seu pedido não precisa de comprovante</td>
