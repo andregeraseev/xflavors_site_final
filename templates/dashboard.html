@@ -26,8 +26,14 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="input-cpf" class="form-label">CPF:</label>
-                            <input type="text" class="form-control" name="cpf" value="{{ cliente.cpf }}"
+                            <input type="text" class="form-control" name="cpf" id="cpf" value="{{ cliente.cpf }}"
                                    id="input-cpf" disabled>
+                            <div class="invalid-feedback">
+                                CPF inválido.
+                            </div>
+                            <div class="valid-feedback">
+                                CPF válido.
+                            </div>
                         </div>
                         <button type="button" class="btn btn-primary" id="btn-edit-cpf">Editar</button>
                         <button type="submit" class="btn btn-primary d-none" id="btn-save-cpf">Salvar</button>
@@ -146,6 +152,85 @@
   });
 
 </script>
+
+
+
+<script>
+
+  $("#form-cpf").submit(function(event) {
+  // Verifica se todos os campos estão válidos
+  if (!$(this).find('.is-invalid').length) {
+    // Se todos os campos estiverem válidos, retorna true para permitir o envio do formulário
+    return true;
+  } else {
+    // Se algum campo estiver inválido, chama o preventDefault() para impedir o envio do formulário
+    event.preventDefault();
+    // Rola a página até o primeiro campo inválido
+    $('html, body').animate({
+        scrollTop: $(this).find('.is-invalid').first().offset().top - 100
+    }, 500);
+  }
+});
+
+
+
+</script>
+
+<script>
+  $(document).ready(function() {
+  var $cpfInput = $("#cpf");
+  var $btnSave = $("#btn-save-cpf");
+
+  $cpfInput.on("input", function() {
+    var cpf = $(this).val().replace(/\D/g, "");
+    console.log(cpf);
+    // Verifica se o CPF é composto por onze dígitos
+    if (cpf.length != 11 || !validateCPF(cpf)) {
+      $(this).addClass("is-invalid");
+      $(this).removeClass("is-valid");
+      $btnSave.attr("disabled", true);
+    } else {
+      $(this).addClass("is-valid");
+      $(this).removeClass("is-invalid");
+      $btnSave.attr("disabled", false);
+    }
+  });
+
+  function validateCPF(cpf) {
+    var sum = 0;
+    var rest;
+
+     // Verifica se o CPF é uma sequência de dígitos iguais
+  if (/^(\d)\1{10}$/.test(cpf)) {
+    return false;
+  }
+
+    for (i=1; i<=9; i++) sum = sum + parseInt(cpf.substring(i-1, i)) * (11 - i);
+    rest = (sum * 10) % 11;
+
+    if ((rest == 10) || (rest == 11)) rest = 0;
+    if (rest != parseInt(cpf.substring(9, 10))) return false;
+
+    sum = 0;
+    for (i = 1; i <= 10; i++) sum = sum + parseInt(cpf.substring(i-1, i)) * (12 - i);
+    rest = (sum * 10) % 11;
+
+    if ((rest == 10) || (rest == 11)) rest = 0;
+    if (rest != parseInt(cpf.substring(10, 11))) return false;
+    return true;
+  }
+
+  $("#btn-edit-cpf").on("click", function() {
+    $cpfInput.prop("disabled", false);
+    $btnSave.removeClass("d-none");
+    $(this).addClass("d-none");
+  });
+});
+</script>
+
+
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
