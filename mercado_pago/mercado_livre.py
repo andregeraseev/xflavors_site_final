@@ -39,14 +39,14 @@ def cria_preferencia(request, pedido):
             },
 
         "back_urls": {
-            "success": "https://xflavors.pythonanywhere.com//success",
-            "failure": "https://xflavors.pythonanywhere.com//failure",
-            "pending": "https://xflavors.pythonanywhere.com//pending"
+            "success": "https://xflavors.pythonanywhere.com/success",
+            "failure": "https://xflavors.pythonanywhere.com/failure",
+            "pending": "https://xflavors.pythonanywhere.com/pending"
         },
         'redirect_urls': {
-            "success": "https://xflavors.pythonanywhere.com//success",
-            "failure": "https://xflavors.pythonanywhere.com//failure",
-            "pending": "https://xflavors.pythonanywhere.com//pending"
+            "success": "https://xflavors.pythonanywhere.com/success",
+            "failure": "https://xflavors.pythonanywhere.com/failure",
+            "pending": "https://xflavors.pythonanywhere.com/pending"
         },
         "external_reference": id_pedido,
         "auto_return" : "approved"
@@ -56,9 +56,9 @@ def cria_preferencia(request, pedido):
 
 
     preference_response = sdk.preference().create(preference_data)
-    print("PREFERENCE_RESPONSE:",preference_response )
+    print("PREFERENCE_RESPONSE1:",preference_response )
     preference = preference_response["response"]
-
+    print('ERROS:',preference)
     return preference['init_point']
     # Redirecione o usuário para a página de pagamento do Mercado Pago
 

@@ -193,6 +193,16 @@ def alterar_celular(request):
     else:
         return JsonResponse({'success': False})
 
+def alterar_cpf(request):
+    if request.method == 'POST':
+        cpf = request.POST.get('cpf')
+        cliente = Cliente.objects.get(user=request.user)
+        cliente.cpf = cpf
+        cliente.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False})
+
 
 
 def editar_endereco_dashboard(request):

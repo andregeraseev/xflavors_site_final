@@ -22,6 +22,16 @@
                         <button type="button" class="btn btn-primary" id="btn-edit-celular">Editar</button>
                         <button type="submit" class="btn btn-primary d-none" id="btn-save-celular">Salvar</button>
                     </form>
+                    <form method="POST" id="form-cpf">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="input-cpf" class="form-label">CPF:</label>
+                            <input type="text" class="form-control" name="cpf" value="{{ cliente.cpf }}"
+                                   id="input-cpf" disabled>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btn-edit-cpf">Editar</button>
+                        <button type="submit" class="btn btn-primary d-none" id="btn-save-cpf">Salvar</button>
+                    </form>
 
                 </div>
             </div>
@@ -84,6 +94,9 @@
 </script>
 
 
+
+
+
 <script>
   $(document).ready(function() {
     $('#form-celular').submit(function(e) {
@@ -102,8 +115,35 @@
     });
   });
 
+</script>
 
+<script>
+  $(document).ready(function() {
+    $('#btn-edit-cpf').click(function() {
+      $('#input-cpf').prop('disabled', false);
+      $('#btn-save-cpf').removeClass('d-none');
+      $(this).addClass('d-none');
+    });
+  });
+</script>
 
+<script>
+  $(document).ready(function() {
+    $('#form-cpf').submit(function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: '{% url "alterar_cpf" %}',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(data) {
+          window.location.reload();
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+        }
+      });
+    });
+  });
 
 </script>
 
