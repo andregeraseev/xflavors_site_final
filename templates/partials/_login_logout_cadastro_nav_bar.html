@@ -5,7 +5,7 @@
         <span class="link-no-style text-white">Olá, {{ user.username }}</span>
     </div>
     <div class="mx-md-2">
-        <a class="link-no-style mx-2 text-white" href="{% url 'dashboard' %}">Minha Conta<i class=" mx-1 fas fa-address-card"></i></a>
+        <a class="link-no-style mx-2 text-white" href="{% url 'dashboard' %}" id="dashboard">Minha Conta<i class=" mx-1 fas fa-address-card"></i></a>
     </div>
     <div class="mx-md-2">
         <a class="link-no-style  text-white" id="logout-link" href="{% url 'logout' %}">
