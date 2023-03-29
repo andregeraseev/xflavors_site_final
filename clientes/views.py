@@ -62,11 +62,12 @@ def verificar_cpf(request):
 from django.core.mail import send_mail
 
 def verificar_email(request):
-
+    print('aqui')
     if request.method == 'POST':
-
+        print('eaqui')
 
         email = request.POST.get('email', None)
+        print(email)
         if email:
             if User.objects.filter(email=email).exists():
 
