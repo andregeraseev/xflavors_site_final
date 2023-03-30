@@ -33,6 +33,7 @@ def aviso_estoque(request):
 def check_aviso_estoque(product, quantidade):
     print("ativando aviso")
     avisos = AvisoEstoque.objects.filter(produto=product, notificado=False)
+    print(product)
     if avisos.exists():
         print("existe avisos")
         for aviso in avisos:
