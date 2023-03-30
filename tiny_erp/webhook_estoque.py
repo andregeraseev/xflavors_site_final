@@ -35,11 +35,7 @@ def tiny_webhook_stock_update(request):
 
 
 
-            # envia email em caso de reestoque
-            try:
-                check_aviso_estoque(id_produto, estoque_atual)
-            except:
-                print("AVISO NAO ENVIADO")
+
 
             # Tenta atualizar a MateriaPrima
             try:
