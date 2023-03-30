@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render, redirect
 
+from avise.tasks import check_aviso_estoque_task
 from cart.models import Cart
 from frontend.models import Banner, BannerMenor
 
@@ -17,7 +18,8 @@ from pedidos.models import Pedido
 def index(request):
     # Filtra os pedidos que estão com o status 'Pago' e obtém os IDs dos produtos nos itens desses pedidos
     products_in_orders = Pedido.objects.filter(status='Pago').values_list('itens__product', flat=True).distinct()
-    print(products_in_orders,'PEDIDOS')
+
+    check_aviso_estoque_task()
     # Obtém a contagem de cada produto que aparece nos pedidos filtrados anteriormente
     # A contagem é feita pela soma das quantidades de cada produto em todos os itens dos pedidos
     produtos_mais_vendidos = Produto.objects.filter(pk__in=products_in_orders).annotate(

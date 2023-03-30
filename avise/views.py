@@ -30,28 +30,28 @@ def aviso_estoque(request):
     return JsonResponse({'status': 'error'})
 
 
-def check_aviso_estoque(product, quantidade):
+def check_aviso_estoque(aviso, quantidade):
     print("ativando aviso")
 
-    avisos = AvisoEstoque.objects.filter(produto__id=product, notificado=False)
-    print(product)
-    print(avisos,"AVISO")
-    if avisos.exists():
-        print("existe avisos")
-        for aviso in avisos:
-            print("aviso")
-            if aviso.produto.variation:
-                print("AVISANDO product.variation")
-                if aviso.produto.variation.materia_prima.stock < quantidade:
-                    send_email_aviso_estoque(aviso)
-                    aviso.notificado = True
-                    aviso.save()
-            else:
-                print("AVISANDO product")
-                if aviso.produto.stock < quantidade:
-                    send_email_aviso_estoque(aviso)
-                    aviso.notificado = True
-                    aviso.save()
+    produto = aviso.produto
+    # produto = Produto.objects.filter(id=produto_id)
+    print(produto)
+
+    if produto:
+        print("existe produtos")
+        variation = produto.variation_set.first()
+        print(variation)
+        if variation.materia_prima.stock > quantidade:
+            send_email_aviso_estoque(aviso)
+            aviso.notificado = True
+            aviso.save()
+
+        else:
+            print("AVISANDO product")
+            if produto.stock > quantidade:
+                send_email_aviso_estoque(aviso)
+                aviso.notificado = True
+                aviso.save()
 
 
 
