@@ -15,5 +15,6 @@ admin.site.register(PedidoItem, PedidoItemAdmin)
 class PedidoAdmin(admin.ModelAdmin):
 
     list_display = ('id', 'user', 'endereco_entrega', 'status', 'data_pedido','metodo_de_pagamento','rastreamento', 'producao')
+    list_editable = ('rastreamento', 'producao', 'status',)
     # list_filter = ('status', 'data_pedido')
     # search_fields = ('id', 'user__username', 'endereco_entrega__endereco')

@@ -44,7 +44,7 @@
                                    data-product-id="{{ product.id }}" value="1" min="1"
                                    max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
                             {% else %}
-                            <button class="btn btn-danger btn-sm w-100 ">Sem estoque</button>
+                            <button class="btn btn-danger btn-sm w-100 avise-me-button" data-product-id="{{ product.id }}" >Avisar-me </button>
 
                             {% endif %}
 
@@ -159,10 +159,41 @@ $('.add-to-cart-button').click(function() {
       alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
     }
   });
+
+});
+
+<!--AVISE-ME-->
+$(document).ready(function() {
+  $(".avise-me-button").click(function() {
+    let productId = $(this).data('product-id');
+    console.log("Product ID: ", productId);
+    var url = "{% url 'avise:aviso_estoque' %}";
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: {
+        product_id: productId,
+        csrfmiddlewaretoken: csrftoken
+      },
+      success: function(data) {
+        alert("Aviso cadastrado com sucesso!");
+      },
+      error: function(xhr, errmsg, err) {
+        alert("Erro ao cadastrar aviso!");
+      }
+    });
+  });
 });
 
 
 
+</script>
 
+
+
+<!--avise-me-->
+<script>
 
 </script>

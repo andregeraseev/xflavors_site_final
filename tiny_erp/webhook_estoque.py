@@ -1,6 +1,8 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
+
+from avise.views import check_aviso_estoque
 from produtos.models import MateriaPrima, Produto
 
 @csrf_exempt
@@ -45,6 +47,9 @@ def tiny_webhook_stock_update(request):
                     produto = Produto.objects.get(id=id_produto)
                     produto.stock = estoque_atual
                     produto.save()
+
+                    # envia email em caso de reestoque
+                    check_aviso_estoque(produto, estoque_atual)
                 except Produto.DoesNotExist:
                     return HttpResponse(status=200)
 

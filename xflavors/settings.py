@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'administracao',
     'mercadopago',
     'frontend',
+    'avise',
 
 
 

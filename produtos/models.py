@@ -82,6 +82,8 @@ class Produto(models.Model):
         """
         return reverse('product_detail', args=[str(self.slug)])
 
+
+
 class Variation(models.Model):
     """
     Model de variação de produtos

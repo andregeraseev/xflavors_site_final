@@ -24,6 +24,7 @@ urlpatterns = [
     path('cart/', include('cart.urls', namespace='cart')),
     path('pedidos/', include('pedidos.urls', namespace='pedidos')),
     path('administracao/', include('administracao.urls', namespace='administracao')),
+    path('avise/', include('avise.urls', namespace='avise')),
     path('', index, name='home'),
     path('import_products/', import_products_view, name='import_products'),
     path('accounts/login/', views.login_view, name='login'),
