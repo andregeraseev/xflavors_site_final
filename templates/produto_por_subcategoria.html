@@ -64,6 +64,12 @@
                         {% endif %}
 
                         {% endwith %}
+
+              {% elif product.stock < 1 %}
+                          <button class="btn btn-danger btn-sm w-100 avise-me-button" data-product-id="{{ product.id }}" >Avisar-me </button>
+                {% else %}
+
+
                 {% else %}
                 <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button" data-product-id="{{ product.id }}" data-variation-id="">Adicionar</button>
                 <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input" data-product-id="{{ product.id }}" value="1" min="1" max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
