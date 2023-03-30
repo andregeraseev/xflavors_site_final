@@ -25,6 +25,13 @@ class Cliente(models.Model):
     def __str__(self):
         return self.user.username
 
+    def toggle_propaganda(self):
+        """
+        Alterna o valor do campo propaganda entre True e False.
+        """
+        self.propaganda = not self.propaganda
+        self.save()
+
 
 
 

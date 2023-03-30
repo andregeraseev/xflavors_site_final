@@ -49,6 +49,10 @@ urlpatterns = [
     path('adicionar_endereco_dashboard', views.adicionar_endereco_dashboard, name='adicionar_endereco_dashboard'),
     path('editar_endereco_dashboard/', views.editar_endereco_dashboard, name='editar_endereco_dashboard'),
     path('excluir_endereco_dashboard/', views.excluir_endereco_dashboard, name='excluir_endereco_dashboard'),
+    path('toggle_propaganda/', views.toggle_propaganda, name='toggle_propaganda'),
+
+
+
 
     path('paga_pix/', paga_pix, name='paga_pix'),
     path('pagamento/sucesso/<int:pedido_id>', payment_success, name='payment_success'),

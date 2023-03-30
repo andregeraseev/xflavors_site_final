@@ -39,6 +39,21 @@
                         <button type="submit" class="btn btn-primary d-none" id="btn-save-cpf">Salvar</button>
                     </form>
 
+
+                    <p class= "mt-4">Cupons e Promoções:</p>
+                    <div id="propaganda-toggle">
+
+                        {% if cliente.propaganda %}
+                        <br>Recebendo por email
+                        {% else %}
+                        <p>Nao esta recebendo por email.</p>
+                        {% endif %}
+                        <button type="button" class="btn btn-primary" id="toggle-btn">Alterar</button>
+                    </div>
+
+
+
+
                 </div>
             </div>
         </div>
@@ -382,6 +397,35 @@ $(document).ready(function() {
       });
     });
   });
+</script>
+
+
+<!--PROPAGANDA-->
+<script>
+
+  $(document).ready(function() {
+    $('#toggle-btn').click(function() {
+      $.ajax({
+        url: '{% url "toggle_propaganda" %}',
+        method: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(data) {
+          // Atualiza o texto do botão de acordo com o valor de propaganda
+          if (data.propaganda) {
+            $('#propaganda-toggle p').text('Recebendo por email');
+          } else {
+            $('#propaganda-toggle p').text('Nao esta recebendo por email.');
+          }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.log(errorThrown);
+        }
+      });
+    });
+  });
+
 </script>
 
 

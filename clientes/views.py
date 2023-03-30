@@ -205,6 +205,14 @@ def alterar_cpf(request):
         return JsonResponse({'success': False})
 
 
+def toggle_propaganda(request):
+    if request.method == 'POST':
+        cliente = request.user.cliente
+        cliente.toggle_propaganda()
+        return JsonResponse({'propaganda': cliente.propaganda})
+    else:
+        return JsonResponse({'error': 'Método de requisição inválido.'})
+
 
 def editar_endereco_dashboard(request):
     if request.method == 'POST':
