@@ -33,6 +33,12 @@ def tiny_webhook_stock_update(request):
             id_produto = estoque['idProduto']
             print(id_produto)
 
+
+
+            # envia email em caso de reestoque
+            check_aviso_estoque(id_produto, estoque_atual)
+
+
             # Tenta atualizar a MateriaPrima
             try:
                 materia_prima = MateriaPrima.objects.get(id=id_produto)
@@ -48,8 +54,7 @@ def tiny_webhook_stock_update(request):
                     produto.stock = estoque_atual
                     produto.save()
 
-                    # envia email em caso de reestoque
-                    check_aviso_estoque(produto, estoque_atual)
+
                 except Produto.DoesNotExist:
                     return HttpResponse(status=200)
 
