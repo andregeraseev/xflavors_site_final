@@ -40,15 +40,15 @@ def check_aviso_estoque(product, quantidade):
         print("existe avisos")
         for aviso in avisos:
             print("aviso")
-            if product.variation:
-                print("product.variation")
-                if product.variation.materia_prima.stock < quantidade:
+            if aviso.produto.variation:
+                print("AVISANDO product.variation")
+                if aviso.produto.variation.materia_prima.stock < quantidade:
                     send_email_aviso_estoque(aviso)
                     aviso.notificado = True
                     aviso.save()
             else:
-                print("product")
-                if product.stock < quantidade:
+                print("AVISANDO product")
+                if aviso.produto.stock < quantidade:
                     send_email_aviso_estoque(aviso)
                     aviso.notificado = True
                     aviso.save()
