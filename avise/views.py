@@ -31,15 +31,20 @@ def aviso_estoque(request):
 
 
 def check_aviso_estoque(product, quantidade):
+    print("ativando aviso")
     avisos = AvisoEstoque.objects.filter(produto=product, notificado=False)
     if avisos.exists():
+        print("existe avisos")
         for aviso in avisos:
+            print("aviso")
             if product.variation:
+                print("product.variation")
                 if product.variation.materia_prima.stock < quantidade:
                     send_email_aviso_estoque(aviso)
                     aviso.notificado = True
                     aviso.save()
             else:
+                print("product")
                 if product.stock < quantidade:
                     send_email_aviso_estoque(aviso)
                     aviso.notificado = True
@@ -49,9 +54,12 @@ def check_aviso_estoque(product, quantidade):
 
 
 def send_email_aviso_estoque(aviso):
+    print("ENVIANDO EMAIL", aviso)
 
     subject = 'Produto em estoque'
     message = f"Olá {aviso.cliente.username}, o produto {aviso.produto.name} está em estoque novamente!"
-    from_email = 'seu-email@provedor.com'
+    print("Nome", aviso.cliente.username)
+    print("PRODUTO", aviso.produto.name)
+    from_email = 'xflavors@gmail.com'
     recipient_list = [aviso.cliente.email]
     send_mail(subject, message, from_email, recipient_list)
