@@ -25,9 +25,9 @@
                     <form method="POST" id="form-cpf">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="input-cpf" class="form-label">CPF:</label>
+                            <label for="cpf" class="form-label">CPF:</label>
                             <input type="text" class="form-control" name="cpf" id="cpf" value="{{ cliente.cpf }}"
-                                   id="input-cpf" disabled>
+                                    disabled>
                             <div class="invalid-feedback">
                                 CPF inválido.
                             </div>
@@ -130,7 +130,7 @@
 <script>
   $(document).ready(function() {
     $('#btn-edit-cpf').click(function() {
-      $('#input-cpf').prop('disabled', false);
+      $('#cpf').prop('disabled', false);
       $('#btn-save-cpf').removeClass('d-none');
       $(this).addClass('d-none');
     });

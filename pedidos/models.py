@@ -91,7 +91,7 @@ class Pedido(models.Model):
     data_atualizacao = models.DateTimeField(auto_now=True)
     itens = models.ManyToManyField(PedidoItem, blank=True, default=1)
     frete = models.CharField(max_length=20, choices=FRETE_CHOICES, default='Frete nao selecionado')
-    valor_frete = subtotal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
+    valor_frete =  models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_de_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, default='Nao selecionado')

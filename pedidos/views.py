@@ -605,22 +605,22 @@ def payment_success(request, pedido_id):
 
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-def notifications(request):
-    mp = mercadopago("MERCADO_PAGO_CLIENT_ID")
-
-    if request.method == 'POST':
-        topic = request.POST.get('topic', '')
-        data_id = request.POST.get('id', '')
-        if topic == 'payment':
-            payment_info = mp.get(f'/v1/payments/{data_id}')
-
-            # Processar informações do pagamento e atualizar seu sistema
-            # ...
-
-        return HttpResponse(status=200)
-
-    return HttpResponse(status=400)
+# @csrf_exempt
+# def notifications(request):
+#     mp = mercadopago("MERCADO_PAGO_CLIENT_ID")
+#
+#     if request.method == 'POST':
+#         topic = request.POST.get('topic', '')
+#         data_id = request.POST.get('id', '')
+#         if topic == 'payment':
+#             payment_info = mp.get(f'/v1/payments/{data_id}')
+#
+#             # Processar informações do pagamento e atualizar seu sistema
+#             # ...
+#
+#         return HttpResponse(status=200)
+#
+#     return HttpResponse(status=400)
 
 
 @csrf_exempt

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Produto, Category, Subcategory,Variation, MateriaPrima
+from .models import Produto, Category, Subcategory, Variation, MateriaPrima
 from django.utils.html import format_html
 
 class VariationCategoryInline(admin.TabularInline):

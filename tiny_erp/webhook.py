@@ -200,7 +200,7 @@ def salva_imagem(payload):
     try:
         for anexo in payload["anexos"]:
             url_imagem = anexo["url"]
-        print(url_imagem)
+            # print(url_imagem)
     except:
         url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
     if url_imagem:
