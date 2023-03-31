@@ -40,13 +40,16 @@
                     </form>
 
 
-                    <p class= "mt-4">Cupons e Promoções:</p>
+                    <p class= "mt-4">Gostaria de receber nossos email?</p>
                     <div id="propaganda-toggle">
 
                         {% if cliente.propaganda %}
-                        <br>Recebendo por email
+                        <br>
+                        <span class="badge badge-success">Ativado</span>
                         {% else %}
-                        <p>Nao esta recebendo por email.</p>
+                        <br>
+                        <span class="badge badge-danger">Desativado</span>
+
                         {% endif %}
                         <button type="button" class="btn btn-primary" id="toggle-btn">Alterar</button>
                     </div>

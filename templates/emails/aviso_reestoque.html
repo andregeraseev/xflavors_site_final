@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bem-vindo ao XFlavors</title>
+  <style>
+    /* Estilos de exemplo, personalize conforme sua necessidade */
+    body {
+      background-color: #f7f7f7;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.5;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+    <img src="https://xflavors.pythonanywhere.com/static/imagens/xflavors_logo_comprido.png" alt="XFlavors Logo">
+    <h2>Olá {{ aviso.cliente.username }}!</h2>
+
+    <p>O produto {{ aviso.produto.name }} está em estoque novamente!</p>
+    <p>Acesse o link abaixo para conferir o produto:</p>
+
+        <a href="https://xflavors.pythonanywhere.com/{{ aviso.produto.get_absolute_url }}">
+        <img src="https://xflavors.pythonanywhere.com/{{ aviso.produto.image.url }}" alt="{{ aviso.produto.name }}" style="width: 200px; height: 200px;">
+        </a>
+</div>
+</body>
+</html>

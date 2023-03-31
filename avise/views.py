@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from clientes.models import Cliente
+from enviadores.email import send_email_aviso_estoque
 from produtos.models import Produto
 from .models import AvisoEstoque
 
@@ -56,13 +57,3 @@ def check_aviso_estoque(aviso, quantidade):
 
 
 
-def send_email_aviso_estoque(aviso):
-    print("ENVIANDO EMAIL", aviso)
-
-    subject = 'Produto em estoque'
-    message = f"Olá {aviso.cliente.username}, o produto {aviso.produto.name} está em estoque novamente!"
-    print("Nome", aviso.cliente.username)
-    print("PRODUTO", aviso.produto.name)
-    from_email = 'xflavors@gmail.com'
-    recipient_list = [aviso.cliente.email]
-    send_mail(subject, message, from_email, recipient_list)

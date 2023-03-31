@@ -62,18 +62,22 @@ def enviar_email_rastreio(destinatario, nome, pedido_id, rastreio):
 
 
 
-# # Define os dados para enviar o e-mail
-# subject = 'Assunto do e-mail'
-# from_email = 'email@exemplo.com'
-# to_email = ['destinatario1@exemplo.com', 'destinatario2@exemplo.com']
-#
-# # Define o conteúdo do e-mail em HTML e texto puro
-# html_content = render_to_string('seu_template.html', {'variavel': 'valor'})
-# text_content = strip_tags(html_content)
-#
-# # Cria a mensagem
-# msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
-# msg.attach_alternative(html_content, "text/html")
-#
-# # Envia o e-mail
-# msg.send()
+def send_email_aviso_estoque(aviso):
+
+    assunto = 'Produto em estoque'
+    message = f"Olá {aviso.cliente.username}, o produto {aviso.produto.name} está em estoque novamente!"
+    remetente = 'xflavors@gmail.com'
+    destinatario = [aviso.cliente.email]
+    # send_mail(subject, message, from_email, recipient_list)
+
+    html_content = render_to_string('emails/aviso_reestoque.html',
+                                    {'aviso': aviso,})
+    text_content = strip_tags(html_content)
+
+    # Cria a mensagem
+    msg = EmailMultiAlternatives(assunto, text_content, remetente, destinatario)
+    msg.attach_alternative(html_content, "text/html")
+
+    # Envia o e-mail
+    msg.send()
+
