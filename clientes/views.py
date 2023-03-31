@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
 from django.utils import timezone
+
+from avise.models import AvisoEstoque
 from cart.models import Cart
 from enviadores.email import enviar_email_confirmacao
 
@@ -147,7 +149,8 @@ def dashboard(request):
     cliente = Cliente.objects.get(user=request.user)
     enderecos = EnderecoEntrega.objects.filter(cliente=cliente)
     pedidos = Pedido.objects.filter(user=request.user)
-    context = {'cliente': cliente, 'enderecos': enderecos, 'pedidos':pedidos}
+    avisos = AvisoEstoque.objects.filter(cliente=request.user,notificado=False)
+    context = {'cliente': cliente, 'enderecos': enderecos, 'pedidos':pedidos, "avisos":avisos}
     return render(request, 'dashboard.html', context)
 
 

@@ -11,7 +11,8 @@ class AvisoEstoque(models.Model):
     # quantidade = models.PositiveIntegerField()
     cliente = models.ForeignKey(User, on_delete=models.CASCADE)
     notificado = models.BooleanField(default=False)
-
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     def __str__(self):
         return f'{self.cliente.username} - {self.produto.name}'
 

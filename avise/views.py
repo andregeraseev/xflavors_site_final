@@ -56,5 +56,15 @@ def check_aviso_estoque(aviso, quantidade):
                 aviso.save()
 
 
+def mudar_aviso(request):
+    if request.method == 'POST':
+        print("excluir aviso")
+        aviso = request.POST.get('aviso_id')
+        print(aviso)
+        aviso = get_object_or_404(AvisoEstoque, id=aviso)
+        aviso.notificado = True
+        aviso.save()
 
+        return JsonResponse({'success': True})
+    return JsonResponse({'status': 'error'})
 
