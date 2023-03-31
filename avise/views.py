@@ -41,11 +41,12 @@ def check_aviso_estoque(aviso, quantidade):
     if produto:
         print("existe produtos")
         variation = produto.variation_set.first()
-        print(variation)
-        if variation.materia_prima.stock > quantidade:
-            send_email_aviso_estoque(aviso)
-            aviso.notificado = True
-            aviso.save()
+        if variation:
+            print(variation)
+            if variation.materia_prima.stock > quantidade:
+                send_email_aviso_estoque(aviso)
+                aviso.notificado = True
+                aviso.save()
 
         else:
             print("AVISANDO product")
