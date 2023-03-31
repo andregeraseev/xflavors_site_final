@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render, redirect
 
+from avise.models import AvisoEstoque
 from avise.tasks import check_aviso_estoque_task
 from cart.models import Cart
 from frontend.models import Banner, BannerMenor
@@ -52,6 +53,10 @@ def index(request):
     active_banners_menor = BannerMenor.objects.filter(active=True)
     active_banners = Banner.objects.filter(active=True)
 
+    avisos = AvisoEstoque.objects.filter(cliente=request.user, notificado=False)
+    produtos_notificados = [aviso.produto.id for aviso in avisos]
+
+
     context = {
         'essencias_mais_vendidos': essencias_mais_vendidos,
         'produtos_mais_vendidos': produtos_mais_vendidos,
@@ -61,7 +66,8 @@ def index(request):
         'cart': cart,
         'subcategoria': subcategoria,
         'category': category,
-        'total_quantity_cart': total_quantity_cart
+        'total_quantity_cart': total_quantity_cart,
+        'produtos_notificados': produtos_notificados
     }
     return render(request, 'index.html', context)
 

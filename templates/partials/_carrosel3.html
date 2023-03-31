@@ -33,6 +33,8 @@
                            style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             R${{ product.price }}</p>
                         {% endif %}
+
+                    <div id="botao-container{{ product.id }}">
                         <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
                             {% if product.variation_set.exists %}
                             {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
@@ -44,25 +46,37 @@
                                    data-product-id="{{ product.id }}" value="1" min="1"
                                    max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
                             {% else %}
-                            <button class="btn btn-danger btn-sm w-100 ">Sem estoque</button>
+
+                                    {% if product.id in produtos_notificados %}
+                                        <button class="btn btn-warning btn-sm w-100" disabled id="botao_aguardando">Aguardando Restoque</button>
+                                    {% else %}
+                                    <button class="btn btn-danger btn-sm w-100 avise-me-button" data-product-id="{{ product.id }}" >Avisar-me </button>
+                                    {% endif %}
+
+                                    {% endif %}
+                                    {% endwith %}
+
+
+                                    {% elif product.stock < 1 %}
+                                    <button class="btn btn-danger btn-sm w-100 avise-me-button" data-product-id="{{ product.id }}" >Avisar-me </button>
+
+
+
+                                    {% else %}
+                                    <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button"
+                                            data-product-id="{{ product.id }}" data-variation-id="">Adicionar
+                                    </button>
+                                    <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
+                                           data-product-id="{{ product.id }}" value="1" min="1"
+                                           max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
 
                             {% endif %}
 
-                            {% endwith %}
-                            {% else %}
-                            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
-                                    data-product-id="{{ product.id }}" data-variation-id="">Adicionar
-                            </button>
-                            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
-                                   data-product-id="{{ product.id }}" value="1" min="1"
-                                   max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
-
-                            {% endif %}
-
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             {% endfor %}
 
@@ -163,6 +177,39 @@ $('.add-to-cart-button-2').click(function() {
 
 
 
+</script>
+
+
+
+<!--avise-me-->
+<script>
+<!--AVISE-ME-->
+$(document).ready(function() {
+  $(".avise-me-button").click(function() {
+    let productId = $(this).data('product-id');
+    console.log("Product ID: ", productId);
+    var url = "{% url 'avise:aviso_estoque' %}";
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: {
+        product_id: productId,
+        csrfmiddlewaretoken: csrftoken
+      },
+      success: function(data) {
+        alert("Aviso cadastrado com sucesso!");
+        var BotaoContainer = "#botao-container" + productId;
+        $(BotaoContainer).html("<button class='btn btn-warning btn-sm w-100' disabled id='botao_aguardando'>Aguardando Restoque</button>");
+
+      },
+      error: function(xhr, errmsg, err) {
+        alert("Erro ao cadastrar aviso!");
+      }
+    });
+  });
+});
 
 
 </script>
