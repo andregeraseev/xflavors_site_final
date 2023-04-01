@@ -1,8 +1,5 @@
 
-
-
-
-  /* Definir largura máxima da lista (container) do carrossel */
+     /* Definir largura máxima da lista (container) do carrossel */
   .carousel-container {
 	max-width: 1200px;
 	margin: 0 auto; /* centralizar o container na tela */
@@ -42,20 +39,25 @@
 
   /* Posicionamento da seta "próximo" */
   .slick-next {
-	right: 60px; /* posicionar à direita */
+	right: 9px; /* posicionar à direita */
 
   }
 
   /* Posicionamento da seta "anterior" */
   .slick-prev {
-	left: 15px; /* posicionar à esquerda */
+	left: -36px; /* posicionar à esquerda */
 
   }
 
+.slick-slider {
+    overflow: visible;
+}
+.slick-prev:before, .slick-next:before {
+    display: inline-block;
+}
 
 @media (max-width: 600px) {
   .product-card {
     height: 500px;
   }
 }
-
