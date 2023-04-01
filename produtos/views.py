@@ -1,5 +1,6 @@
 from django.db.models import Count
 
+from avise.models import AvisoEstoque
 from cart.models import Cart
 from django.shortcuts import render, get_object_or_404
 
@@ -60,7 +61,16 @@ def pagina_search(request, q):
     query = q
     products = Produto.objects.filter(name__icontains=query)
 
-    context= { "products": products}
+
+    if request.user.is_authenticated:
+        avisos = AvisoEstoque.objects.filter(cliente=request.user, notificado=False)
+    else:
+        avisos = None
+
+    produtos_notificados = [aviso.produto.id for aviso in avisos] if avisos else []
+    context= { "products": products, "produtos_notificados":produtos_notificados}
+
+
 
     return  render(request, 'pagina_search.html', context)
 
@@ -120,8 +130,15 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
         except Cart.DoesNotExist:
             pass
 
+    if request.user.is_authenticated:
+        avisos = AvisoEstoque.objects.filter(cliente=request.user, notificado=False)
+    else:
+        avisos = None
+    produtos_notificados = [aviso.produto.id for aviso in avisos] if avisos else []
+
     # Contexto para ser exibido no template
     context = {
+        "produtos_notificados": produtos_notificados,
         'category_filter': category_filter,
         'subcategory': subcategory,
         'produtos': produtos,
@@ -144,14 +161,15 @@ def product_detail(request, slug):
     # Obtenha todos os pedidos que contêm o item em questão
     # Obtenha todos os pedidos que contêm o produto em questão
     orders = Pedido.objects.filter(itens__in=pedido_itens, status="Pago").order_by().values_list('id', flat=True).distinct()
-    print(("ORDERS",orders))
+    # print(("ORDERS",orders))
     # Obtenha todos os outros itens que aparecem nos mesmos pedidos que o item em questão
     related_item_ids = PedidoItem.objects.filter(pedido__in=orders).exclude(product=produto).annotate(
         count=Count('product')).order_by('-count')
-    print(related_item_ids, "ITENS")
+    # print(related_item_ids, "ITENS")
     related_items = Produto.objects.filter(pedidoitem__in=related_item_ids).distinct()[:4]
-    print(related_items, "RELATED ITENS")
+    # print(related_items, "RELATED ITENS")
     # Ordene o dicionário pelos valores em ordem decrescente para obter os itens mais comuns
+
 
 
     category = Category.objects.all()
@@ -165,7 +183,15 @@ def product_detail(request, slug):
         except Cart.DoesNotExist:
             pass
 
+
+    if request.user.is_authenticated:
+        avisos = AvisoEstoque.objects.filter(cliente=request.user, notificado=False)
+    else:
+        avisos = None
+    produtos_notificados = [aviso.produto.id for aviso in avisos] if avisos else []
+
     context = {
+        "produtos_notificados":produtos_notificados,
         'related_products': related_items,
         'product': produto,
         'total_quantity_cart': total_quantity_cart,
