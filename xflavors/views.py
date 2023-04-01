@@ -53,9 +53,11 @@ def index(request):
     active_banners_menor = BannerMenor.objects.filter(active=True)
     active_banners = Banner.objects.filter(active=True)
 
-    avisos = AvisoEstoque.objects.filter(cliente=request.user, notificado=False)
-    produtos_notificados = [aviso.produto.id for aviso in avisos]
-
+    if request.user.is_authenticated:
+        avisos = AvisoEstoque.objects.filter(cliente=request.user, notificado=False)
+    else:
+        avisos = None
+    produtos_notificados = [aviso.produto.id for aviso in avisos] if avisos else []
 
     context = {
         'essencias_mais_vendidos': essencias_mais_vendidos,

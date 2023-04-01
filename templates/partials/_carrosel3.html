@@ -5,83 +5,16 @@
       <hr style="border: none; border-top: 1px solid black;">
 
       <!-- Carrossel -->
-      <div class="card-deck essencia-list2">
-        {% for product in essencias_mais_vendidos|slice:":10" %}
-        <div class="col product-card">
-          <div class="card ">
-            <a href="{% url 'product_detail' product.slug %}">
-              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top">
-            </a>
-            <div class="card-body" style="height: 220px;">
-              <h5 class="card-title"
-                  style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;"
-                  onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
+            <div class="card-deck  slick-list ">
+                {% for product in essencias_mais_vendidos|slice:":10" %}
 
-                        <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small>
-                        {% if product.variation_set.exists %}
-                        <select name="variation" class="variation-select form-select form-control-sm w-100"
-                                data-product-id="{{ product.id }}">
-                            {% for variation in product.variation_set.all %}
-                            <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{variation.nome_simplificado }}
-                                - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}
-                            </option>
-                            {% endfor %}
-                        </select>
-                        <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
-                        {% else %}
-                        <p class="mb-1"
-                           style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            R${{ product.price }}</p>
-                        {% endif %}
+                {% include 'carrocel_partials/_carrocel_card.html' %}
 
-                    <div id="botao-container{{ product.id }}">
-                        <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
-                            {% if product.variation_set.exists %}
-                            {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
-                            {% if materia_prima_stock > 10 %}
-                            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
-                                    data-product-id="{{ product.id }}" data-variation-id="">Adicionar
-                            </button>
-                            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
-                                   data-product-id="{{ product.id }}" value="1" min="1"
-                                   max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
-                            {% else %}
-
-                                    {% if product.id in produtos_notificados %}
-                                        <button class="btn btn-warning btn-sm w-100" disabled id="botao_aguardando">Aguardando Restoque</button>
-                                    {% else %}
-                                    <button class="btn btn-danger btn-sm w-100 avise-me-button" data-product-id="{{ product.id }}" >Avisar-me </button>
-                                    {% endif %}
-
-                                    {% endif %}
-                                    {% endwith %}
+                {% endfor %}
 
 
-                                    {% elif product.stock < 1 %}
-                                    <button class="btn btn-danger btn-sm w-100 avise-me-button" data-product-id="{{ product.id }}" >Avisar-me </button>
+            </div>
 
-
-
-                                    {% else %}
-                                    <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button"
-                                            data-product-id="{{ product.id }}" data-variation-id="">Adicionar
-                                    </button>
-                                    <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
-                                           data-product-id="{{ product.id }}" value="1" min="1"
-                                           max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
-
-                            {% endif %}
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            {% endfor %}
-
-
-        </div>
     </div>
 </div>
 
@@ -180,16 +113,22 @@ $('.add-to-cart-button-2').click(function() {
 </script>
 
 
-
 <!--avise-me-->
 <script>
-<!--AVISE-ME-->
+<!--avise-me-->
+
 $(document).ready(function() {
   $(".avise-me-button").click(function() {
     let productId = $(this).data('product-id');
     console.log("Product ID: ", productId);
     var url = "{% url 'avise:aviso_estoque' %}";
     var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    // Encontra o botão "avise-me" correspondente no outro carrossel usando o mesmo "productId"
+    var otherButton = $('#carousel-1 .avise-me-button[data-product-id="' + productId + '"]');
+    if (otherButton.length == 0) {
+      otherButton = $('#carousel-2 .avise-me-button[data-product-id="' + productId + '"]');
+    }
 
     $.ajax({
       url: url,
@@ -198,18 +137,45 @@ $(document).ready(function() {
         product_id: productId,
         csrfmiddlewaretoken: csrftoken
       },
-      success: function(data) {
-        alert("Aviso cadastrado com sucesso!");
-        var BotaoContainer = "#botao-container" + productId;
-        $(BotaoContainer).html("<button class='btn btn-warning btn-sm w-100' disabled id='botao_aguardando'>Aguardando Restoque</button>");
+       success: function(data) {
+        if (data.success) {
+          // Exibe uma mensagem de sucesso
+        $('#alert_success').show();
+        $('#alert_container_success').show();
+        $('#alert_success').html(data.aviso_adicionado);
 
+        // Oculta a mensagem de sucesso após 5 segundos
+        setTimeout(function() {
+          $('#alert_success').hide();
+          $('#alert_container_success').hide();
+        }, 5000);
+
+
+          // Muda o botão "avise-me" nos dois carrosséis para "Aguardando Restoque"
+          var buttonHtml = "<button class='btn btn-warning btn-sm w-100' disabled id='botao_aguardando'>Aguardando Restoque</button>";
+          $(".avise-me-button[data-product-id='" + productId + "']").replaceWith(buttonHtml);
+          otherButton.replaceWith(buttonHtml);
+        }
+        else {
+           // Exibe uma mensagem de erro
+        $('#available-stock').text(data.mensagem);
+        $('#alert-erro').show();
+        $('#alert-container-erro').show();
+        $('#alert-erro').html(data.mensagem);
+
+        // Oculta a mensagem de erro após 5 segundos
+        setTimeout(function() {
+          $('#alert-erro').hide();
+          $('#alert-container-erro').hide();
+        }, 5000);
+
+        }
       },
       error: function(xhr, errmsg, err) {
-        alert("Erro ao cadastrar aviso!");
+        alert("Erro ao cadastrar aviso!" + errmsg.message);
       }
     });
   });
 });
-
-
 </script>
+

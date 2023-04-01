@@ -18,16 +18,22 @@ def aviso_estoque(request):
         produto_id = request.POST.get('product_id')
         print("produto_id", produto_id)
         user = request.user
-        print("user", user)
-        produto = get_object_or_404(Produto, pk=produto_id)
 
-        aviso = AvisoEstoque.objects.create(
-            produto=produto,
-            cliente=user,
+        if user.is_anonymous:
+            print("ANONIMO")
+            return JsonResponse({'success': False, 'mensagem': 'Usuário precisa estar cadastrado e logado'})
+        else:
+            print("USUARIO AUTENTICADO")
+            print("user", user)
+            produto = get_object_or_404(Produto, pk=produto_id)
 
-        )
+            aviso = AvisoEstoque.objects.create(
+                produto=produto,
+                cliente=user,
 
-        return JsonResponse({'status': 'ok'})
+            )
+
+            return JsonResponse({"success":True, 'status': 'ok', "aviso_adicionado":"Aviso cadastrado com sucesso"})
     return JsonResponse({'status': 'error'})
 
 
