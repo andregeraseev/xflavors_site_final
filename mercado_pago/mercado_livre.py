@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 
 def cria_preferencia(request, pedido):
     sdk = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
-    frete = int(pedido.valor_frete)
+    frete = float(pedido.valor_frete)
     id_pedido = pedido.id
     itens = []
     for item in pedido.itens.all():
