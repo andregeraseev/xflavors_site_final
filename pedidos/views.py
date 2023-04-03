@@ -34,6 +34,8 @@ def detalhes_pedido(request, pedido_id):
         else:
             preco = item.product.price
         total += item.quantity * preco
+
+
     context = {'pedido': pedido, 'total':total}
 
     return render(request, 'detalhes_pedido.html', context)
@@ -55,9 +57,11 @@ def checkout(request):
     for item in itens:
         if item.variation:
             preco= item.variation.price
+
         else:
             preco = item.product.price
         total += item.quantity * preco
+        print("TOTAL", total)
 
     # Verifica se o usuário está autenticado e se existe um objeto Cliente correspondente a ele
     if user.is_authenticated and hasattr(user, 'cliente'):
@@ -365,8 +369,11 @@ def criar_pedido(request):
     # Obter informações do formulário
     user = request.user
     subtotal = float(request.POST['subtotal'])
+    print("SUBTOTAL", subtotal)
     frete = float(request.POST['frete'])
+    print("Frete", frete)
     total = float(request.POST['total'])
+    print("total", total)
     frete_selecionado = request.POST['frete_selecionado']
     metodo_pagamento = request.POST['metodo_pagamento']
     observacao = request.POST['observacao']
@@ -536,12 +543,12 @@ def pagina_pagamento(request, pedido_id):
         return redirect('home')
 
 
-    print(itens)
-    for item in itens:
-        print(item.quantity)
-        print(item.variation)
-        print(item.product)
-        print(pedido.metodo_de_pagamento)
+    # print(itens)
+    # for item in itens:
+    #     print(item.quantity)
+    #     print(item.variation)
+    #     print(item.product)
+    #     print(pedido.metodo_de_pagamento)
 
 
 

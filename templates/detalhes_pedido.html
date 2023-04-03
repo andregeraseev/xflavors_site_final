@@ -31,8 +31,12 @@
                                     <td>  R${{ pedido.valor_frete }} </td>
                                 </tr>
                                 <tr>
+                                    <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                    <td><strong>R$ {{ pedido.subtotal }}</strong></td>
+                                </tr>
+                                <tr>
                                     <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                    <td><strong>R$ {{ total }}</strong></td>
+                                    <td><strong>R$ {{ pedido.total }}</strong></td>
                                 </tr>
                             </tbody>
                         </table>

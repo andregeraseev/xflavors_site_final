@@ -3,7 +3,7 @@
 {% block content %}
 <div class="row">
   <div class="col-12 col-md-6">
-    <h2 class="mb-4">Endereço de Entrega</h2>
+    <h2 class="mb-4">Endereço de Entrega{{ total }}</h2>
     {% if endereco_primario %}
     <p>{{ endereco_primario.rua }}, {{ endereco_primario.numero }} - {{ endereco_primario.complemento }}<br>
       {{ endereco_primario.bairro }}, {{ endereco_primario.cidade }} - {{ endereco_primario.estado }}<br>
@@ -239,7 +239,10 @@ $(document).ready(function () {
       valorFrete = parseFloat($('#valor-pac').text().match(/\d+\.\d+/)[0]);
     }
     $('#frete').text('R$ ' + valorFrete.toFixed(2));
-    var totalComFrete = parseFloat('{{ total }}') + valorFrete;
+    var valor = "{{ total }}";
+    var total = valor.replace(",", ".");
+    console.log(total)
+    var totalComFrete = parseFloat(total) + valorFrete;
     $('#total-com-frete').text('R$ ' + totalComFrete.toFixed(2));
   });
 });
@@ -336,14 +339,17 @@ $(document).ready(function() {
 
 <!--    alert('CRIANDO PEDIDO.');-->
     // Obtém o valor do subtotal
-    var subtotal = parseFloat($('#subtotal').text().replace('R$ ', ''));
-
+<!--    var valor_subtotal = '#subtotal';-->
+<!--    var valor_subtotal = valor.replace(",", ".");-->
+<!--    console.log(total)-->
+    var subtotal = parseFloat($('#subtotal').text().replace('R$ ', '').replace(',', '.'));
+    console.log(subtotal)
     // Obtém o valor do frete
     var frete = parseFloat($('#frete').text().replace('R$ ', ''));
-
+    console.log(frete)
     // Obtém o valor total com o frete
     var total = parseFloat($('#total-com-frete').text().replace('R$ ', ''));
-
+    console.log(total)
     // Obtém o método de pagamento selecionado
     var metodoPagamento = $('input[name=metodo_pagamento]:checked').val();
 
