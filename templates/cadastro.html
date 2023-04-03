@@ -15,7 +15,7 @@
 
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+            <input type="email" class="form-control" id="email" name="email" maxlength="50" aria-describedby="emailHelp">
             <div id="email-feedback" class="invalid-feedback"></div>
 
         </div>
@@ -25,7 +25,7 @@
         </div>
         <div class="form-group">
             <label for="cpf">CPF</label>
-            <input type="text" class="form-control" id="cpf" name="cpf" required>
+            <input type="text" class="form-control"  maxlength="15" id="cpf" name="cpf" required>
             <div class="invalid-feedback">
                 CPF inválido.
             </div>
@@ -35,11 +35,14 @@
             <div class="form-group mt-2" style="display: flex;">
                 <div style="margin-right: 10px;">
                     <label for="password">Senha:</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" maxlength="50" required>
+                    <small id="password-help" class="form-text text-muted">
+    <br> Senha deve ter: <br> pelo menos 8 caracteres<br> Uma letra maiúscula <br> Um caracter especial.
+  </small>
                 </div>
                 <div>
                     <label for="password-confirm">Confirme a senha:</label>
-                    <input type="password" id="password-confirm" name="password_confirm" required>
+                    <input type="password" id="password-confirm" maxlength="50" name="password_confirm" required>
                     <div id="password-feedback" class="invalid-feedback"></div>
                 </div>
             </div>
@@ -50,32 +53,32 @@
 
         <div class="form-group">
             <label for="cep">CEP:</label>
-            <input type="text" class="form-control" id="cep" name="cep">
+            <input type="text" class="form-control" maxlength="12" id="cep" name="cep">
         </div>
         <div class="form-group">
             <label for="street">Rua:</label>
-            <input type="text" class="form-control" id="street" name="street">
+            <input type="text" class="form-control" id="street" maxlength="50" name="street">
         </div>
         <div class="form-group">
             <label for="number">Número:</label>
-            <input type="text" class="form-control" id="number" name="number">
+            <input type="text" class="form-control" id="number" maxlength="5" name="number">
         </div>
         <div class="form-group">
             <label for="city">Cidade:</label>
-            <input type="text" class="form-control" id="city" name="city">
+            <input type="text" class="form-control" id="city" maxlength="50" name="city">
         </div>
         <div class="form-group">
             <label for="neighborhood">Bairro:</label>
-            <input type="text" class="form-control" id="neighborhood" name="neighborhood">
+            <input type="text" class="form-control" id="neighborhood" maxlength="50" name="neighborhood">
         </div>
         <div class="form-group">
             <label for="state">Estado:</label>
-            <input type="text" class="form-control" id="state" name="state">
+            <input type="text" class="form-control" id="state" maxlength="2" name="state">
 
         </div>
         <div class="form-group">
             <label for="complement">Complemento:</label>
-            <input type="text" class="form-control" id="complement" name="complement">
+            <input type="text" class="form-control" id="complement" maxlength="50" name="complement">
         </div>
         <button type="submit" class="btn btn-primary" id="submit-btn">Enviar</button>
 

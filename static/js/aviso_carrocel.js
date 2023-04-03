@@ -1,3 +1,4 @@
+<!--avise-me-->
 
 $(document).ready(function() {
   $(".avise-me-button").click(function() {
