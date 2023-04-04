@@ -11,7 +11,7 @@ from tiny_erp.webhook import tiny_webhook
 from tiny_erp.webhook_estoque import tiny_webhook_stock_update
 from tiny_erp.webhook_rastreio import tiny_rastreio
 from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,\
-    pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending
+    pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending, validar_cupom, remover_cupom
 from mercado_pago.mercado_livre_weebhook import mercado_pago_webhook
 from Importador.clientes import ImportClientesView
 from django.urls import path, include
@@ -40,6 +40,9 @@ urlpatterns = [
     path('atualizar_endereco_entrega/', atualizar_endereco_entrega, name='atualizar_endereco_entrega'),
     path('editar_endereco/', editar_endereco, name='editar_endereco'),
     path('cotacao_frete_correios/', cotacao_frete_correios, name='cotacao_frete_correios'),
+    path('validar_cupom/', validar_cupom, name='validar_cupom'),
+    path('remover_cupom/', remover_cupom, name='remover_cupom'),
+
     path('criar_pedido/', criar_pedido, name='criar_pedido'),
     path('pagina_pagamento/<int:pedido_id>', pagina_pagamento, name='pagina_pagamento'),
     path('visualizar_pedidos', visualizar_pedidos, name='visualizar_pedidos'),

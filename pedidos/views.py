@@ -47,6 +47,65 @@ def visualizar_pedidos(request):
     return render(request, 'visualizar_pedidos.html', context)
 
 
+
+
+
+
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from cart.models import Cupom
+
+def validar_cupom(request):
+    user = request.user
+    cart = Cart.get_or_create_cart(user)
+    print("TESTANDO CUPOM")
+    codigo_cupom = request.POST.get('codigo_cupom')
+    print("codigo_cupom", codigo_cupom)
+    cupom = get_object_or_404(Cupom, codigo=codigo_cupom)
+    print("cupom", cupom)
+    subtotal = float(request.POST.get('total_pedido'))
+    print("subtotal", subtotal)
+
+    if not cupom.pode_ser_utilizado():
+        return JsonResponse({'status': 'error', 'mensagem': 'O cupom não pode ser utilizado.'})
+
+    valor_desconto = round(float(cupom.desconto_percentual) / 100 * subtotal, 2)
+    print("valor_desconto", valor_desconto)
+    valor_total_com_desconto = subtotal - valor_desconto
+    print("valor_total_com_desconto", valor_total_com_desconto)
+
+    cart.aplicar_cupom(codigo_cupom)
+
+
+    return JsonResponse({'status': 'success', 'valor_total_com_desconto': valor_total_com_desconto, 'valor_desconto': valor_desconto})
+
+
+def remover_cupom(request):
+    cart_id = request.POST['cart_id']
+    cupom_id = request.POST['cupom_id']
+
+    # Verifica se o carrinho pertence ao usuário atual
+    cart = get_object_or_404(Cart, id=cart_id, user=request.user)
+
+    # Verifica se o carrinho tem um cupom
+    if not cart.cupom:
+        return JsonResponse({'status': 'error', 'mensagem': 'O carrinho não tem um cupom.'})
+
+    # Verifica se o cupom pertence ao carrinho
+    if cart.cupom.id != int(cupom_id):
+        return JsonResponse({'status': 'error', 'mensagem': 'O cupom não pertence ao carrinho.'})
+
+    # Remove o cupom do carrinho
+    cart.cupom = None
+    cart.save()
+
+    return JsonResponse({'status': 'success'})
+
+
+
 @login_required
 def checkout(request):
     user = request.user
@@ -63,13 +122,22 @@ def checkout(request):
         total += item.quantity * preco
         print("TOTAL", total)
 
+    subtotal = total
+    desconto =0
+    total_com_desconto = None
+    if cart.cupom:
+        valor_desconto = round(float(cart.cupom.desconto_percentual) / 100 * float(total), 2)
+        print("valor_desconto", valor_desconto)
+        desconto = - valor_desconto
+        total = round(float(total) + desconto,2)
+
     # Verifica se o usuário está autenticado e se existe um objeto Cliente correspondente a ele
     if user.is_authenticated and hasattr(user, 'cliente'):
         enderecos = user.cliente.enderecoentrega_set.all()
         endereco_primario = enderecos.filter(primario=True).first()
         print(enderecos)
 
-    return render(request, 'pedidos/checkout.html', {'cart': cart, 'total': total, 'endereco': enderecos, 'endereco_primario': endereco_primario, 'itens': itens})
+    return render(request, 'pedidos/checkout.html', { 'subtotal':subtotal,'desconto':desconto, 'cart': cart, 'total': total, 'endereco': enderecos, 'endereco_primario': endereco_primario, 'itens': itens})
 
 
 
@@ -374,6 +442,8 @@ def criar_pedido(request):
     print("Frete", frete)
     total = float(request.POST['total'])
     print("total", total)
+    desconto = float(request.POST.get('desconto', 0))
+    print("desconto", desconto)
     frete_selecionado = request.POST['frete_selecionado']
     metodo_pagamento = request.POST['metodo_pagamento']
     observacao = request.POST['observacao']
@@ -429,7 +499,8 @@ def criar_pedido(request):
             valor_frete=frete,
             total=total,
             metodo_de_pagamento=metodo_pagamento,
-            observacoes = observacao
+            observacoes = observacao,
+            desconto = desconto
         )
 
         print(pedido.metodo_de_pagamento, "METODO DE PAGAMENTO")
@@ -476,6 +547,7 @@ def criar_pedido(request):
         # Limpar o carrinho
         print('deletando carrinho')
         cart.cartitem_set.all().delete()
+        cart.delete()
         print(pedido.id, 'PEDIDO ID')
 
         try:
@@ -561,6 +633,7 @@ def pagina_pagamento(request, pedido_id):
         'tipo_frete': pedido.frete,
         'valor_frete': pedido.valor_frete,
         'total': pedido.total,
+        'desconto': pedido.desconto,
         'frete_selecionado': request.GET.get('frete_selecionado'),
         'metodo_de_pagamento': pedido.metodo_de_pagamento,
     }

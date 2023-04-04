@@ -6,6 +6,43 @@ from django.http import JsonResponse
 from produtos.models import Produto, Variation
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
+from django.utils import timezone
+
+
+class Cupom(models.Model):
+    STATUS_CHOICES = (
+        ('Ativo', 'Ativo'),
+        ('Expirado', 'Expirado'),
+        ('Utilizado', 'Utilizado'),
+    )
+
+    codigo = models.CharField(max_length=15, unique=True)
+    desconto_percentual = models.DecimalField(max_digits=5, decimal_places=2)
+    maximo_usos = models.IntegerField(default=1)
+    usos_atuais = models.IntegerField(default=0)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='Ativo')
+    data_validade = models.DateTimeField(default=timezone.now)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_modificacao = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.codigo
+
+    def gerar_codigo(self):
+        self.codigo = str(uuid.uuid4().hex.upper()[:15])
+
+    def esta_ativo(self):
+        return self.status == 'Ativo'
+
+    def pode_ser_utilizado(self):
+        return self.esta_ativo() and self.usos_atuais < self.maximo_usos and timezone.now() < self.data_validade
+
+    def adicionar_uso(self):
+        self.usos_atuais += 1
+        self.save()
+
+
 
 
 # Classe Cart, que representa o carrinho de compras de um usuário
@@ -22,6 +59,29 @@ class Cart(models.Model):
     # todo
     variations = models.ManyToManyField(Variation, related_name='carts', blank=True)
     # Método que retorna ou cria o carrinho de um determinado usuário
+    cupom = models.ForeignKey(Cupom, on_delete=models.SET_NULL, null=True, blank=True)
+
+    # métodos do modelo
+
+    def aplicar_cupom(self, codigo_cupom):
+        if not self.cupom:
+            try:
+                cupom = Cupom.objects.get(codigo=codigo_cupom)
+                self.cupom = cupom
+            except Cupom.DoesNotExist:
+                return False, 'Cupom inválido.'
+            if self.cupom.pode_ser_utilizado():
+                self.cupom.adicionar_uso()
+                self.cupom = cupom
+                self.save()
+                return True, 'Cupom aplicado com sucesso.'
+            else:
+                return False, 'Cupom expirado.'
+        else:
+            return False, 'Já existe um cupom aplicado neste pedido.'
+
+
+
     @classmethod
     def get_or_create_cart(cls, user):
         # Verifica se o usuário não é anônimo

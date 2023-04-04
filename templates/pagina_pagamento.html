@@ -141,6 +141,12 @@ function copyToClipboard(text) {
               <td colspan="3">Frete  {{ tipo_frete }}:</td>
               <td> R${{ valor_frete }}</td>
             </tr>
+            {% if desconto != 0 %}
+            <tr>
+              <td colspan="3">Desconto:</td>
+              <td>R${{ desconto }}</td>
+            </tr>
+            {% endif %}
             <tr>
               <td colspan="3">Total:</td>
               <td>R${{ total }}</td>

@@ -1,5 +1,5 @@
 from clientes.models import EnderecoEntrega
-from cart.models import Cart
+from cart.models import Cart, Cupom
 from django.contrib.auth.models import User
 from django.db import models
 from django.db import models
@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from clientes.models import EnderecoEntrega
 from produtos.models import Produto, Variation
 from cart.models import CartItem
+import uuid
+from django.utils import timezone
 
 
 class PedidoItem(models.Model):
@@ -50,6 +52,13 @@ class EnderecoPedido(models.Model):
     cidade = models.CharField(max_length=100)
     estado = models.CharField(max_length=2)
     cep = models.CharField(max_length=8)
+
+
+
+
+
+
+
 
 
 
@@ -103,6 +112,13 @@ class Pedido(models.Model):
     observacoes = models.TextField(blank=True, null=True) # campo de observacoes do cliente
     observacoes_internas = models.TextField(blank=True, null=True) # campo de observacoes internar
     link_mercado_pago = models.CharField(max_length=400, blank=True, null=True) # link para pagar via mercado pago
+    cupom = models.ForeignKey(Cupom, on_delete=models.SET_NULL, null=True, blank=True)
+    desconto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    # métodos do modelo
+
+
+
+
     class Meta:
         ordering = ('-data_pedido',)
 
@@ -129,6 +145,11 @@ class Pedido(models.Model):
 
     def __str__(self):
         return f"Pedido {self.id}"
+
+
+
+
+
 
 
 

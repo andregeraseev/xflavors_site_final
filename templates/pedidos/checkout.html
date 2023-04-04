@@ -3,7 +3,7 @@
 {% block content %}
 <div class="row">
   <div class="col-12 col-md-6">
-    <h2 class="mb-4">Endereço de Entrega{{ total }}</h2>
+    <h2 class="mb-4">Endereço de Entrega</h2>
     {% if endereco_primario %}
     <p>{{ endereco_primario.rua }}, {{ endereco_primario.numero }} - {{ endereco_primario.complemento }}<br>
       {{ endereco_primario.bairro }}, {{ endereco_primario.cidade }} - {{ endereco_primario.estado }}<br>
@@ -82,7 +82,6 @@
 <textarea name="observacao" class="form-control mb-3" rows="3"></textarea>
 
 
-
   <h3>Detalhes do Pedido</h3>
 
 <script>
@@ -90,7 +89,9 @@ function fecharAlerta(id) {
   $('#alert-container-erro-' + id).hide();
 }
 </script>
+
     {% for item in itens %}
+
     <div id="alert-container-erro-{{ item.id }}" style="display: none;">
       <div id="alert-erro-{{ item.id }}" class="alert alert-danger alert-dismissible fade show" role="alert">
       </div>
@@ -120,19 +121,46 @@ function fecharAlerta(id) {
     <tfoot>
       <tr>
         <th colspan="3">Subtotal:</th>
-        <td id="subtotal">R$ {{ total }}</td>
+        <td id="subtotal">R$ {{ subtotal }}</td>
       </tr>
       <tr>
         <th colspan="3">Frete:</th>
         <td id="frete">R$ 0.00</td>
       </tr>
+      {% if cart.cupom %}
+      <tr>
+        <th colspan="3">Desconto:</th>
+        <td id="total-com-desconto">R$ {{ desconto }}</td>
+      </tr>
+      {% endif %}
       <tr>
         <th colspan="3">Total:</th>
-        <td id="total-com-frete">R$ {{ total }}</td>
+        <td id="total-com-frete">R$ {{ total }} </td>
       </tr>
+
+
+
     </tfoot>
   </table>
     </div>
+    {% if cart.cupom %}
+  <div class="mt-4">
+
+    <p class="mb-1"><strong>Cupom:</strong> {{ cart.cupom }}</p>
+    <button id="remover-cupom-btn" class="btn btn-danger">Remover Cupom</button>
+  </div>
+{% else %}
+  <div class="mt-4">
+    <form id="cupom-form" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_codigo_cupom">Código do Cupom</label>
+        <input type="text" class="form-control" id="id_codigo_cupom" name="codigo_cupom">
+      </div>
+      <button type="submit" class="btn btn-primary">Aplicar Cupom</button>
+    </form>
+  </div>
+{% endif %}
 </div>
 </div>
 
@@ -239,10 +267,16 @@ $(document).ready(function () {
       valorFrete = parseFloat($('#valor-pac').text().match(/\d+\.\d+/)[0]);
     }
     $('#frete').text('R$ ' + valorFrete.toFixed(2));
-    var valor = "{{ total }}";
+    var valor = "{{ total }}" ;
+<!--    var desconto =  "{{ total_com_desconto }}";-->
+<!--    var desconto = desconto.replace(",", ".");-->
+<!--    console.log("desconto", desconto)-->
     var total = valor.replace(",", ".");
-    console.log(total)
-    var totalComFrete = parseFloat(total) + valorFrete;
+    console.log("total", total)
+<!--    console.log("total - desconto", parseFloat(total) + parseFloat(desconto))-->
+
+
+    var totalComFrete = parseFloat(total) + valorFrete ;
     $('#total-com-frete').text('R$ ' + totalComFrete.toFixed(2));
   });
 });
@@ -344,6 +378,13 @@ $(document).ready(function() {
 <!--    console.log(total)-->
     var subtotal = parseFloat($('#subtotal').text().replace('R$ ', '').replace(',', '.'));
     console.log(subtotal)
+
+    // Obtém o valor do desconto
+     var desconto = 0;
+      var descontoElement = $('#total-com-desconto');
+      if (descontoElement.length) {
+        desconto = parseFloat(descontoElement.text().replace('R$ ', '').replace(',', '.'));
+      }
     // Obtém o valor do frete
     var frete = parseFloat($('#frete').text().replace('R$ ', ''));
     console.log(frete)
@@ -365,6 +406,7 @@ $(document).ready(function() {
       url: '{% url "criar_pedido" %}',
       type: 'POST',
       data: {
+        'desconto':desconto,
         'observacao' : observacao,
         'subtotal': subtotal,
         'frete': frete,
@@ -426,6 +468,68 @@ $(document).ready(function() {
   background-color: #ffcccc;
 }
 </style>
+
+
+
+
+
+<!--VALIDAR CUPOM-->
+<script>
+  $(document).ready(function() {
+    $('#cupom-form').submit(function(event) {
+      event.preventDefault();
+      var subtotal = parseFloat($('#subtotal').text().replace('R$ ', '').replace(',', '.'));
+      console.log(subtotal);
+      var codigo_cupom = $('#id_codigo_cupom').val();
+      console.log(codigo_cupom);
+      $.ajax({
+        type: 'POST',
+        url: '{% url "validar_cupom" %}',
+        data: {
+          codigo_cupom: codigo_cupom,
+          'total_pedido': subtotal,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(data) {
+          if (data.status === 'success') {
+            $('#total-com-frete').text('R$ ' + data.valor_total_com_desconto.toFixed(2));
+            $('#desconto').text('R$ ' + data.valor_desconto.toFixed(2)).parent().show();
+            location.reload();
+          } else {
+            alert(data.mensagem);
+          }
+        },
+        error: function() {
+          alert('Ocorreu um erro ao validar o cupom.');
+        }
+      });
+    });
+  });
+</script>
+
+<!--remocer cupom-->
+
+<script>
+    $(document).ready(function() {
+        $('#remover-cupom-btn').click(function() {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "remover_cupom" %}',
+                data: {
+                    'cart_id': '{{ cart.id }}',
+                    'cupom_id': '{{ cart.cupom.id }}',
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    location.reload();
+                },
+                error: function() {
+                    alert('Ocorreu um erro ao remover o cupom.');
+                }
+            });
+        });
+    });
+</script>
 
 
     {% endblock %}

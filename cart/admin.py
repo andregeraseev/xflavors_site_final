@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Cart, CartItem
+from .models import Cart, CartItem, Cupom
 
 
 class CartItemAdmin(admin.ModelAdmin):
@@ -22,3 +22,16 @@ class Cartadmin(admin.ModelAdmin):
   list_display = ['id', 'user']
 
 admin.site.register(Cart, Cartadmin)
+
+
+class CupomAdmin(admin.ModelAdmin):
+  list_display = ('codigo', 'desconto_percentual', 'maximo_usos', 'usos_atuais', 'status', 'data_validade')
+  list_filter = ('status', 'data_validade')
+  search_fields = ('codigo',)
+  fieldsets = (
+    (None, {'fields': ('codigo', 'desconto_percentual', 'maximo_usos', 'data_validade')}),
+    ('Status', {'fields': ('status',)}),
+  )
+
+
+admin.site.register(Cupom, CupomAdmin)
