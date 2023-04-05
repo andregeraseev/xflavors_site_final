@@ -13,7 +13,7 @@ def cria_preferencia(request, pedido):
     frete = float(pedido.valor_frete)
     id_pedido = pedido.id
     total = float(pedido.total)
-    print(total)
+
     itens = []
     for item in pedido.itens.all():
         if item.variation:
