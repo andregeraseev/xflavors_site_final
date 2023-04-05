@@ -34,10 +34,12 @@
                                     <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
                                     <td><strong>R$ {{ pedido.subtotal }}</strong></td>
                                 </tr>
+                                {% if pedido.desconto %}
                                 <tr>
                                     <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
                                     <td><strong>R$ {{ pedido.desconto }}</strong></td>
                                 </tr>
+                                {% endif %}
                                 <tr>
                                     <td colspan="3" class="text-end"><strong>Total:</strong></td>
                                     <td><strong>R$ {{ pedido.total }}</strong></td>
