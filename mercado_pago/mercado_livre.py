@@ -12,7 +12,8 @@ def cria_preferencia(request, pedido):
     sdk = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
     frete = float(pedido.valor_frete)
     id_pedido = pedido.id
-    total = pedido.total
+    total = float(pedido.total)
+    print(total)
     itens = []
     for item in pedido.itens.all():
         if item.variation:
@@ -33,12 +34,16 @@ def cria_preferencia(request, pedido):
     print(itens, 'ITENSSSS')
 
     preference_data = {
+
+        'items': [
+            { 'currency_id': 'BRL', 'description': 'pagamento XF', 'title': 'Produto XF',
+             'quantity': 1, 'unit_price': total}],
         # "items": itens,
-        "shipments": {
-                "cost": frete,
-                "mode": "not_specified",
-            },
-        "total_amount": total,
+        # "shipments": {
+        #         "cost": frete,
+        #         "mode": "not_specified",
+        #     },
+
 
         "back_urls": {
             "success": "https://xflavors.pythonanywhere.com/success",
@@ -51,7 +56,8 @@ def cria_preferencia(request, pedido):
             "pending": "https://xflavors.pythonanywhere.com/pending"
         },
         "external_reference": id_pedido,
-        "auto_return" : "approved"
+        "auto_return" : "approved",
+
 
 
     }
