@@ -456,6 +456,7 @@ def criar_pedido(request):
     endereco_entrega = EnderecoEntrega.objects.filter(cliente=user.cliente, primario=True).first()
     # Obter o carrinho atual do usuário
     cart = Cart.objects.get(user=request.user)
+    cupom = cart.cupom
     # print('SUBTOTAL',subtotal)
 
     items = cart.cartitem_set.all()
@@ -500,7 +501,8 @@ def criar_pedido(request):
             total=total,
             metodo_de_pagamento=metodo_pagamento,
             observacoes = observacao,
-            desconto = desconto
+            desconto = desconto,
+            cupom = cupom
         )
 
         print(pedido.metodo_de_pagamento, "METODO DE PAGAMENTO")
