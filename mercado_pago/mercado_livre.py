@@ -12,6 +12,7 @@ def cria_preferencia(request, pedido):
     sdk = mercadopago.SDK(os.getenv('MERCADOLIVRETOKEN'))
     frete = float(pedido.valor_frete)
     id_pedido = pedido.id
+    total = pedido.total
     itens = []
     for item in pedido.itens.all():
         if item.variation:
@@ -32,11 +33,12 @@ def cria_preferencia(request, pedido):
     print(itens, 'ITENSSSS')
 
     preference_data = {
-        "items": itens,
+        # "items": itens,
         "shipments": {
                 "cost": frete,
                 "mode": "not_specified",
             },
+        "total_amount": total,
 
         "back_urls": {
             "success": "https://xflavors.pythonanywhere.com/success",
