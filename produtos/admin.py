@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Produto, Category, Subcategory, Variation, MateriaPrima
+from .models import Produto, Category, Subcategory, Variation, MateriaPrima, Favorito
 from django.utils.html import format_html
 
 class VariationCategoryInline(admin.TabularInline):
@@ -53,3 +53,10 @@ class VariantionAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 admin.site.register(Variation,VariantionAdmin)
+
+class FavoritoAdmin(admin.ModelAdmin):
+    list_display = ('cliente',)
+
+
+
+admin.site.register(Favorito, FavoritoAdmin)

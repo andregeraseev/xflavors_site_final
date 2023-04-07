@@ -15,9 +15,7 @@ from enviadores.email import enviar_email_confirmacao
 from pedidos.models import Pedido
 from .models import Cliente, EnderecoEntrega
 from django.contrib.auth.models import User
-from produtos.models import Produto
-
-
+from produtos.models import Produto, Favorito
 
 
 def login_view(request):
@@ -150,7 +148,12 @@ def dashboard(request):
     enderecos = EnderecoEntrega.objects.filter(cliente=cliente)
     pedidos = Pedido.objects.filter(user=request.user)
     avisos = AvisoEstoque.objects.filter(cliente=request.user,notificado=False)
-    context = {'cliente': cliente, 'enderecos': enderecos, 'pedidos':pedidos, "avisos":avisos}
+
+    favorito = Favorito.objects.get(cliente=cliente)
+    produtos_favoritos = favorito.produto.all()
+    print(produtos_favoritos)
+
+    context = {'cliente': cliente, 'enderecos': enderecos, 'pedidos':pedidos, "avisos":avisos, "produtos_favoritos" : produtos_favoritos}
     return render(request, 'dashboard.html', context)
 
 

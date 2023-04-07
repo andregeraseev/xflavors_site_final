@@ -231,6 +231,38 @@ $(document).ready(function() {
 </script>
 
 
+<script>
+
+
+
+
+function addToFavorites(productId) {
+    var url = '/add_to_favorites/' + productId + '/';
+    $.ajax({
+        url: url,
+        type: 'POST',
+         data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.status == 'added') {
+                // Produto foi adicionado aos favoritos
+                $('#favoritos-container').load(location.href + ' #favoritos-container');
+                $('#favorite-btn-' + productId + ' i').removeClass('far').addClass('fas');
+            } else if (response.status == 'removed') {
+                // Produto foi removido dos favoritos
+                $('#favoritos-container').load(location.href + ' #favoritos-container');
+                $('#favorite-btn-' + productId + ' i').removeClass('fas').addClass('far');
+            }
+        },
+        error: function(response) {
+            console.log('Erro ao adicionar produto aos favoritos:', response);
+        }
+    });
+}
+
+
 </script>
 
 {% endblock %}

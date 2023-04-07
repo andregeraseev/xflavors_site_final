@@ -1,6 +1,7 @@
 from cart.models import Cart
-from produtos.models import Category, Subcategory, Produto
-
+from clientes.models import Cliente
+from produtos.models import Category, Subcategory, Produto, Favorito
+from django.shortcuts import get_object_or_404
 
 def categorias(request):
 
@@ -37,3 +38,11 @@ def total_quantity_cart(request):
         except Cart.DoesNotExist:
             pass
     return {'total_quantity_cart': total_quantity_cart}
+
+def favoritos(request):
+    try:
+        cliente = get_object_or_404(Cliente, user=request.user)
+        favoritos = Favorito.objects.filter(cliente=cliente).values_list('produto__id', flat=True)
+    except:
+        favoritos = []
+    return {'favoritos': favoritos}

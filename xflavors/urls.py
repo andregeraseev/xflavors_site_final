@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import path,include
 from clientes import views
 from frontend.views import termos, envio
-from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search, pagina_search
+from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search, pagina_search, add_to_favorites
 from .views import index
 from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
 from tiny_erp.webhook import tiny_webhook
@@ -33,7 +33,9 @@ urlpatterns = [
     # path('carrinho/', views.carrinho, name='carrinho'),
     path('add_to_cart_carrocel/', add_to_cart_carrocel, name='add_to_cart_carrocel'),
     # path('add_to_cart/', add_to_cart, name='add_to_cart'),
+
     path('products/<slug:slug>/', product_detail, name='product_detail'),
+    path('add_to_favorites/<int:product_id>/', add_to_favorites, name='add_to_favorites'),
     path('categoria/<int:category_id>/subcategoria/<int:subcategory_id>/', produto_por_subcategoria, name='produto_por_subcategoria'),
     path('checkout/', checkout, name='checkout'),
     # path('processar_pagamento/', processar_pagamento, name='processar_pagamento'),

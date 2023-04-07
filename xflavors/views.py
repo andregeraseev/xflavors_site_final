@@ -10,9 +10,10 @@ from django.shortcuts import render, redirect
 from avise.models import AvisoEstoque
 from avise.tasks import check_aviso_estoque_task
 from cart.models import Cart
+from clientes.models import Cliente
 from frontend.models import Banner, BannerMenor
 
-from produtos.models import Produto, Category, Subcategory
+from produtos.models import Produto, Category, Subcategory, Favorito
 from pedidos.models import Pedido
 
 
@@ -59,7 +60,19 @@ def index(request):
         avisos = None
     produtos_notificados = [aviso.produto.id for aviso in avisos] if avisos else []
 
+    if request.user.is_authenticated:
+        cliente = get_object_or_404(Cliente, user=request.user)
+        favoritos = Favorito.objects.filter(cliente=cliente).values_list('produto__id', flat=True)
+    else:
+        favoritos = []
+
+
+
+
+
+
     context = {
+        'favoritos': favoritos,
         'essencias_mais_vendidos': essencias_mais_vendidos,
         'produtos_mais_vendidos': produtos_mais_vendidos,
         'active_banners_menor': active_banners_menor,

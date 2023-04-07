@@ -3,6 +3,9 @@ from django.urls import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 
+from clientes.models import Cliente
+
+
 class Category(models.Model):
     """
     Model de categoria de produtos
@@ -38,6 +41,8 @@ class MateriaPrima(models.Model):
 
     def __str__(self):
         return self.name
+
+
 
 
 class Produto(models.Model):
@@ -82,6 +87,10 @@ class Produto(models.Model):
         """
         return reverse('product_detail', args=[str(self.slug)])
 
+
+class Favorito(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    produto = models.ManyToManyField(Produto)
 
 
 class Variation(models.Model):

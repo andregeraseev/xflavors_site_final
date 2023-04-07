@@ -4,8 +4,9 @@ from avise.models import AvisoEstoque
 from cart.models import Cart
 from django.shortcuts import render, get_object_or_404
 
+from clientes.models import Cliente
 from pedidos.models import PedidoItem, Pedido
-from .models import Category, Subcategory, Produto
+from .models import Category, Subcategory, Produto, Favorito
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -200,3 +201,24 @@ def product_detail(request, slug):
     }
     return render(request, 'product_detail.html', context)
 
+def add_to_favorites(request, product_id):
+    # Obtenha o produto que o usuário deseja adicionar aos favoritos
+    produto = get_object_or_404(Produto, pk=product_id)
+    user= request.user
+    cliente = get_object_or_404(Cliente, user=user)
+    # Verifique se o usuário já tem o produto em seus favoritos
+    favorite, created = Favorito.objects.get_or_create(cliente=cliente)
+    if produto in favorite.produto.all():
+        # Remova o produto dos favoritos
+        favorite.produto.remove(produto)
+        print(favorite)
+        status = 'removed'
+        print("removido")
+    else:
+        # Adicione o produto aos favoritos
+        favorite.produto.add(produto)
+        status = 'added'
+        print("adicionado")
+
+    # Retorne uma resposta JSON com o status da operação
+    return JsonResponse({'status': status})
