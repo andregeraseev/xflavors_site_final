@@ -13,11 +13,26 @@
     <div class="row d-flex">
         <div class="col-md-5 mb-3">
             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100" style="max-width: 400px">
+                   <!-- Adiciona o botão de favorito sobre a imagem do produto -->
+
+
         </div>
         <div class="col-md-6 mb-3">
-            <h1>{{ product.name }}</h1>
+            <h1>{{ product.name }}
+            <button id="favorite-btn-{{ product.id }}" class="btn favorite-btn  m-3 text-danger" onclick="addToFavorites({{ product.id }})">
+            {% if product.id in favoritos %}
+            <i class="fas fa-heart"></i>
+            {% else %}
+            <i class="far fa-heart"></i>
+            {% endif %}
+
+        </button>
+            </h1>
+
+
 
             <h6>{{ product.description|safe }}</h6>
+
             {% if product.variation_set.exists %}
                 <h4>Selecione uma variação:</h4>
                 <select name="variation" id="variation" class="w-100 mb-3">
@@ -90,7 +105,11 @@
               <div class="card-body">
 
 
+
+
                   <h5 class="card-title" style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name }}</h5>
+                     <!-- Adiciona o botão de favorito sobre a imagem do produto -->
+
 
                 {% if product.variation_set.exists %}
                   <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}" >
@@ -412,7 +431,34 @@ $('.add-to-cart-button').click(function() {
 
 
 
-<!--Favoritos-->
+<!--favorito-->
+<script>
+function addToFavorites(productId) {
+    var url = '/add_to_favorites/' + productId + '/';
+    $.ajax({
+        url: url,
+        type: 'POST',
+         data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.status == 'added') {
+                // Produto foi adicionado aos favoritos
+
+                $('#favorite-btn-' + productId + ' i').removeClass('far').addClass('fas');
+            } else if (response.status == 'removed') {
+                // Produto foi removido dos favoritos
+
+                $('#favorite-btn-' + productId + ' i').removeClass('fas').addClass('far');
+            }
+        },
+        error: function(response) {
+            console.log('Erro ao adicionar produto aos favoritos:', response);
+        }
+    });
+}
+</script>
 
 
 {% endblock %}
