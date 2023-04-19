@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+
+
+<div class="container">
+
+<div class="card-deck row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+
+        <div class="card">
+            <img class="card-img-top" src="{{ kit.image.url }}" alt="{{ kit.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ kit.name }}</h5>
+                <p class="card-text">{{ kit.description }}</p>
+                <form id="kit-form-{{ kit.id }}" method="POST" class="kit-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="kit_id" value="{{ kit.id }}">
+                    <ul>
+                        {% for variation in kit.variacoes.all %}
+                        {% if variation.materia_prima.stock < 10 %}
+                        {{ variation.name }}<br>
+                        <h6 class=" text-danger">Sem estoque</h6>
+                        {% else %}
+                            <li>
+                                {{ variation.name }}
+                                {{ variation.materia_prima.stock|divisor:variation.gasto }}
+                                <input type="number" name="quantities[]" value="1" min="0" max="{{ variation.materia_prima.stock|divisor:variation.gasto }}">
+                                <input type="hidden" name="variation_ids[]" value="{{ variation.id }}">
+                            </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <button type="submit" class="btn btn-primary add-to-kit-button">Adicionar tudo ao carrinho</button>
+                </form>
+            </div>
+        </div>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function() {
+  $('.kit-form').on('submit', function(event) {
+    event.preventDefault();
+    var $form = $(this);
+    var data = $form.serialize();
+    var url = '{% url "adicionar_kit_ao_carrinho" %}';
+    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); // Recupera o valor do token CSRF
+    $.ajax({
+      type: 'POST',
+      url: url,
+      data: data,
+      headers: { 'X-CSRFToken': csrfToken }, // Adiciona o cabeçalho X-CSRFToken à solicitação
+      success: function(data) {
+      if (data.success) {
+        // Recarrega o ícone do carrinho
+        $('#cart-icon').load(document.URL + ' #cart-icon');
+
+        // Exibe uma mensagem de sucesso
+        $('#alert_success').show();
+        $('#alert_container_success').show();
+        $('#alert_success').html("Kit adicionado com sucesso");
+
+        // Oculta a mensagem de sucesso após 5 segundos
+        setTimeout(function() {
+          $('#alert_success').hide();
+          $('#alert_container_success').hide();
+        }, 5000)
+
+
+      } else {
+        // Exibe uma mensagem de erro
+        $('#available-stock').text(data.stock);
+        $('#alert-erro').show();
+        $('#alert-container-erro').show();
+        $('#alert-erro').html(data.error);
+
+        // Oculta a mensagem de erro após 5 segundos
+        setTimeout(function() {
+          $('#alert-erro').hide();
+          $('#alert-container-erro').hide();
+        }, 5000)
+      }
+    },
+      error: function(response) {
+        console.log(response);
+        // Manipule o erro aqui, se necessário
+      }
+    });
+  });
+});
+</script>
+
+
+
+
+
+{% endblock %}

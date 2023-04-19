@@ -112,3 +112,28 @@ class Variation(models.Model):
     def __str__(self):
         return self.name
 
+
+class Kit(models.Model):
+    """
+    Model de kit de produtos
+    """
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='kits')
+    variacoes = models.ManyToManyField(Variation)
+    num_vendas = models.IntegerField(default=0)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        """
+        Sobrescreve o método de salvar para atribuir o valor ao campo slug
+        """
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+    def __str__(self):
+        return self.name
+
+

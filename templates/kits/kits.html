@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+<!-- Adiciona um select para escolher a ordenação dos produtos -->
+<form action="" method="get" class="d-flex justify-content-end">
+  <div class="form-group">
+    <label for="ordenacao-select" class="sr-only">Ordenar por:</label>
+    <select class="form-control form-control-sm" id="ordenacao-select" name="ordenacao">
+      <option value="">Ordenar por:</option>
+      <option value="alfabetica">Nome (A-Z)</option>
+      <option value="alfabetica_decrescente">Nome (Z-A)</option>
+      <option value="preco-crescente">Preço (menor para maior)</option>
+      <option value="preco-decrescente">Preço (maior para menor)</option>
+      <option value="mais-vendidos">Mais vendidos</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-sm btn-danger ml-2">Aplicar</button>
+</form>
+
+
+<div class="card-deck row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+    {% for kit in kits %}
+    <div class="col  product-card">
+        <div class="card mt-2">
+            <img class="card-img-top" src="{{ kit.image.url }}" alt="{{ kit.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ kit.name }}</h5>
+                <p class="card-text">{{ kit.description }}</p>
+
+            </div>
+            <div class="text-center">
+                <a href="{% url 'kit_detail' kit.slug %}" class="btn btn-primary">Ver mais</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+
+
+
+
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+
+
+
+<ul class="pagination">
+  {% for numero_pagina in pagina.paginator.page_range %}
+
+  {% if pagina.number == numero_pagina %}
+  <li class="page-item active" aria-current="page">
+    <span class="page-link">{{ numero_pagina }} <span class="sr-only">(current)</span></span>
+  </li>
+  {% else %}
+  <li class="page-item"><a class="page-link" href="?pagina={{ numero_pagina }}">{{ numero_pagina }}</a></li>
+  {% endif %}
+  {% endfor %}
+</ul>
+
+
+</div>
+</div>
+
+
+
+
+
+<style>
+
+.pagination .page-item.active .page-link {
+  background-color: #d9534f;
+  border-color: #d9534f;
+  color: white;
+}
+
+  @media (max-width: 575.98px) {
+  .variation-select {
+    font-size: 8px;
+  }
+}
+
+</style>
+
+
+
+
+{% endblock %}

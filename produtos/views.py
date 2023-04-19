@@ -1,12 +1,13 @@
 from django.db.models import Count
 
 from avise.models import AvisoEstoque
-from cart.models import Cart
+from cart.models import Cart, CartItem
 from django.shortcuts import render, get_object_or_404
 
+from cart.views import verifica_estoque_produto_com_variacao, verifica_qunatidade_carrinho_varivel, cria_item_carrinho
 from clientes.models import Cliente
 from pedidos.models import PedidoItem, Pedido
-from .models import Category, Subcategory, Produto, Favorito
+from .models import Category, Subcategory, Produto, Favorito, Kit, Variation
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -222,3 +223,114 @@ def add_to_favorites(request, product_id):
 
     # Retorne uma resposta JSON com o status da operação
     return JsonResponse({'status': status})
+
+
+def kit_detail(request, slug):
+    kit = get_object_or_404(Kit, slug=slug)
+    print(kit)
+    items = []
+
+    for variacao in kit.variacoes.all():
+        items.append({
+            'product': variacao.produto_pai.name
+        })
+
+    context = {
+        'kit': kit,
+        'kit_items': items
+    }
+    return render(request, 'kits/kit_detail.html', context)
+
+
+
+
+def receitas(request):
+    kits = Kit.objects.all()
+
+    # Ordenação dos produtos
+    ordenacao = request.GET.get('ordenacao')
+    if ordenacao == 'alfabetica':
+        # Ordena em ordem alfabética pelo nome
+        kits = kits.order_by('name')
+    elif ordenacao == 'alfabetica_decrescente':
+        # Ordena em ordem alfabética pelo nome
+        kits = kits.order_by('-name')
+    elif ordenacao == 'preco-crescente':
+        # Ordena em ordem crescente pelo preço
+        kits = kits.order_by('price')
+    elif ordenacao == 'preco-decrescente':
+        # Ordena em ordem decrescente pelo preço
+        kits = kits.order_by('-price')
+    elif ordenacao == 'mais-vendidos':
+        # Ordena pelo número de vendas dos produtos, do maior para o menor
+        kits = kits.order_by('-num_vendas')
+
+    # Paginação dos produtos
+    produtos_por_pagina = 20
+    paginator = Paginator(kits, produtos_por_pagina)
+    pagina_numero = request.GET.get('pagina')
+    pagina = paginator.get_page(pagina_numero)
+
+    items = []
+
+    for kit in kits:
+        for variacao in kit.variacoes.all():
+            items.append({
+                'product': variacao.produto_pai.name
+            })
+    print(items)
+    context = {
+        'kits': kits,
+        'kit_items': items,
+        'pagina': pagina,
+    }
+    return render(request, 'kits/kits.html', context)
+
+
+def adicionar_kit_ao_carrinho(request):
+    user = request.user
+
+    cart = Cart.get_or_create_cart(user)
+
+    if request.method == "POST":
+        print("AQUIIIIIIIIIIIIIIIII")
+        kit_id = request.POST.get("kit_id")
+        print(kit_id)
+        variation_ids = request.POST.getlist("variation_ids[]")
+        print(variation_ids)
+        quantities = request.POST.getlist("quantities[]")
+        print(quantities)
+
+        # Cria o carrinho se ainda não existe
+        # user = request.user
+        # cart_id = Cart.get_or_create_cart(user)
+
+        # Adiciona cada variação ao carrinho
+        for variation_id, quantity in zip(variation_ids, quantities):
+
+            variation = Variation.objects.get(id=variation_id)
+            quantity= int(quantity)
+            print(quantity)
+            if variation:
+                quantidade_materia_prima = variation.materia_prima.stock
+                materia_prima_id = variation.materia_prima.id
+                quantity = int(quantity)
+                product = variation.produto_pai
+                try:
+                    verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+                                                         materia_prima_id, product)
+                except ValueError as e:
+                    return JsonResponse({'success': False, 'error': str(e)})
+
+                # except ValueError as e:
+                #     return JsonResponse({'success': False, 'error': str(e)})
+                quantity = int(quantity)
+                if quantity <= 0:
+                    continue
+                print(quantity,'QUANTIDE')
+                cria_item_carrinho(cart, product, variation, quantity)
+
+
+        data = {"success": True, "message": "Kit adicionado ao carrinho com sucesso!"}
+        return JsonResponse(data)
+
