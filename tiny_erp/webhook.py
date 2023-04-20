@@ -124,9 +124,11 @@ def print_payload_data(payload):
 
     except:
         print("Sem Arvore de Categoria")
-    print("Outros")
+    print("Payload", payload)
     localizacao = payload["localizacao"]
+    print("localizacao:",localizacao)
     nome = payload["nome"]
+    print("nome:", nome)
     preco = payload["preco"]
     estoque = payload["estoqueAtual"]
     product_id = payload["id"]
@@ -134,7 +136,7 @@ def print_payload_data(payload):
     marca = payload["marca"] if "marca" in payload else "marca não especificada"
     category, subcategoria = categoria_subcategoria(payload)
     image_path = salva_imagem(payload)
-    print(payload)
+    print("Payload",payload)
 
     print("Classe do produto", payload['classeProduto'])
     if payload['classeProduto'] == "M":
