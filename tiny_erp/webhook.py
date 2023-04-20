@@ -208,6 +208,7 @@ def salva_imagem(payload):
     except:
         url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
     if url_imagem:
+        print("url_imagem",url_imagem)
         # Faz uma nova requisição para baixar a imagem
         response = requests.get(url_imagem)
         if response.status_code == 200:
