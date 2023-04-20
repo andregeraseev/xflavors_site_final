@@ -203,7 +203,7 @@ def print_payload_data(payload):
 def salva_imagem(payload):
     tamanho_padrao = (800, 800)
     print("salvando imagem")
-    print("Payload", payload)
+    print("Payload anexos", payload["anexos"])
     try:
         for anexo in payload["anexos"]:
             url_imagem = anexo["url"]
