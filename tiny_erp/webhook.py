@@ -136,6 +136,7 @@ def print_payload_data(payload):
     marca = payload["marca"] if "marca" in payload else "marca não especificada"
     category, subcategoria = categoria_subcategoria(payload)
     image_path = salva_imagem(payload)
+    print("image_path:", image_path)
     print("Payload",payload)
 
     print("Classe do produto", payload['classeProduto'])
