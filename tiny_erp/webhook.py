@@ -135,6 +135,7 @@ def print_payload_data(payload):
     descricao = payload["descricaoComplementar"]
     marca = payload["marca"] if "marca" in payload else "marca não especificada"
     category, subcategoria = categoria_subcategoria(payload)
+    print("Categoria e subcategoria",category, subcategoria)
     image_path = salva_imagem(payload)
     print("image_path:", image_path)
     print("Payload",payload)
@@ -201,6 +202,7 @@ def print_payload_data(payload):
 
 def salva_imagem(payload):
     tamanho_padrao = (800, 800)
+    print("salvando imagem")
     try:
         for anexo in payload["anexos"]:
             url_imagem = anexo["url"]
