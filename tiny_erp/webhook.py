@@ -121,9 +121,10 @@ def print_payload_data(payload):
             print("  ID Pai:", categoria["idPai"])
             print("  Descrição:", categoria["descricao"])
             print("  Descrição Completa:", categoria["descricaoCompleta"])
-            print()
+
     except:
         print("Sem Arvore de Categoria")
+    print("Outros")
     localizacao = payload["localizacao"]
     nome = payload["nome"]
     preco = payload["preco"]
