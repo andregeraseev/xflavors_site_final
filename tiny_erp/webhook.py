@@ -138,7 +138,7 @@ def print_payload_data(payload):
     print("Categoria e subcategoria",category, subcategoria)
     image_path = salva_imagem(payload)
     print("image_path:", image_path)
-    print("Payload",payload)
+    # print("Payload",payload)
 
     print("Classe do produto", payload['classeProduto'])
     if payload['classeProduto'] == "M":
@@ -203,10 +203,12 @@ def print_payload_data(payload):
 def salva_imagem(payload):
     tamanho_padrao = (800, 800)
     print("salvando imagem")
+    print("Payload", payload)
     try:
         for anexo in payload["anexos"]:
             url_imagem = anexo["url"]
-            print(url_imagem)
+            print("url_imagem",url_imagem)
+            print("anexo", anexo)
     except:
         url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
         print("url_imagem", url_imagem)
