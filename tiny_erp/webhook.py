@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
-from PIL import Image
+
 from io import BytesIO
 from produtos.models import Produto, Subcategory
 import os
@@ -11,6 +11,9 @@ from produtos.models import Category, Subcategory, Variation,MateriaPrima
 import time
 from xflavors.settings import MEDIA_ROOT
 from django.core.exceptions import ValidationError
+from PIL import Image, UnidentifiedImageError
+from requests.exceptions import RequestException
+
 
 @csrf_exempt
 def tiny_webhook(request):
@@ -200,44 +203,59 @@ def print_payload_data(payload):
 
 
 
+
 def salva_imagem(payload):
     tamanho_padrao = (800, 800)
     print("salvando imagem")
-    if payload['classeProduto'] == 'M':
+
+    if payload.get('classeProduto') == 'M':
         url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
     else:
-        try:
+        url_imagem = None
+        if 'anexos' in payload:
             for anexo in payload["anexos"]:
-                url_imagem = anexo["url"]
-                print("url_imagem",url_imagem)
-                print("anexo", anexo)
-        except:
+                if 'url' in anexo:
+                    url_imagem = anexo["url"]
+                    break
+                else:
+                    print("Chave 'url' não encontrada no anexo")
+        else:
+            print("Chave 'anexos' não encontrada no payload")
+
+        if not url_imagem:
             url_imagem = 'https://www.arteshowestruturas.com.br/wp-content/uploads/sites/699/2017/01/SEM-IMAGEM.jpg'
-            print("url_imagem", url_imagem)
-    if url_imagem:
-        print("url_imagem",url_imagem)
-        # Faz uma nova requisição para baixar a imagem
+
+    print("url_imagem", url_imagem)
+
+    try:
         response = requests.get(url_imagem)
-        if response.status_code == 200:
-            # Extrai o nome do arquivo da URL da imagem
+        response.raise_for_status()
+    except RequestException as e:
+        print(f"Erro ao fazer a requisição para a URL da imagem: {e}")
+        return None
+
+    try:
+        with Image.open(BytesIO(response.content)) as img:
+            width, height = img.size
+            if width < tamanho_padrao[0] or height < tamanho_padrao[1]:
+                img = img.resize(tamanho_padrao)
+            else:
+                img.thumbnail(tamanho_padrao)
+
             url_parts = urlparse(url_imagem)
             filename = os.path.basename(url_parts.path)
 
-            # Redimensiona a imagem
-            with Image.open(BytesIO(response.content)) as img:
-                width, height = img.size
-                if width < tamanho_padrao[0] or height < tamanho_padrao[1]:
-                    # Caso a imagem seja menor que o tamanho padrão, redimensiona sem manter a proporção
-                    img = img.resize(tamanho_padrao)
-                else:
-                    # Caso contrário, redimensiona mantendo a proporção
-                    img.thumbnail(tamanho_padrao)
+            with open(os.path.join(MEDIA_ROOT+"/products", filename), 'wb') as f:
+                img.save(f)
 
-                # Salva a imagem na pasta "media" do projeto
-                with open(os.path.join(MEDIA_ROOT+"/products", filename), 'wb') as f:
-                    img.save(f)
-                image_path = os.path.join('products', filename)
-    return image_path
+            image_path = os.path.join('products', filename)
+            return image_path
+    except UnidentifiedImageError:
+        print("Erro ao abrir a imagem. O arquivo pode estar corrompido ou ter um formato inválido.")
+        return None
+    except Exception as e:
+        print(f"Erro ao processar a imagem: {e}")
+        return None
 
 
 def categoria_subcategoria(payload):
