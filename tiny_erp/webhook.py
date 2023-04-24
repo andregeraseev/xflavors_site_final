@@ -293,7 +293,7 @@ def categoria_subcategoria(payload):
 
 
 def obter_info_produto(product_id, produtopai):
-    time.sleep(2)
+    time.sleep(5)
     print("Obtendo Informacao do produto:", product_id)
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
     token = TINY_ERP_API_KEY
