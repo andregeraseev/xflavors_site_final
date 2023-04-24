@@ -292,7 +292,7 @@ def categoria_subcategoria(payload):
 
 
 
-def obter_info_produto(product_id,produtopai):
+def obter_info_produto(product_id, produtopai):
     time.sleep(2)
     print("Obtendo Informacao do produto:", product_id)
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
@@ -315,36 +315,36 @@ def obter_info_produto(product_id,produtopai):
         print(f"Erro ao buscar informações do produto: {e}")
         return
 
-    try:
-        produto = response.json()['retorno']
-    except KeyError:
-        print("Erro ao obter informações do produto.")
+    if 'retorno' not in response.json():
+        print("Campo 'retorno' não encontrado na resposta da API.")
         return
 
-    try:
-        print(produto['produto']['kit'])
-        gasto = produto['produto']['kit']
-        materia_prima = gasto[0]['item']['id_produto']
+    produto = response.json()['retorno']
 
-    except KeyError:
-        print("Erro ao obter informações do kit e matéria-prima. Usando produto pai como matéria-prima.")
-        materia_prima = product_id
-        gasto = 0
+    if 'produto' not in produto:
+        print("Campo 'produto' não encontrado no retorno da API.")
+        return
+
+    produto_info = produto['produto']
+
+    gasto = produto_info.get('kit', [])
+    materia_prima = gasto[0]['item']['id_produto'] if gasto else product_id
 
     estoque = 0
-    nome_simplificado = produto.get('produto', {}).get('grade', '')
+    nome_simplificado = produto_info.get('grade', '')
 
-    try:
-
-        unidade = produto['produto']['unidade']
-        print("UNIDADE:", unidade)
-    except KeyError:
+    unidade = produto_info.get('unidade')
+    if unidade is None:
         print("Erro ao obter a unidade do produto.")
         return
+
+    print("UNIDADE:", unidade)
+
     print("obtendo_materia_prima")
     obtendo_materia_prima(materia_prima)
     print('tentando salvar variacao')
     salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
+
 
 
 
