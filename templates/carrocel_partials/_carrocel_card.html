@@ -20,7 +20,7 @@
                                 style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;"
                                 onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name}}</h5>
 
-                            <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small>
+                            {% if product.marca %} <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small> {% else %} <br> {% endif %}
 <!--                            &lt;!&ndash;                            favorito&ndash;&gt;-->
 <!--                           <button id="favorite-btn-{{ product.id }}" class="btn favorite-btn text-danger" onclick="addToFavorites({{ product.id }})">-->
 <!--                            {% if product.id in favoritos %}-->
