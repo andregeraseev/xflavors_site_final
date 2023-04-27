@@ -194,7 +194,61 @@
                     </button>
                     {% endif %}
                      <br>
-                        <button class="btn btn-sm btn-primary " style="font-size: 10px;">Observações</button>
+<!--                    OBSERVACOES INTERNAS-->
+<!--                        <button class="btn btn-sm btn-primary " style="font-size: 10px;">Observações</button>-->
+                     <!-- Botão para adicionar observacao -->
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#observacaoModal-{{ pedido.id }}" style="font-size: 10px;">Observações
+                    </button>
+
+                    <!-- Modal para adicionar rastreamento -->
+                    <div class="modal fade" id="observacaoModal-{{ pedido.id }}" tabindex="-1" role="dialog"
+                         aria-labelledby="rastreamentoModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="observacaoModal">Adicionar observacao</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Fechar"></button>
+                                </div>
+                                <div class="modal-body">
+    <form id="observacaoForm-{{ pedido.id }}">
+        <div class="form-group">
+            <label for="input-observacao-{{ pedido.id }}">Observação (máximo 300 caracteres):</label>
+        <textarea id="input-observacao-{{ pedido.id }}" rows="4" cols="50" maxlength="300">{{ pedido.observacoes_internas|default:'' }}</textarea>            <small id="charCount-{{ pedido.id }}" class="form-text text-muted">0 / 300</small>
+            <button type="button" class="btn btn-primary" onclick="salvarObservacao({{ pedido.id }})">Salvar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    (function() {
+        const pedidoId = "{{ pedido.id }}";
+        const textarea = document.getElementById(`input-observacao-${pedidoId}`);
+        const charCount = document.getElementById(`charCount-${pedidoId}`);
+
+        // Atualizar contador quando a página for carregada
+        const initialLength = textarea.value.length;
+        if (initialLength > 0) {
+            charCount.innerText = `${initialLength} / 300`;
+        }
+
+        textarea.addEventListener("input", () => {
+            const currentLength = textarea.value.length;
+            charCount.innerText = `${currentLength} / 300`;
+        });
+    })();
+</script>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fim do modal -->
+
 
                 </td>
 
@@ -441,6 +495,39 @@ function toggleProducao(pedidoId) {
   });
 }
 </script>
+
+
+
+
+
+<!--OBSEVACAO INTERNA-->
+
+<script>
+function salvarObservacao(pedidoId) {
+    const observacao = document.getElementById(`input-observacao-${pedidoId}`).value;
+
+    $.ajax({
+        url: "{% url 'administracao:adicionar_observacao' %}",
+        method: "POST",
+        data: {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            "pedido_id": pedidoId,
+            "observacao": observacao,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (response) {
+            alert("Observacao adicionado com sucesso!");
+            window.location.reload();
+        },
+        error: function (xhr, status, error) {
+            alert("Ocorreu um erro ao adicionar o a observacao: " + xhr.responseText);
+        }
+    });
+}
+
+
+</script>
+
 
 
 <!--IMPRIMIR MULTIPLOS-->

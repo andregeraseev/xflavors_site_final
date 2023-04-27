@@ -293,13 +293,18 @@ def adicionar_kit_ao_carrinho(request):
     cart = Cart.get_or_create_cart(user)
 
     if request.method == "POST":
-        print("AQUIIIIIIIIIIIIIIIII")
+        # print("AQUIIIIIIIIIIIIIIIII")
         kit_id = request.POST.get("kit_id")
-        print(kit_id)
+        kit = get_object_or_404(Kit, id=kit_id)
+        kit.num_vendas += 1
+        kit.save()
+        # print("NUMERO DE VENDAS DO KIT", kit, kit.num_vendas)
+
+        # print(kit_id)
         variation_ids = request.POST.getlist("variation_ids[]")
-        print(variation_ids)
+        # print(variation_ids)
         quantities = request.POST.getlist("quantities[]")
-        print(quantities)
+        # print(quantities)
 
         # Cria o carrinho se ainda não existe
         # user = request.user
@@ -310,7 +315,7 @@ def adicionar_kit_ao_carrinho(request):
 
             variation = Variation.objects.get(id=variation_id)
             quantity= int(quantity)
-            print(quantity)
+            # print(quantity)
             if variation:
                 quantidade_materia_prima = variation.materia_prima.stock
                 materia_prima_id = variation.materia_prima.id
@@ -327,7 +332,7 @@ def adicionar_kit_ao_carrinho(request):
                 quantity = int(quantity)
                 if quantity <= 0:
                     continue
-                print(quantity,'QUANTIDE')
+                # print(quantity,'QUANTIDE')
                 cria_item_carrinho(cart, product, variation, quantity)
 
 

@@ -123,6 +123,27 @@ def adicionar_rastreamento(request):
     return JsonResponse({'status': 'error', 'message': 'Método inválido'})
 
 
+
+@staff_member_required
+def adicionar_observacao(request):
+    # print('adicionando rastreio')
+    if request.method == 'POST':
+        pedido_id = request.POST.get('pedido_id')
+        observacao = request.POST.get('observacao')
+        # print(rastreamento)
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+
+            pedido.adicionar_observacao_interna(observacao)
+            pedido.save()
+            return JsonResponse({'status': 'success'})
+        except Pedido.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Pedido não encontrado'})
+    return JsonResponse({'status': 'error', 'message': 'Método inválido'})
+
+
+
+
 @staff_member_required
 def producao(request):
     if request.method == "POST":
