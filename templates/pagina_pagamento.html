@@ -1,9 +1,13 @@
 {% extends 'base_pagamento.html' %}
 
 {% block content %}
-  <div class="row">
-    <!-- LADO ESQUERDO -->
-    <div class="col-md-8">
+   <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <!-- LADO ESQUERDO -->
+          <div class="row">
+            <div class="col-md-8">
       <h2>Pagamento</h2>
       <p>Seu pedido foi criado com sucesso! O número do pedido é {{ pedido_id }}.</p>
       <p>O método de pagamento escolhido foi {{ metodo_de_pagamento }}, siga as instruções abaixo para realizar o pagamento:</p>
@@ -32,7 +36,7 @@
 
 
         </div>
-        <button type="submit" class="btn btn-primary">Enviar comprovante</button>
+        <button type="submit" class="btn btn-primary mt-2">Enviar comprovante</button>
       </form>
 {% endif %}
 <!--      DEPOSITO-->
@@ -58,7 +62,7 @@
 
 
         </div>
-        <button type="submit" class="btn btn-primary">Enviar comprovante</button>
+        <button type="submit" class="btn btn-primary mt-2">Enviar comprovante</button>
       </form>
 {% endif %}
 
@@ -153,8 +157,15 @@ function copyToClipboard(text) {
             </tr>
           </tfoot>
         </table>
+
       </div>
+
     </div>
+     <div class="row mt-4">
+            <div class="col-md-12">
+              <a href="{% url 'home' %}" class="btn btn-secondary">Voltar para Home</a>
+            </div>
+          </div>
   </div>
 </div>
 {% endblock %}
