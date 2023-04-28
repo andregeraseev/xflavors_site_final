@@ -149,7 +149,7 @@ def dashboard(request):
     pedidos = Pedido.objects.filter(user=request.user)
     avisos = AvisoEstoque.objects.filter(cliente=request.user,notificado=False)
 
-    favorito = Favorito.objects.get(cliente=cliente)
+    favorito, created = Favorito.objects.get_or_create(cliente=cliente)
     produtos_favoritos = favorito.produto.all()
     print(produtos_favoritos)
 
