@@ -43,16 +43,16 @@
 
 <ul class="pagination">
   {% for numero_pagina in pagina.paginator.page_range %}
-
   {% if pagina.number == numero_pagina %}
   <li class="page-item active" aria-current="page">
     <span class="page-link">{{ numero_pagina }} <span class="sr-only">(current)</span></span>
   </li>
   {% else %}
-  <li class="page-item"><a class="page-link" href="?pagina={{ numero_pagina }}">{{ numero_pagina }}</a></li>
+  <li class="page-item"><a class="page-link" href="?ordenacao={{ ordenacao }}&pagina={{ numero_pagina }}">{{ numero_pagina }}</a></li>
   {% endif %}
   {% endfor %}
 </ul>
+
 
 
 </div>

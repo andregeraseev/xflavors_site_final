@@ -97,7 +97,7 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
     subcategory = get_object_or_404(Subcategory, pk=subcategory_id)
 
     # Filtra os produtos pela categoria e subcategoria selecionada
-    produtos = Produto.objects.filter(category=category_filter, subcategory=subcategory)
+    produtos = Produto.objects.filter(category=category_filter, subcategory=subcategory).order_by('name')
 
     # Ordenação dos produtos
     ordenacao = request.GET.get('ordenacao')
@@ -148,6 +148,7 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
         'total_quantity_cart': total_quantity_cart,
         'subcategoria': subcategory,
         'category': category,
+        'ordenacao': ordenacao,
     }
 
     # Renderiza o template 'produto_por_subcategoria.html' com o contexto
