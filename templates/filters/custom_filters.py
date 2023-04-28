@@ -10,4 +10,4 @@ def multiplicar(valor, multiplicador):
 
 @register.filter
 def divisor(valor, divisor):
-    return int(valor / divisor)
+    return int(valor) / int(divisor)
