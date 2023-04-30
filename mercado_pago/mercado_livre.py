@@ -46,14 +46,14 @@ def cria_preferencia(request, pedido):
 
 
         "back_urls": {
-            "success": "https://xflavors.pythonanywhere.com/success",
-            "failure": "https://xflavors.pythonanywhere.com/failure",
-            "pending": "https://xflavors.pythonanywhere.com/pending"
+            "success": "https://xflavors.net/success",
+            "failure": "https://xflavors.net/failure",
+            "pending": "https://xflavors.net/pending"
         },
         'redirect_urls': {
-            "success": "https://xflavors.pythonanywhere.com/success",
-            "failure": "https://xflavors.pythonanywhere.com/failure",
-            "pending": "https://xflavors.pythonanywhere.com/pending"
+            "success": "https://xflavors.net/success",
+            "failure": "https://xflavors.net/failure",
+            "pending": "https://xflavors.net/pending"
         },
         "external_reference": id_pedido,
         "auto_return" : "approved",
