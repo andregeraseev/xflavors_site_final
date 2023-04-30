@@ -92,7 +92,7 @@ class Pedido(models.Model):
         ('Pagseguro', 'Pagseguro'),
 
     )
-
+    
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     endereco_entrega = models.ForeignKey(EnderecoPedido, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Aguardando pagamento')
