@@ -98,7 +98,7 @@
                                     </button>
                                     <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
                                            data-product-id="{{ product.id }}" value="1" min="1"
-                                           max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
+                                           max="{% if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
                                     {% else %}
 
                                     {% if product.id in produtos_notificados %}
