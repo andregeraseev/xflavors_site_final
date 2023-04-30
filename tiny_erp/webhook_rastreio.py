@@ -44,8 +44,8 @@ def tiny_rastreio(request):
             pedido.status = 'Enviado'
             pedido.save()
         except:
-            pedido = Pedido.objects.get(id=pedido_id)
-            print('Erro ao salvar rastreio no pedido', pedido_id,codigo, pedido.status )
+
+            print('Erro ao salvar rastreio no pedido')
             return HttpResponse(json.dumps({'error': 'Erro ao rastreio no pedido salvar pedido'}), status=400,
                                 content_type="application/json")
 
