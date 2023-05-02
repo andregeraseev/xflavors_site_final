@@ -18,7 +18,7 @@
               </div>
               <div class="col-md-5">
                 <strong style="font-size: 20px">Endereço de Entrega</strong>
-                <br> <strong style="font-size: 22px">{{ pedido.endereco_entrega.cliente }}</strong>
+                <br> <strong style="font-size: 22px">{{ pedido.pedido.endereco_entrega.user.username }}</strong>
                 <br>{{ pedido.endereco_entrega.rua }}, {{ pedido.endereco_entrega.numero }}
                 {% if pedido.endereco_entrega.complemento %} <br><strong>complemento:</strong>{{ pedido.endereco_entrega.complemento }} {% endif %}
                 <br>{{ pedido.endereco_entrega.bairro }}, {{ pedido.endereco_entrega.cidade }} - {{ pedido.endereco_entrega.estado }}
