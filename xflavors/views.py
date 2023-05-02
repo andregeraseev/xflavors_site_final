@@ -19,7 +19,7 @@ from pedidos.models import Pedido
 
 def index(request):
     # Filtra os pedidos que estão com o status 'Pago' e obtém os IDs dos produtos nos itens desses pedidos
-    products_in_orders = Pedido.objects.filter(status='Pago').values_list('itens__product', flat=True).distinct()
+    products_in_orders = Pedido.objects.exclude(status__in=['Cancelado','Em processamento', 'Aguardando pagamento']).values_list('itens__product', flat=True).distinct()
 
 
     # Obtém a contagem de cada produto que aparece nos pedidos filtrados anteriormente
