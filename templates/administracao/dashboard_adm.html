@@ -72,7 +72,7 @@
                 </td>
 
                 <td>{{ pedido.user }}<br>
-                    <span style="font-size: 8px;"><a href="https://api.whatsapp.com/send?phone={{ pedido.user.cliente.celular }}&text=Olá, estou entrando em contato sobre o pedido {{ pedido.id }}"
+                    <span style="font-size: 8px;"><a href="https://api.whatsapp.com/send?phone={{ pedido.user.cliente.celular }}&text=Olá, {{ pedido.user.username }}! Andre da Xflavors aqui, estou entrando em contato para falar sobre o sobre o pedido {{ pedido.id }}"
                        target="_blank">
                         <i class="fab fa-whatsapp fa-lg"></i>
                     </a></span>
