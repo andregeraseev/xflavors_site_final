@@ -18,7 +18,8 @@ def carrinho(request):
 
     if request.user.is_authenticated:
         try:
-            cart = Cart.objects.get(user=request.user)
+            user = request.user
+            cart = Cart.get_or_create_cart(user)
             total_quantity_cart = cart.total_quantity()
         except Cart.DoesNotExist:
             pass
