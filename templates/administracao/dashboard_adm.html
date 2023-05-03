@@ -11,7 +11,7 @@
   <div class="col-md-6">
     <div class="form-group">
       <label for="filtro-status">Filtrar por status:</label>
-      <select class="form-control" id="filtro-status">
+      <select class="form-control filtro" id="filtro-status">
         <option value="">Todos</option>
         <option value="Aguardando Pagamento">Aguardando Pagamento</option>
         <option value="Pago">Pago</option>
@@ -25,7 +25,7 @@
   <div class="col-md-6">
     <div class="form-group">
       <label for="filtro-prod">Filtrar por produto:</label>
-      <select class="form-control" id="filtro-prod">
+      <select class="form-control filtro" id="filtro-prod">
         <option value="">Todos</option>
         <option value="Sim">Sim</option>
         <option value="Não">Não</option>
@@ -559,7 +559,18 @@ $(document).ready(function() {
 });
 </script>
 
+<script>
+document.querySelectorAll('.filtro').forEach((filtro) => {
+    filtro.addEventListener('change', (e) => {
+      localStorage.setItem(e.target.id, e.target.value);
+    });
 
+    const valorSalvo = localStorage.getItem(filtro.id);
+    if (valorSalvo) {
+      filtro.value = valorSalvo;
+    }
+  });
+</script>
 
 {% endblock %}
 
