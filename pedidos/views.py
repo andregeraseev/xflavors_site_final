@@ -16,7 +16,7 @@ from cart.models import CartItem, Cart
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import redirect
-from clientes.models import EnderecoEntrega
+from clientes.models import EnderecoEntrega, Cliente
 
 
 
@@ -111,7 +111,7 @@ def checkout(request):
     user = request.user
     cart = Cart.get_or_create_cart(user)
     itens = cart.cartitem_set.all()
-
+    cliente = Cliente.objects.get(user= user)
     total = 0
     for item in itens:
         if item.variation:
@@ -120,14 +120,14 @@ def checkout(request):
         else:
             preco = item.product.price
         total += item.quantity * preco
-        print("TOTAL", total)
+        # print("TOTAL", total)
 
     subtotal = total
     desconto =0
     total_com_desconto = None
     if cart.cupom:
         valor_desconto = round(float(cart.cupom.desconto_percentual) / 100 * float(total), 2)
-        print("valor_desconto", valor_desconto)
+        # print("valor_desconto", valor_desconto)
         desconto = - valor_desconto
         total = round(float(total) + desconto,2)
 
@@ -135,9 +135,9 @@ def checkout(request):
     if user.is_authenticated and hasattr(user, 'cliente'):
         enderecos = user.cliente.enderecoentrega_set.all()
         endereco_primario = enderecos.filter(primario=True).first()
-        print(enderecos)
+        # print(enderecos)
 
-    return render(request, 'pedidos/checkout.html', { 'subtotal':subtotal,'desconto':desconto, 'cart': cart, 'total': total, 'endereco': enderecos, 'endereco_primario': endereco_primario, 'itens': itens})
+    return render(request, 'pedidos/checkout.html', { 'cliente':cliente, 'subtotal':subtotal,'desconto':desconto, 'cart': cart, 'total': total, 'endereco': enderecos, 'endereco_primario': endereco_primario, 'itens': itens})
 
 
 
