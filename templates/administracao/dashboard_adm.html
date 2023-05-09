@@ -550,6 +550,7 @@ $(document).ready(function() {
 });
 </script>
 
+<!--selecionar check box-->
 <script>
 $(document).ready(function() {
   // Seleciona todos os checkboxes quando o novo checkbox for clicado
@@ -559,8 +560,16 @@ $(document).ready(function() {
 });
 </script>
 
+
+
+<!--filtro ao recarregar pagina-->
 <script>
-document.querySelectorAll('.filtro').forEach((filtro) => {
+  function triggerChangeEvent(element) {
+    const event = new Event('change');
+    element.dispatchEvent(event);
+  }
+
+  document.querySelectorAll('.filtro').forEach((filtro) => {
     filtro.addEventListener('change', (e) => {
       localStorage.setItem(e.target.id, e.target.value);
     });
@@ -568,9 +577,13 @@ document.querySelectorAll('.filtro').forEach((filtro) => {
     const valorSalvo = localStorage.getItem(filtro.id);
     if (valorSalvo) {
       filtro.value = valorSalvo;
+      setTimeout(() => {
+        triggerChangeEvent(filtro);
+      }, 500);
     }
   });
 </script>
+
 
 {% endblock %}
 
