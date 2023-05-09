@@ -187,13 +187,15 @@
 
                 <td>
                     {% if pedido.producao %}
-                    <button type="button" class="btn btn-sm btn-success rounded-pill" onclick="toggleProducao({{ pedido.id }})">Sim
+                    <button id="producao-sim-{{ pedido.id }}" type="button" class="btn btn-sm btn-success rounded-pill"
+                            onclick="toggleProducao({{ pedido.id }})">Sim
                     </button>
                     {% else %}
-                    <button type="button" class="btn btn-sm btn-secondary rounded-pill" onclick="toggleProducao({{ pedido.id }})">Não
+                    <button id="producao-nao-{{ pedido.id }}" type="button"
+                            class="btn btn-sm btn-secondary rounded-pill" onclick="toggleProducao({{ pedido.id }})">Não
                     </button>
                     {% endif %}
-                     <br>
+                    <br>
 <!--                    OBSERVACOES INTERNAS-->
 <!--                        <button class="btn btn-sm btn-primary " style="font-size: 10px;">Observações</button>-->
                      <!-- Botão para adicionar observacao -->
@@ -487,7 +489,22 @@ function toggleProducao(pedidoId) {
     },
     success: function(response) {
       console.log(response);
-      window.location.reload();
+
+      // Atualiza os botões de acordo com a resposta do servidor
+      var btnSim = document.getElementById(`producao-sim-${pedidoId}`);
+      var btnNao = document.getElementById(`producao-nao-${pedidoId}`);
+
+      if (btnSim) {
+        btnSim.id = `producao-nao-${pedidoId}`;
+        btnSim.classList.remove('btn-success');
+        btnSim.classList.add('btn-secondary');
+        btnSim.innerText = 'Não';
+      } else {
+        btnNao.id = `producao-sim-${pedidoId}`;
+        btnNao.classList.remove('btn-secondary');
+        btnNao.classList.add('btn-success');
+        btnNao.innerText = 'Sim';
+      }
     },
     error: function(xhr, status, error) {
       console.log(error);

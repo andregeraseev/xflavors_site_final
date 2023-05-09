@@ -272,6 +272,7 @@ function fecharAlerta(id) {
 
 
 $(document).ready(function() {
+
   $('#endereco_entrega').on('change', function() {
     // Obter o ID do endereço selecionado
     var enderecoId = $(this).val();
@@ -317,6 +318,7 @@ $(document).ready(function() {
 
 
 $(document).ready(function () {
+
     var cep = '{{ endereco_primario.cep }}'; // coloque aqui o CEP a ser cotado
     $.ajax({
         url: '{% url "cotacao_frete_correios" %}',
