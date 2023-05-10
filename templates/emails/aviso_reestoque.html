@@ -34,14 +34,14 @@
 </head>
 <body>
 <div class="container">
-    <img src="https://xflavors.pythonanywhere.com/static/imagens/xflavors_logo_comprido.png" alt="XFlavors Logo">
+    <img src="https://www.xflavors.net/static/imagens/xflavors_logo_comprido.png" alt="XFlavors Logo">
     <h2>Olá {{ aviso.cliente.username }}!</h2>
 
     <p>O produto {{ aviso.produto.name }} está em estoque novamente!</p>
     <p>Acesse o link abaixo para conferir o produto:</p>
 
-        <a href="https://xflavors.pythonanywhere.com/{{ aviso.produto.get_absolute_url }}">
-        <img src="https://xflavors.pythonanywhere.com/{{ aviso.produto.image.url }}" alt="{{ aviso.produto.name }}" style="width: 200px; height: 200px;">
+        <a href="https://www.xflavors.net/{{ aviso.produto.get_absolute_url }}">
+        <img src="https://www.xflavors.net/{{ aviso.produto.image.url }}" alt="{{ aviso.produto.name }}" style="width: 200px; height: 200px;">
         </a>
 </div>
 </body>
