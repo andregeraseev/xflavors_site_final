@@ -118,6 +118,7 @@ class Kit(models.Model):
     Model de kit de produtos
     """
     name = models.CharField(max_length=255)
+    resumo = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='kits')
