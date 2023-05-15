@@ -163,7 +163,7 @@ def product_detail(request, slug):
 
     # Obtenha todos os pedidos que contêm o item em questão
     # Obtenha todos os pedidos que contêm o produto em questão
-    orders = Pedido.objects.filter(itens__in=pedido_itens, status="Pago").order_by().values_list('id', flat=True).distinct()
+    orders = Pedido.objects.filter(itens__in=pedido_itens, status__in=["Pago", "Enviado"]).order_by().values_list('id', flat=True).distinct()
     # print(("ORDERS",orders))
     # Obtenha todos os outros itens que aparecem nos mesmos pedidos que o item em questão
     related_item_ids = PedidoItem.objects.filter(pedido__in=orders).exclude(product=produto).annotate(
