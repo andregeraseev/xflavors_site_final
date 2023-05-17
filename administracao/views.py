@@ -2,6 +2,8 @@
 from django.db.models.functions import Trunc, TruncDay
 from django.shortcuts import render
 from django.db.models import Sum
+from django.template.loader import render_to_string
+
 from pedidos.models import Pedido
 import pandas as pd
 from datetime import datetime, timedelta
@@ -10,6 +12,49 @@ from django.contrib.admin.views.decorators import staff_member_required
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+
+
+
+from django.shortcuts import render
+from django.core.mail import EmailMultiAlternatives
+from django.template import Context, Template
+from django.contrib import messages
+from .forms import EmailEmMassaForm
+from clientes.models import Cliente
+
+@staff_member_required
+def enviar_email_em_massa_view(request):
+    if request.method == 'POST':
+        form = EmailEmMassaForm(request.POST)
+        if form.is_valid():
+            assunto = form.cleaned_data['assunto']
+            corpo = form.cleaned_data['corpo']
+            clientes = Cliente.objects.filter(propaganda=True, cpf=36944557878)
+
+            for cliente in clientes:
+                # Carregar o template de email
+                corpo_html = render_to_string('emails\email_em_massa.html', {
+                    'nome': cliente.user.username,
+                    'assunto': assunto,
+                    'corpo': corpo
+                })
+
+                email = EmailMultiAlternatives(
+                    subject=assunto,
+                    body=corpo_html,  # Usar o template HTML como corpo do email
+                    from_email='xflavors@gmail.com',
+                    to=[cliente.user.email]
+                )
+                email.attach_alternative(corpo_html, "text/html")
+                email.send()
+
+            messages.success(request, f'Email enviado com sucesso para {len(clientes)} clientes.')
+        else:
+            messages.error(request, 'Erro ao enviar o email. Verifique os dados informados.')
+    else:
+        form = EmailEmMassaForm()
+
+    return render(request, 'administracao/enviar_email_em_massa.html', {'form': form})
 
 
 @staff_member_required
