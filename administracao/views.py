@@ -33,7 +33,7 @@ def enviar_email_em_massa_view(request):
 
             for cliente in clientes:
                 # Carregar o template de email
-                corpo_html = render_to_string('emails\email_em_massa.html', {
+                corpo_html = render_to_string('emails/email_em_massa.html', {
                     'nome': cliente.user.username,
                     'assunto': assunto,
                     'corpo': corpo
