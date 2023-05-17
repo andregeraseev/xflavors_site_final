@@ -29,7 +29,9 @@ def enviar_email_em_massa_view(request):
         if form.is_valid():
             assunto = form.cleaned_data['assunto']
             corpo = form.cleaned_data['corpo']
-            clientes = Cliente.objects.filter(propaganda=True, cpf=36944557878)
+            clientes_ids = form.cleaned_data['clientes']
+
+            clientes = Cliente.objects.filter(id__in=clientes_ids)
 
             for cliente in clientes:
                 # Carregar o template de email
