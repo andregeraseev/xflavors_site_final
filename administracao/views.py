@@ -21,6 +21,9 @@ from django.template import Context, Template
 from django.contrib import messages
 from .forms import EmailEmMassaForm
 from clientes.models import Cliente
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 
 @staff_member_required
 def enviar_email_em_massa_view(request):
@@ -42,6 +45,13 @@ def enviar_email_em_massa_view(request):
                     'corpo': corpo
                 })
 
+                try:
+                    # Valida o email antes de tentar enviar
+                    validate_email(cliente.user.email)
+                except ValidationError:
+                    messages.error(request, f'Endereço de email inválido: {cliente.user.email}')
+                    continue
+
                 email = EmailMultiAlternatives(
                     subject=assunto,
                     body=corpo_html,  # Usar o template HTML como corpo do email
@@ -62,6 +72,7 @@ def enviar_email_em_massa_view(request):
         form = EmailEmMassaForm()
 
     return render(request, 'administracao/enviar_email_em_massa.html', {'form': form})
+
 
 
 @staff_member_required
