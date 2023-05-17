@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 
 
-
+from smtplib import SMTPException
 from django.shortcuts import render
 from django.core.mail import EmailMultiAlternatives
 from django.template import Context, Template
@@ -33,6 +33,7 @@ def enviar_email_em_massa_view(request):
 
             clientes = Cliente.objects.filter(id__in=clientes_ids)
 
+            total_enviados = 0
             for cliente in clientes:
                 # Carregar o template de email
                 corpo_html = render_to_string('emails/email_em_massa.html', {
@@ -48,9 +49,13 @@ def enviar_email_em_massa_view(request):
                     to=[cliente.user.email]
                 )
                 email.attach_alternative(corpo_html, "text/html")
-                email.send()
+                try:
+                    email.send()
+                    total_enviados += 1
+                except SMTPException as e:
+                    messages.error(request, f'Erro ao enviar email para {cliente.user.email}: {str(e)}')
 
-            messages.success(request, f'Email enviado com sucesso para {len(clientes)} clientes.')
+            messages.success(request, f'Email enviado com sucesso para {total_enviados} clientes.')
         else:
             messages.error(request, 'Erro ao enviar o email. Verifique os dados informados.')
     else:
