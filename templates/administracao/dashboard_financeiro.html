@@ -3,11 +3,51 @@
   {{ form.as_p }}
   <button type="submit">Selecionar Período</button>
 </form>
-
 {% for venda in vendas_por_mes %}
   <p>Período: {{ venda.data_inicial }} - {{ venda.data_final }}</p>
   <p>Categoria: {{ venda.category }}</p>
-  <p>Total de vendas: {{ venda.total_vendas }}</p>
-  <p>Total de frete: {{ venda.total_frete }}</p>
+  <p>Total de vendas: {{ venda.total_vendas|default:0 }}</p>
+  <p>Subtotal: {{ venda.total_subtotal|default:0 }}</p>
+  <p>Total de frete: {{ venda.total_frete|default:0 }}</p>
+{% empty %}
+  <p>Nenhuma venda encontrada para o período selecionado.</p>
 {% endfor %}
+
+
+
+
+<table>
+  <thead>
+    <tr>
+      <th>ID do Pedido</th>
+      <th>Nome do Produto</th>
+      <th>Nome da Variação</th>
+      <th>Valor Unitário</th>
+      <th>Quantidade</th>
+      <th>Valor Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for venda in vendas_detalhadas %}
+    <tr>
+      <td>{{ venda.pedido__id }}</td>
+      <td>{{ venda.product__name }}</td>
+      <td>{{ venda.variation__name }}</td>
+      <td>
+        {% if venda.product__price > 0 %}
+          {{ venda.product__price }}
+        {% else %}
+          {{ venda.variation__price }}
+        {% endif %}
+      </td>
+      <td>{{ venda.quantity }}</td>
+      <td>{{ venda.subtotal }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td colspan="5"><strong>Total</strong></td>
+      <td><strong>{{ total_subtotal }}</strong></td>
+    </tr>
+  </tbody>
+</table>
 

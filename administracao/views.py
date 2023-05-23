@@ -1,5 +1,5 @@
 # administracao/views.py
-from django.db.models.functions import Trunc, TruncDay
+from django.db.models.functions import Trunc, TruncDay, Concat
 from django.shortcuts import render
 from django.db.models import Sum
 from django.template.loader import render_to_string
@@ -228,9 +228,44 @@ from datetime import date, timedelta
 
 from .forms import SelecionarPeriodoForm
 
+from django.db.models import Sum
+from django.shortcuts import render
+
+from pedidos.models import Pedido
+from produtos.models import Category
+from .forms import SelecionarPeriodoForm
+
+from django.db.models import Sum
+from django.shortcuts import render
+
+from pedidos.models import Pedido, PedidoItem
+from produtos.models import Category
+from .forms import SelecionarPeriodoForm
+
+from django.db.models import Sum
+from django.shortcuts import render
+
+from pedidos.models import Pedido, PedidoItem
+from produtos.models import Category
+from .forms import SelecionarPeriodoForm
+from django.db.models import F, ExpressionWrapper, DecimalField
+
+# views.py
+from django.db.models import Sum, F, Case, When, DecimalField
+from django.shortcuts import render
+from django.db.models import Value, CharField
+
+from django.db.models import ExpressionWrapper, F, DecimalField, CharField, Sum, When, Case
+from django.db.models.functions import Round
 
 @staff_member_required
 def dashboard_financeiro(request):
+    vendas_por_periodo = None
+    vendas_detalhadas = []
+    total_vendas = 0
+    total_frete = 0
+    total_subtotal = 0
+
     if request.method == 'POST':
         form = SelecionarPeriodoForm(request.POST)
         if form.is_valid():
@@ -243,25 +278,56 @@ def dashboard_financeiro(request):
             if category:
                 vendas_por_periodo = vendas_por_periodo.filter(itens__product__category=category)
 
-            valor_vendas = vendas_por_periodo.aggregate(total_vendas=Sum('total'))
-            valor_frete = vendas_por_periodo.aggregate(total_frete=Sum('valor_frete'))
+            total_vendas = vendas_por_periodo.aggregate(total_vendas=Round(Sum('total'), 2))['total_vendas'] or 0
+            total_frete = vendas_por_periodo.aggregate(total_frete=Round(Sum('valor_frete'), 2))['total_frete'] or 0
 
-            vendas_por_mes = [{
-                'data_inicial': data_inicial,
-                'data_final': data_final,
-                'category': category,
-                'total_vendas': valor_vendas['total_vendas'],
-                'total_frete': valor_frete['total_frete']
-            }]
+            itens_pedidos = PedidoItem.objects.filter(pedido__in=vendas_por_periodo)
+            vendas_detalhadas = itens_pedidos.values(
+                'pedido__data_pedido',
+                'product__name',
+                'variation__name',
+                'quantity',
+            ).annotate(
+                subtotal=Case(
+                    When(variation__price__gt=0, then=Round(F('variation__price') * F('quantity'), 2)),
+                    default=Round(F('product__price') * F('quantity'), 2),
+                    output_field=DecimalField(max_digits=10, decimal_places=2)
+                )
+            )
+
+            total_subtotal = vendas_detalhadas.aggregate(total_subtotal=Round(Sum('subtotal'), 2))['total_subtotal'] or 0
+
+        vendas_por_mes = Pedido.objects.filter(
+            data_pedido__range=[data_inicial, data_final]
+        ).annotate(
+            data_periodo=ExpressionWrapper(
+                F('data_pedido') + ' - ' + F('data_pedido'),
+                output_field=CharField()
+            )
+        ).values(
+            'data_periodo'
+        ).annotate(
+            total_vendas=Round(Sum('total'), 2),
+            total_subtotal=Round(Sum('subtotal'), 2),
+            total_frete=Round(Sum('valor_frete'), 2)
+        )
+
     else:
         form = SelecionarPeriodoForm()
-        vendas_por_mes = []
+
 
     context = {
         'form': form,
+        'vendas_detalhadas': vendas_detalhadas,
+        'total_vendas': total_vendas,
+        'total_frete': total_frete,
+        'total_subtotal': total_subtotal,
         'vendas_por_mes': vendas_por_mes
     }
     return render(request, 'administracao/dashboard_financeiro.html', context)
+
+
+
 
 
 
