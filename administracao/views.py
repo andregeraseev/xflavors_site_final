@@ -258,6 +258,9 @@ from django.db.models import Value, CharField
 from django.db.models import ExpressionWrapper, F, DecimalField, CharField, Sum, When, Case
 from django.db.models.functions import Round
 
+from django.db.models import ExpressionWrapper, F, DecimalField, CharField, Sum, When, Case
+from django.db.models.functions import Round
+
 @staff_member_required
 def dashboard_financeiro(request):
     vendas_por_periodo = None
@@ -271,17 +274,21 @@ def dashboard_financeiro(request):
         if form.is_valid():
             data_inicial = form.cleaned_data['data_inicial']
             data_final = form.cleaned_data['data_final']
-            categoria = form.cleaned_data['categoria']
+            category = form.cleaned_data['category']
 
             vendas_por_periodo = Pedido.objects.filter(data_pedido__range=[data_inicial, data_final])
 
-            if categoria:
-                vendas_por_periodo = vendas_por_periodo.filter(itens__product__category=categoria)
+            if category:
+                vendas_por_periodo = vendas_por_periodo.filter(itens__product__category=category)
 
             total_vendas = vendas_por_periodo.aggregate(total_vendas=Round(Sum('total'), 2))['total_vendas'] or 0
             total_frete = vendas_por_periodo.aggregate(total_frete=Round(Sum('valor_frete'), 2))['total_frete'] or 0
 
             itens_pedidos = PedidoItem.objects.filter(pedido__in=vendas_por_periodo)
+
+            if category:
+                itens_pedidos = itens_pedidos.filter(product__category=category)
+
             vendas_detalhadas = itens_pedidos.values(
                 'pedido__id',
                 'pedido__data_pedido',
@@ -326,6 +333,7 @@ def dashboard_financeiro(request):
         'vendas_por_mes': vendas_por_mes
     }
     return render(request, 'administracao/dashboard_financeiro.html', context)
+
 
 
 
