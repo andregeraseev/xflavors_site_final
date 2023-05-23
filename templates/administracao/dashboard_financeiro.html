@@ -1,0 +1,13 @@
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Selecionar Período</button>
+</form>
+
+{% for venda in vendas_por_mes %}
+  <p>Período: {{ venda.data_inicial }} - {{ venda.data_final }}</p>
+  <p>Categoria: {{ venda.category }}</p>
+  <p>Total de vendas: {{ venda.total_vendas }}</p>
+  <p>Total de frete: {{ venda.total_frete }}</p>
+{% endfor %}
+

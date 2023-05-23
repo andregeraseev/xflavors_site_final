@@ -9,7 +9,8 @@ from produtos.models import Produto, Variation
 from cart.models import CartItem
 import uuid
 from django.utils import timezone
-
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
 
 class PedidoItem(models.Model):
 
@@ -143,7 +144,13 @@ class Pedido(models.Model):
         self.save()
 
 
-    def __str__(self):
+    @classmethod
+    def get_vendas_por_mes(cls, year, month):
+        return cls.objects.filter(data_pedido__year=year, data_pedido__month=month).aggregate(
+            total_vendas=Sum('total')).get('total_vendas', 0)
+
+
+def __str__(self):
         return f"Pedido {self.id}"
 
 
