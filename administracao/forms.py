@@ -20,7 +20,7 @@ from produtos.models import Category
 class SelecionarPeriodoForm(forms.Form):
     data_inicial = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Data Inicial')
     data_final = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Data Final')
-    category = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Todas as categorias', required=False)
+    categoria = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Todas as categorias', required=False)
 
 
 
