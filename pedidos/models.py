@@ -81,6 +81,7 @@ class Pedido(models.Model):
         ('Reembolsado', 'Reembolsado'),
         ('Estorno', 'Estorno'),
         ('Cancelado', 'Cancelado'),
+        ('Pagamento em análise', 'Pagamento em análise'),
     )
     FRETE_CHOICES = (
         ('Sedex', 'Sedex'),

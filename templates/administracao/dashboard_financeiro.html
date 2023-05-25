@@ -6,9 +6,10 @@
 {% for venda in vendas_por_mes %}
   <p>Período: {{ venda.data_inicial }} - {{ venda.data_final }}</p>
   <p>Categoria: {{ venda.category }}</p>
-  <p>Total de vendas: {{ venda.total_vendas|default:0 }}</p>
-  <p>Subtotal: {{ venda.total_subtotal|default:0 }}</p>
-  <p>Total de frete: {{ venda.total_frete|default:0 }}</p>
+  <p>Total de vendas: {{ venda.total_vendas|floatformat:2 }}</p>
+  <p>Subtotal: {{ venda.total_subtotal|floatformat:2 }}</p>
+  <p>Total de frete: {{ venda.total_frete|floatformat:2 }}</p>
+
 {% empty %}
   <p>Nenhuma venda encontrada para o período selecionado.</p>
 {% endfor %}
@@ -41,7 +42,8 @@
         {% endif %}
       </td>
       <td>{{ venda.quantity }}</td>
-      <td>{{ venda.subtotal }}</td>
+      <td>{{ venda.subtotal|floatformat:2 }}</td>
+
     </tr>
     {% endfor %}
     <tr>

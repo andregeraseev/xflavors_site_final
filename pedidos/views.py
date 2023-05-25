@@ -661,6 +661,7 @@ def paga_pix(request):
 
         # Atualizar o pedido com o caminho para o comprovante de pagamento
         pedido.comprovante = path
+        pedido.status = "Pagamento em análise"
         pedido.save()
 
         # Redirecionar o cliente de volta para a página de pagamento com uma mensagem de sucesso
