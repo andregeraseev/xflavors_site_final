@@ -463,12 +463,16 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     print(gasto)
 
     pai = Produto.objects.get(id=produtopai)
+    if produto['produto']['precoPromocional']:
+        preco = produto['produto']['precoPromocional']
+    else:
+        preco = produto['produto']['preco']
     try:
         Variation.objects.update_or_create(
             id=produto['produto']['id'],
             produto_pai=pai,
             defaults={'name': produto['produto']['nome'],
-                      'price': produto['produto']['preco'],
+                      'price': preco,
                       'stock': estoque,
                       'nome_simplificado': nome_simplificado,
                       'gasto': gasto,
