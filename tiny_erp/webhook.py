@@ -467,7 +467,11 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     print("PRECO", produto['produto']['preco'])
     print("PRECOPROMOCIONAL", produto['produto']['preco_promocional'])
     try:
-        preco = produto['produto']['preco_promocional']
+        preco_promocional = produto['produto']['preco_promocional']
+        if preco_promocional > 0:
+            preco = preco_promocional
+        else:
+            preco = produto['produto']['preco']
     except:
         preco = produto['produto']['preco']
     try:
