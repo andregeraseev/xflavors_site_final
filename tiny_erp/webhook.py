@@ -132,7 +132,11 @@ def print_payload_data(payload):
     print("localizacao:",localizacao)
     nome = payload["nome"]
     print("nome:", nome)
-    preco = payload["preco"]
+    if payload["precoPromocional"]:
+        preco = payload["precoPromocional"]
+    else:
+        preco = payload["preco"]
+
     estoque = payload["estoqueAtual"]
     product_id = payload["id"]
     descricao = payload["descricaoComplementar"]
