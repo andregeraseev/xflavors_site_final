@@ -465,9 +465,9 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     pai = Produto.objects.get(id=produtopai)
     print("PRECO", produto['produto'])
     print("PRECO", produto['produto']['preco'])
-    print("PRECOPROMOCIONAL", produto['produto']['precoPromocional'])
+    print("PRECOPROMOCIONAL", produto['produto']['preco_promocional'])
     try:
-        preco = produto['produto']['precoPromocional']
+        preco = produto['produto']['preco_promocional']
     except:
         preco = produto['produto']['preco']
     try:
