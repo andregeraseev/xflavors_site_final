@@ -278,12 +278,12 @@ def dashboard_financeiro(request):
             category = form.cleaned_data['category']
             subcategory = form.cleaned_data['subcategory']  # nova linha
 
-            vendas_por_periodo = Pedido.objects.filter(data_pedido__range=[data_inicial, data_final])
-
+            vendas_por_periodo = Pedido.objects.filter(data_pedido__range=[data_inicial, data_final],
+                                                       status__in=['Pago', 'Enviado', 'Em trânsito', 'Entregue'])
             if category:
-                vendas_por_periodo = vendas_por_periodo.filter(itens__product__category=category)
+                vendas_por_periodo = vendas_por_periodo.filter(itens__product__category=category, status__in=['Pago', 'Enviado', 'Em trânsito', 'Entregue'])
             if subcategory:  # nova linha
-                vendas_por_periodo = vendas_por_periodo.filter(itens__product__subcategory=subcategory)  # nova linha
+                vendas_por_periodo = vendas_por_periodo.filter(itens__product__subcategory=subcategory, status__in=['Pago', 'Enviado', 'Em trânsito', 'Entregue'])
 
             total_vendas = vendas_por_periodo.aggregate(total_vendas=Round(Sum('total'), 2))['total_vendas'] or 0
             total_frete = vendas_por_periodo.aggregate(total_frete=Round(Sum('valor_frete'), 2))['total_frete'] or 0
