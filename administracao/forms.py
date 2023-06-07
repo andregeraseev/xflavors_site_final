@@ -15,12 +15,12 @@ class EmailEmMassaForm(forms.Form):
 
 
 from django import forms
-from produtos.models import Category
+from produtos.models import Category,  Subcategory
 
 class SelecionarPeriodoForm(forms.Form):
     data_inicial = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Data Inicial')
     data_final = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Data Final')
     category = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Todas as categorias', required=False)
-
+    subcategory = forms.ModelChoiceField(queryset=Subcategory.objects.all(), empty_label='Todas as subcategorias', required=False)
 
 

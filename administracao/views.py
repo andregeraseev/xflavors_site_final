@@ -276,11 +276,14 @@ def dashboard_financeiro(request):
             data_inicial = form.cleaned_data['data_inicial']
             data_final = form.cleaned_data['data_final']
             category = form.cleaned_data['category']
+            subcategory = form.cleaned_data['subcategory']  # nova linha
 
             vendas_por_periodo = Pedido.objects.filter(data_pedido__range=[data_inicial, data_final])
 
             if category:
                 vendas_por_periodo = vendas_por_periodo.filter(itens__product__category=category)
+            if subcategory:  # nova linha
+                vendas_por_periodo = vendas_por_periodo.filter(itens__product__subcategory=subcategory)  # nova linha
 
             total_vendas = vendas_por_periodo.aggregate(total_vendas=Round(Sum('total'), 2))['total_vendas'] or 0
             total_frete = vendas_por_periodo.aggregate(total_frete=Round(Sum('valor_frete'), 2))['total_frete'] or 0
@@ -289,6 +292,9 @@ def dashboard_financeiro(request):
 
             if category:
                 itens_pedidos = itens_pedidos.filter(product__category=category)
+
+            if subcategory:  # nova linha
+                itens_pedidos = itens_pedidos.filter(product__subcategory=subcategory)  # nova linha
 
             vendas_detalhadas = itens_pedidos.values(
                 'pedido__id',
