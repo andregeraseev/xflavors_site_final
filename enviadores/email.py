@@ -3,12 +3,14 @@ from django.core.mail import send_mail
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from xflavors.settings import EMAIL_HOST_USER
+
 
 
 def enviar_email_confirmacao(destinatario, nome):
     assunto = 'Confirmação de Cadastro'
     # mensagem = f'Olá {nome}, \n\nObrigado por se cadastrar no nosso site. Seu cadastro foi confirmado com sucesso!'
-    remetente = 'xflavors@gmail.com'
+    remetente = EMAIL_HOST_USER
 
     # Define o conteúdo do e-mail em HTML e texto puro
     html_content = render_to_string('emails/Bem_vindo.html', {'nome': nome})
@@ -28,7 +30,7 @@ def enviar_email_pedido_criado(destinatario, nome, pedido ):
     print('enviado email')
     assunto = 'Pedido Criado'
     mensagem = f'Olá {nome}, \n\nSeu pedido #{pedido} foi criado com sucesso.'
-    remetente = 'xflavors@gmail.com'
+    remetente = EMAIL_HOST_USER
     # send_mail(assunto, mensagem, remetente, [destinatario], fail_silently=False)
 
     # Define o conteúdo do e-mail em HTML e texto puro
@@ -46,7 +48,7 @@ def enviar_email_rastreio(destinatario, nome, pedido_id, rastreio):
     print('enviado email rastreio')
     assunto = 'Pedido Enviado'
     mensagem = f'Olá {nome}, \n\nSeu pedido #{pedido_id} foi criado com sucesso.'
-    remetente = 'xflavors@gmail.com'
+    remetente = EMAIL_HOST_USER
     # send_mail(assunto, mensagem, remetente, [destinatario], fail_silently=False)
 
     # Define o conteúdo do e-mail em HTML e texto puro
@@ -66,7 +68,7 @@ def send_email_aviso_estoque(aviso):
 
     assunto = 'Produto em estoque'
     message = f"Olá {aviso.cliente.username}, o produto {aviso.produto.name} está em estoque novamente!"
-    remetente = 'xflavors@gmail.com'
+    remetente = EMAIL_HOST_USER
     destinatario = [aviso.cliente.email]
     # send_mail(subject, message, from_email, recipient_list)
 

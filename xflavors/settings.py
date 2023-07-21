@@ -34,13 +34,17 @@ MERCADO_PAGO_CLIENT_SECRET = os.getenv('MERCADOLIVRETOKEN')
 
 # EMAIL
 
+EMAIL_HOST = 'smtp.titan.email'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'contato@xflavors.net'  # Substitua por seu e-mail real
+EMAIL_HOST_PASSWORD = 'Garbage@87'  # Substitua por sua senha real
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'ageraseev@gmail.com'
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
+ADMIN_EMAIL = "contato@xflavors.net"  # Substitua por seu e-mail real
+SUPPORT_EMAIL = "contato@xflavors.net"  # Substitua por seu e-mail real
+DEFAULT_FROM_EMAIL = ADMIN_EMAIL
+SERVER_EMAIL = ADMIN_EMAIL
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

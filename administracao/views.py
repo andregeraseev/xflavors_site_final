@@ -23,7 +23,7 @@ from .forms import EmailEmMassaForm
 from clientes.models import Cliente
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
+from xflavors.settings import EMAIL_HOST_USER
 
 @staff_member_required
 def enviar_email_em_massa_view(request):
@@ -55,7 +55,7 @@ def enviar_email_em_massa_view(request):
                 email = EmailMultiAlternatives(
                     subject=assunto,
                     body=corpo_html,  # Usar o template HTML como corpo do email
-                    from_email='xflavors@gmail.com',
+                    from_email= EMAIL_HOST_USER,
                     to=[cliente.user.email]
                 )
                 email.attach_alternative(corpo_html, "text/html")

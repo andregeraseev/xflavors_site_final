@@ -566,7 +566,8 @@ def criar_pedido(request):
             nome= user.username
             pedido= pedido
             enviar_email_pedido_criado(destinatario, nome, pedido)
-        except:
+        except Exception as e:
+            print(e)
             raise ValueError('Problema para enviar o email')
 
 
