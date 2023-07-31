@@ -342,6 +342,52 @@ def dashboard_financeiro(request):
     return render(request, 'administracao/dashboard_financeiro.html', context)
 
 
+# views.py
+
+import plotly.express as px
+import plotly.offline as opy
+from django.shortcuts import render
+from pedidos.models import Pedido
+from django.db.models import Sum, F
+from django.utils import timezone
+import json
+
+def sales_chart(request):
+    message = ''
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        if start_date and end_date:
+            if end_date >= start_date:
+                sales_by_date = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date])
+            else:
+                message = 'A data final não pode ser menor que a data inicial.'
+        else:
+            sales_by_date = Pedido.objects.filter(data_pedido__gte=timezone.now()-timezone.timedelta(days=30))
+    else:
+        sales_by_date = Pedido.objects.filter(data_pedido__gte=timezone.now()-timezone.timedelta(days=30))
+
+    sales_by_date = sales_by_date.annotate(date=F('data_pedido__date')).values('date').annotate(
+        total=Sum('total')).order_by('date')
+
+    if sales_by_date:
+        fig = px.line(sales_by_date, x='date', y='total')
+        fig.update_layout(
+            title="Vendas ao longo do tempo",
+            xaxis_title="Data",
+            yaxis_title="Vendas (R$)",
+            font=dict(
+                size=18,
+            )
+        )
+        plot_div = opy.plot(fig, output_type='div', include_plotlyjs=False)
+    else:
+        plot_div = ''
+        message = 'Não há vendas no período selecionado.'
+
+    return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'message': message})
+
+
 
 
 
