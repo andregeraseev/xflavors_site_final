@@ -352,17 +352,17 @@ from django.db.models import Sum, F
 from django.utils import timezone
 import json
 
-
+from datetime import datetime
 def sales_chart(request):
     message = ''
     value_type = 'total'  # Default value
     order_statuses = ['Pago', 'Enviado', 'Em trânsito', 'Entregue']  # Default statuses
-    start_date = timezone.now() - timezone.timedelta(days=30)  # Default start date
-    end_date = timezone.now()  # Default end date
+    start_date = (timezone.now() - timezone.timedelta(days=30)).strftime('%Y-%m-%d')  # Default start date
+    end_date = timezone.now().strftime('%Y-%m-%d')  # Default end date
 
     if request.method == 'POST':
-        start_date = request.POST.get('start_date', start_date)
-        end_date = request.POST.get('end_date', end_date)
+        start_date = datetime.strptime(request.POST.get('start_date', start_date), '%Y-%m-%d')
+        end_date = datetime.strptime(request.POST.get('end_date', end_date), '%Y-%m-%d')
         value_type = request.POST.get('value_type', 'total')  # Get the selected value type, default is 'total'
         # Get the selected order statuses, default is ['Pago', 'Enviado', 'Em trânsito', 'Entregue']
         order_statuses = request.POST.getlist('order_status', ['Pago', 'Enviado', 'Em trânsito', 'Entregue'])
@@ -389,7 +389,7 @@ def sales_chart(request):
 
         fig = px.line(df, x='index', y='total')
         fig.update_layout(
-            title=f"{value_type.capitalize()} de {start_date} a {end_date} no status {', '.join(order_statuses)}",
+            title=f"{value_type.capitalize()} de {start_date.strftime('%Y-%m-%d')} a {end_date.strftime('%Y-%m-%d')} no status {', '.join(order_statuses)}",
             xaxis_title="Data",
             yaxis_title=f"{value_type.capitalize()}",
             font=dict(
@@ -401,8 +401,12 @@ def sales_chart(request):
         plot_div = ''
         message = 'Não há vendas no período selecionado.'
 
-    return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'message': message})
+    # Create a table with more detailed data
+    qs = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date], status__in=order_statuses)
+    df_detailed = pd.DataFrame(list(qs.values()))
+    table_div = df_detailed.to_html(classes='table table-striped table-hover')
 
+    return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
 
 
 
