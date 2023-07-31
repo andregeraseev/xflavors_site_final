@@ -29,7 +29,11 @@
             <div class="card-body">
                 <h5 class="card-title">{{ kit.name }}</h5>
                 <p class="card-text">{{ kit.resumo }}</p>
-
+                 {% if kit.info_estoque == "Todas essências disponíveis" %}
+                <small class="text-success">{{ kit.info_estoque }}</small>
+                {% else %}
+                <small class="text-danger">{{ kit.info_estoque }}</small>
+                {% endif %}
             </div>
             <div class="text-center">
                 <a href="{% url 'kit_detail' kit.slug %}" class="btn btn-primary">Ver mais</a>
@@ -55,19 +59,19 @@
 
 
 
-<ul class="pagination">
-  {% for numero_pagina in pagina.paginator.page_range %}
-
-  {% if pagina.number == numero_pagina %}
-  <li class="page-item active" aria-current="page">
-    <span class="page-link">{{ numero_pagina }} <span class="sr-only">(current)</span></span>
-  </li>
-  {% else %}
-  <li class="page-item"><a class="page-link" href="?pagina={{ numero_pagina }}">{{ numero_pagina }}</a></li>
-  {% endif %}
-  {% endfor %}
-</ul>
-
+<div  class=" container p-5 text-center">
+  <ul class="pagination">
+    {% for numero_pagina in pagina.paginator.page_range %}
+    {% if pagina.number == numero_pagina %}
+    <li class="page-item active" aria-current="page">
+      <span class="page-link">{{ numero_pagina }} <span class="sr-only">(current)</span></span>
+    </li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?ordenacao={{ ordenacao }}&pagina={{ numero_pagina }}">{{ numero_pagina }}</a></li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+</div>
 
 </div>
 </div>

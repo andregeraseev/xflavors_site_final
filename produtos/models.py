@@ -133,6 +133,13 @@ class Kit(models.Model):
         self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    def info_estoque(self):
+        total_variacoes = self.variacoes.count()
+        variacoes_disponiveis = self.variacoes.filter(materia_prima__stock__gte=10).count()
+        if total_variacoes == variacoes_disponiveis:
+            return "Todas essências disponíveis"
+        else:
+            return f"Temos {variacoes_disponiveis} essencias disponiveis de {total_variacoes}"
 
     def __str__(self):
         return self.name
