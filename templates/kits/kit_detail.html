@@ -8,7 +8,39 @@
     }
     .product-img {
         width: 100%;
-        max-width: 100px;
+        max-height: 300px; /* Aumenta a altura máxima da imagem */
+        object-fit: cover; /* Garante que a imagem cubra toda a área disponível */
+    }
+    .kit-form {
+        background-color: #f8f9fa; /* Adiciona um plano de fundo claro ao formulário */
+        padding: 15px; /* Adiciona algum preenchimento ao formulário */
+        margin-bottom: 15px; /* Adiciona algum espaço abaixo do formulário */
+    }
+    .kit-form button {
+        background-color: #007bff; /* Muda a cor de fundo do botão para azul */
+        color: white; /* Muda a cor do texto do botão para branco */
+    }
+    .kit-form button:hover {
+        background-color: #0056b3; /* Muda a cor de fundo do botão para um azul mais escuro quando o mouse está sobre ele */
+    }
+    .alert {
+        padding: 10px;
+        margin-top: 10px;
+    }
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    .card-body h5 {
+        font-size: 2em; /* Aumenta o tamanho do título do produto */
+        font-weight: bold; /* Faz o título do produto ser em negrito */
+        margin-bottom: 15px; /* Adiciona algum espaço abaixo do título do produto */
     }
 </style>
 <div class="container">
@@ -24,12 +56,12 @@
                         {% csrf_token %}
                         <input type="hidden" name="kit_id" value="{{ kit.id }}">
                         <div class="table-responsive w-100">
-                           <table class="table ">
+                            <table class="table ">
                                 <tbody>
                                     {% for variation in kit.variacoes.all %}
                                         <tr>
                                             <td style="width: 20%;"><img src="{{ variation.produto_pai.image.url }}" alt="{{ variation.name }}" class="img-fluid product-img"></td>
-                                            <td style="width: 60%;">{{ variation.name }}</td>
+                                            <td style="width: 50%;">{{ variation.name }}</td>
 
                                             {% if variation.materia_prima.stock < 10 %}
                                             <td><h6 class="text-danger">Sem estoque</h6></td>
