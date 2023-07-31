@@ -3,7 +3,7 @@ from django.db.models.functions import Trunc, TruncDay, Concat
 from django.shortcuts import render
 from django.db.models import Sum
 from django.template.loader import render_to_string
-
+import numpy as np
 from pedidos.models import Pedido
 import pandas as pd
 from datetime import datetime, timedelta
@@ -404,7 +404,37 @@ def sales_chart(request):
     # Create a table with more detailed data
     qs = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date], status__in=order_statuses)
     df_detailed = pd.DataFrame(list(qs.values()))
+
+    # Drop unnecessary columns
+    columns_to_drop = ['endereco_entrega_id', 'data_atualizacao', 'comprovante', 'numero_pedido_tiny',
+                       'mercado_pago_id', 'rastreamento', 'producao', 'observacoes',
+                       'observacoes_internas', 'link_mercado_pago']
+    df_detailed = df_detailed.drop(columns=columns_to_drop)
+    df_detailed['data_pedido'] = df_detailed['data_pedido'].dt.strftime('%d/%m/%Y')
+
+
     table_div = df_detailed.to_html(classes='table table-striped table-hover')
+
+    # Calculate the sum of the desired columns
+    sums = df_detailed[['desconto', 'subtotal', 'total', 'valor_frete']].sum()
+
+    # Add a row with the sum of the desired columns
+    df_sum = df_detailed[['desconto', 'subtotal', 'total', 'valor_frete']].sum().to_frame().T
+
+    # Append the sum row to the DataFrame
+    df_detailed = df_detailed.append(df_sum)
+
+    # Replace NaN values with '-' in the entire DataFrame
+    df_detailed = df_detailed.replace(np.nan, '-')
+
+    # Rename the index of the last row
+    df_detailed = df_detailed.rename(index={df_detailed.index[-1]: 'TOTAL'})
+
+    # Convert the DataFrame to HTML
+    table_div = df_detailed.to_html(classes='table table-striped table-hover')
+
+    return render(request, "administracao/sales_chart.html",
+                  context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
 
     return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
 
