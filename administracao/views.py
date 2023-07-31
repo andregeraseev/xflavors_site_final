@@ -371,7 +371,17 @@ def sales_chart(request):
         total=Sum('total')).order_by('date')
 
     if sales_by_date:
-        fig = px.line(sales_by_date, x='date', y='total')
+        # Convert queryset to pandas DataFrame
+        df = pd.DataFrame.from_records(sales_by_date)
+
+        # Create date range
+        date_range = pd.date_range(start=df['date'].min(), end=df['date'].max())
+
+        # Reindex DataFrame to include all dates in the range
+        df.set_index('date', inplace=True)
+        df = df.reindex(date_range, fill_value=0).reset_index()
+
+        fig = px.line(df, x='index', y='total')
         fig.update_layout(
             title="Vendas ao longo do tempo",
             xaxis_title="Data",
@@ -386,9 +396,6 @@ def sales_chart(request):
         message = 'Não há vendas no período selecionado.'
 
     return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'message': message})
-
-
-
 
 
 
