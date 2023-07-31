@@ -2,18 +2,21 @@
 
 {% block content %}
 
-<!-- Include Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<!-- Include Bootstrap 5 CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta2/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- Include Bootstrap Datepicker CSS -->
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+<!-- Include jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!-- Include Bootstrap Datepicker JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
-<!-- Include jQuery -->
+<!-- Include Plotly JS -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 
 
 <div class="container-fluid">
@@ -39,32 +42,42 @@
     </div>
   </nav>
 <div class="card">
-
-
-
-
-<div class="container mt-4">
-    <h2>Vendas ao longo do tempo</h2>
+<div class="container mt-5">
+    <h2 class="mb-3">Vendas ao longo do tempo</h2>
     <form method="post">
         {% csrf_token %}
-        <div class="row">
-            <div class="col-lg-4 col-md-6 mb-3">
-                <div class="form-group">
-                    <label for="start-date">Data inicial:</label>
-                    <input type="text" name="start_date" class="form-control datepicker" id="start-date"
-                           autocomplete="off">
-                </div>
+        <div class="row g-3">
+            <div class="col-lg-3">
+                <label for="start-date" class="form-label">Data inicial:</label>
+                <input type="text" name="start_date" class="form-control datepicker" id="start-date" autocomplete="off">
             </div>
-            <div class="col-lg-4 col-md-6 mb-3">
-                <div class="form-group">
-                    <label for="end-date">Data final:</label>
-                    <input type="text" name="end_date" class="form-control datepicker" id="end-date" autocomplete="off">
-                </div>
+            <div class="col-lg-3">
+                <label for="end-date" class="form-label">Data final:</label>
+                <input type="text" name="end_date" class="form-control datepicker" id="end-date" autocomplete="off">
             </div>
-
-            <div class="col-lg-4 col-md-12 align-self-end mb-3">
-                <button type="submit" class="btn btn-primary">Atualizar gráfico</button>
+            <div class="col-lg-3">
+                <label for="value-type" class="form-label">Valor:</label>
+                <select class="form-control" id="value-type" name="value_type">
+                    <option value="total">Total</option>
+                    <option value="subtotal">Subtotal</option>
+                    <option value="valor_frete">Frete</option>
+                    <option value="desconto">Descontos</option>
+                </select>
             </div>
+            <div class="col-lg-3">
+                <label for="order-status" class="form-label">Status do pedido:</label>
+                <select multiple class="form-control" id="order-status" name="order_status">
+                    <option value="Pago">Pago</option>
+                    <option value="Enviado">Enviado</option>
+                    <option value="Em trânsito">Em trânsito</option>
+                    <option value="Entregue">Entregue</option>
+                    <option value="Cancelado">Cancelado</option>
+                    <option value="Aguardando pagamento">Aguardando pagamento</option>
+                </select>
+            </div>
+        </div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Atualizar gráfico</button>
         </div>
     </form>
 
@@ -79,8 +92,22 @@
         {{ plot_div|safe }}
     </div>
     {% endif %}
-</div>
 
+    <style>
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+</style>
+
+    {% if table_div %}
+    <div class="table-responsive mt-4">
+        {{ table_div|safe }}
+    </div>
+    {% endif %}
+</div>
+</div>
 
 <script>
 $(document).ready(function() {
@@ -96,9 +123,21 @@ $(document).ready(function() {
         var startDate = $(this).val();
         $('#end-date').datepicker('setStartDate', startDate);
     });
+
+    // Load dates from local storage
+    if (localStorage.getItem('start_date')) {
+        $('#start-date').val(localStorage.getItem('start_date'));
+    }
+    if (localStorage.getItem('end_date')) {
+        $('#end-date').val(localStorage.getItem('end_date'));
+    }
+
+    // Save dates to local storage when they change
+    $('#start-date, #end-date').change(function() {
+        localStorage.setItem('start_date', $('#start-date').val());
+        localStorage.setItem('end_date', $('#end-date').val());
+    });
 });
-
 </script>
-
 
 {% endblock %}

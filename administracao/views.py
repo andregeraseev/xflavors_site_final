@@ -352,23 +352,33 @@ from django.db.models import Sum, F
 from django.utils import timezone
 import json
 
+
 def sales_chart(request):
     message = ''
+    value_type = 'total'  # Default value
+    order_statuses = ['Pago', 'Enviado', 'Em trânsito', 'Entregue']  # Default statuses
     if request.method == 'POST':
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
+        value_type = request.POST.get('value_type', 'total')  # Get the selected value type, default is 'total'
+        # Get the selected order statuses, default is ['Pago', 'Enviado', 'Em trânsito', 'Entregue']
+        order_statuses = request.POST.getlist('order_status', ['Pago', 'Enviado', 'Em trânsito', 'Entregue'])
         if start_date and end_date:
             if end_date >= start_date:
-                sales_by_date = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date])
+                sales_by_date = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date],
+                                                      status__in=order_statuses)
             else:
                 message = 'A data final não pode ser menor que a data inicial.'
         else:
-            sales_by_date = Pedido.objects.filter(data_pedido__gte=timezone.now()-timezone.timedelta(days=30))
+            sales_by_date = Pedido.objects.filter(data_pedido__gte=timezone.now() - timezone.timedelta(days=30),
+                                                  status__in=order_statuses)
     else:
-        sales_by_date = Pedido.objects.filter(data_pedido__gte=timezone.now()-timezone.timedelta(days=30))
+        sales_by_date = Pedido.objects.filter(data_pedido__gte=timezone.now() - timezone.timedelta(days=30),
+                                              status__in=order_statuses)
 
+    # Use the selected value type for the aggregation
     sales_by_date = sales_by_date.annotate(date=F('data_pedido__date')).values('date').annotate(
-        total=Sum('total')).order_by('date')
+        total=Sum(value_type)).order_by('date')
 
     if sales_by_date:
         # Convert queryset to pandas DataFrame
@@ -383,19 +393,45 @@ def sales_chart(request):
 
         fig = px.line(df, x='index', y='total')
         fig.update_layout(
-            title="Vendas ao longo do tempo",
+            title=f"{value_type} de {start_date} a {end_date} no status {order_statuses} ",
             xaxis_title="Data",
-            yaxis_title="Vendas (R$)",
+            yaxis_title="Vendas",
             font=dict(
-                size=18,
+                size=10,
+            ),
+            title_font=dict(
+                size=14,
             )
         )
+
         plot_div = opy.plot(fig, output_type='div', include_plotlyjs=False)
+
+        # Create the table
+        table_div = df.to_html(classes="table table-striped", index=False)
+
+        # Add a total row to the dataframe
+
+        total_row = pd.Series(df['total'].sum(), index=['total'])
+
+        total_row['index'] = 'Total'
+
+        df = df.append(total_row, ignore_index=True)
+
+        # Create the table
+
+        table_div = df.to_html(classes="table table-striped", index=False)
+
     else:
+
         plot_div = ''
+
+        table_div = ''
+
         message = 'Não há vendas no período selecionado.'
 
-    return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'message': message})
+    return render(request, "administracao/sales_chart.html",
+                  context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
+
 
 
 
