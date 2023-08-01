@@ -461,16 +461,16 @@ def download_sales_data(request):
     df = df.drop(columns=columns_to_drop)
 
     # Convert 'data_pedido' column to the correct format
-    df['data_pedido'] = df['data_pedido'].dt.strftime('%d/%m/%Y')
+    # df['data_pedido'] = df['data_pedido'].dt.strftime('%d/%m/%Y')
 
-    # Add a row with the sum of the desired columns
-    df_sum = df[['desconto', 'subtotal', 'total', 'valor_frete']].sum().to_frame().T
-    df_sum = df_sum.rename(index={df_sum.index[-1]: 'TOTAL'})
-    # Append the sum row to the DataFrame
-    df = df.append(df_sum)
-
-    # Replace NaN values with '-' in the entire DataFrame
-    df = df.fillna('-')
+    # # Add a row with the sum of the desired columns
+    # df_sum = df[['desconto', 'subtotal', 'total', 'valor_frete']].sum().to_frame().T
+    # df_sum = df_sum.rename(index={df_sum.index[-1]: 'TOTAL'})
+    # # Append the sum row to the DataFrame
+    # df = df.append(df_sum)
+    #
+    # # Replace NaN values with '-' in the entire DataFrame
+    # df = df.fillna('-')
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(df.to_csv(index=False), content_type='text/csv')
