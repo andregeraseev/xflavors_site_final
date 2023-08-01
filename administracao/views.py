@@ -361,14 +361,14 @@ def sales_chart(request):
     end_date = timezone.now().strftime('%Y-%m-%d')  # Default end date
 
     if request.method == 'POST':
-        start_date = datetime.strptime(request.POST.get('start_date', start_date), '%Y-%m-%d')
-        end_date = datetime.strptime(request.POST.get('end_date', end_date), '%Y-%m-%d')
+        start_date = request.POST.get('start_date', start_date)
+        end_date = request.POST.get('end_date', end_date)
+        if datetime.strptime(end_date, '%Y-%m-%d') < datetime.strptime(start_date, '%Y-%m-%d'):
+            message = 'A data final não pode ser menor que a data inicial.'
+            end_date = start_date
         value_type = request.POST.get('value_type', 'total')  # Get the selected value type, default is 'total'
         # Get the selected order statuses, default is ['Pago', 'Enviado', 'Em trânsito', 'Entregue']
         order_statuses = request.POST.getlist('order_status', ['Pago', 'Enviado', 'Em trânsito', 'Entregue'])
-        if end_date < start_date:
-            message = 'A data final não pode ser menor que a data inicial.'
-            end_date = start_date
 
     sales_by_date = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date], status__in=order_statuses)
 
@@ -389,7 +389,7 @@ def sales_chart(request):
 
         fig = px.line(df, x='index', y='total')
         fig.update_layout(
-            title=f"{value_type.capitalize()} de {start_date.strftime('%Y-%m-%d')} a {end_date.strftime('%Y-%m-%d')} no status {', '.join(order_statuses)}",
+            title=f"{value_type.capitalize()} de {start_date} a {end_date} no status {', '.join(order_statuses)}",
             xaxis_title="Data",
             yaxis_title=f"{value_type.capitalize()}",
             font=dict(
@@ -412,12 +412,6 @@ def sales_chart(request):
     df_detailed = df_detailed.drop(columns=columns_to_drop)
     df_detailed['data_pedido'] = df_detailed['data_pedido'].dt.strftime('%d/%m/%Y')
 
-
-    table_div = df_detailed.to_html(classes='table table-striped table-hover')
-
-    # Calculate the sum of the desired columns
-    sums = df_detailed[['desconto', 'subtotal', 'total', 'valor_frete']].sum()
-
     # Add a row with the sum of the desired columns
     df_sum = df_detailed[['desconto', 'subtotal', 'total', 'valor_frete']].sum().to_frame().T
 
@@ -425,18 +419,13 @@ def sales_chart(request):
     df_detailed = df_detailed.append(df_sum)
 
     # Replace NaN values with '-' in the entire DataFrame
-    df_detailed = df_detailed.replace(np.nan, '-')
+    df_detailed = df_detailed.fillna('-')
 
     # Rename the index of the last row
     df_detailed = df_detailed.rename(index={df_detailed.index[-1]: 'TOTAL'})
 
-    # Convert the DataFrame to HTML
     table_div = df_detailed.to_html(classes='table table-striped table-hover')
 
-    return render(request, "administracao/sales_chart.html",
-                  context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
-
     return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
-
 
 
