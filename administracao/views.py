@@ -77,12 +77,12 @@ def enviar_email_em_massa_view(request):
 
 @staff_member_required
 def dashboard_adm(request):
-    today = datetime.datetime.now().date()
+    today = datetime.now().date()
     year = request.GET.get('year', today.year)
     month = request.GET.get('month', today.month)
 
     try:
-        start_date = datetime.datetime.strptime(f"{year}-{month}-01", "%Y-%m-%d").date()
+        start_date = datetime.strptime(f"{year}-{month}-01", "%Y-%m-%d").date()
         end_date = (start_date + timedelta(days=30)).replace(day=1) - timedelta(days=1)
     except ValueError:
         start_date = today.replace(day=1)
@@ -437,10 +437,6 @@ def sales_chart(request):
                   context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
 
     return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
-
-
-
-
 
 
 
