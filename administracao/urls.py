@@ -3,7 +3,8 @@ from django.conf.urls.static import static
 from django.urls import path,include
 
 from administracao.views import dashboard_adm, atualizar_status, adicionar_rastreamento, producao, enviar_tiny, \
-    pedido_detail, imprimir_selecionados, adicionar_observacao, enviar_email_em_massa_view, dashboard_financeiro, sales_chart
+    pedido_detail, imprimir_selecionados, adicionar_observacao, enviar_email_em_massa_view, dashboard_financeiro, \
+    sales_chart, download_sales_data
 
 app_name = 'administracao'
 
@@ -24,6 +25,7 @@ path('enviar_email_em_massa/', enviar_email_em_massa_view, name='enviar_email_em
 
 # graficos
 path('sales_chart/', sales_chart, name='sales_chart'),
+path('download_sales_data/', download_sales_data, name='download_sales_data'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

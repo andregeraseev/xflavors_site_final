@@ -18,87 +18,95 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 
-
 <div class="container-fluid">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'home' %}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'administracao:dashboard_adm' %}">Pedidos</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'administracao:dashboard_financeiro' %}">Financeiro</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'administracao:enviar_email_em_massa' %}">Emails</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-<div class="card">
-<div class="container mt-5">
-    <h2 class="mb-3">Vendas ao longo do tempo</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div class="row g-3">
-            <div class="col-lg-3">
-                <label for="start-date" class="form-label">Data inicial:</label>
-                <input type="text" name="start_date" class="form-control datepicker" id="start-date" autocomplete="off">
-            </div>
-            <div class="col-lg-3">
-                <label for="end-date" class="form-label">Data final:</label>
-                <input type="text" name="end_date" class="form-control datepicker" id="end-date" autocomplete="off">
-            </div>
-            <div class="col-lg-3">
-                <label for="value-type" class="form-label">Valor:</label>
-                <select class="form-control" id="value-type" name="value_type">
-                    <option value="total">Total</option>
-                    <option value="subtotal">Subtotal</option>
-                    <option value="valor_frete">Frete</option>
-                    <option value="desconto">Descontos</option>
-                </select>
-            </div>
-            <div class="col-lg-3">
-                <label for="order-status" class="form-label">Status do pedido:</label>
-                <select multiple class="form-control" id="order-status" name="order_status">
-                    <option value="Pago">Pago</option>
-                    <option value="Enviado">Enviado</option>
-                    <option value="Em trânsito">Em trânsito</option>
-                    <option value="Entregue">Entregue</option>
-                    <option value="Cancelado">Cancelado</option>
-                    <option value="Aguardando pagamento">Aguardando pagamento</option>
-                </select>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'administracao:dashboard_adm' %}">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'administracao:dashboard_financeiro' %}">Financeiro</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'administracao:enviar_email_em_massa' %}">Emails</a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Atualizar gráfico</button>
-        </div>
-    </form>
+    </nav>
+    <div class="card">
+        <div class="container mt-5">
+            <h2 class="mb-3">Vendas ao longo do tempo</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-lg-3">
+                        <label for="start-date" class="form-label">Data inicial:</label>
+                        <input type="text" name="start_date" class="form-control datepicker" id="start-date"
+                               autocomplete="off">
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="end-date" class="form-label">Data final:</label>
+                        <input type="text" name="end_date" class="form-control datepicker" id="end-date"
+                               autocomplete="off">
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="value-type" class="form-label">Valor:</label>
+                        <select class="form-control" id="value-type" name="value_type">
+                            <option value="total">Total</option>
+                            <option value="subtotal">Subtotal</option>
+                            <option value="valor_frete">Frete</option>
+                            <option value="desconto">Descontos</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="order-status" class="form-label">Status do pedido:</label>
+                        <select multiple class="form-control" id="order-status" name="order_status">
+                            <option value="Pago">Pago</option>
+                            <option value="Enviado">Enviado</option>
+                            <option value="Em trânsito">Em trânsito</option>
+                            <option value="Entregue">Entregue</option>
+                            <option value="Cancelado">Cancelado</option>
+                            <option value="Aguardando pagamento">Aguardando pagamento</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Atualizar gráfico</button>
+                </div>
+            </form>
 
-    {% if message %}
-    <div class="alert alert-info mt-4">
-        {{ message }}
-    </div>
-    {% endif %}
 
-    {% if plot_div %}
-    <div class="mt-4">
-        {{ plot_div|safe }}
-    </div>
-    {% endif %}
 
-    <style>
+            {% if message %}
+            <div class="alert alert-info mt-4">
+                {{ message }}
+            </div>
+            {% endif %}
+
+            {% if plot_div %}
+            <div class="mt-4">
+                {{ plot_div|safe }}
+            </div>
+            {% endif %}
+
+ <a href="{% url 'administracao:download_sales_data' %}" class="btn btn-primary mt-3">Download CSV</a>
+
+
+<!--            TABELAS         -->
+<style>
 .table-responsive {
     max-height: 400px;
     overflow-y: auto;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 }
+
 </style>
 
 <style>
@@ -107,15 +115,18 @@
     }
 </style>
 
+            {% if table_div %}
+            <div class="table-responsive mt-4">
+                {{ table_div|safe }}
+            </div>
+            {% endif %}
 
-    {% if table_div %}
-    <div class="table-responsive mt-4">
-        {{ table_div|safe }}
+<!--            FIM TABELAS-->
+        </div>
     </div>
-    {% endif %}
-</div>
 </div>
 
+<!--    DATAPIKER-->
 <script>
 $(document).ready(function() {
     // Initialize datepicker
@@ -146,5 +157,18 @@ $(document).ready(function() {
     });
 });
 </script>
+
+
+<!--    AVISO DE FORMULARIO NAO PREENCHIDO (DATA)-->
+<script>
+$('form').on('submit', function(e) {
+    var startDate = $('#start-date').val();
+    var endDate = $('#end-date').val();
+    if (!startDate || !endDate) {
+        e.preventDefault();
+        alert('Por favor, preencha ambas as datas antes de enviar o formulário.');
+    }
+});
+   </script>
 
 {% endblock %}

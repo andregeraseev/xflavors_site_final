@@ -376,6 +376,13 @@ def sales_chart(request):
     sales_by_date = sales_by_date.annotate(date=F('data_pedido__date')).values('date').annotate(
         total=Sum(value_type)).order_by('date')
 
+    # Store values in session
+    request.session['start_date'] = start_date
+    request.session['end_date'] = end_date
+    request.session['value_type'] = value_type
+    request.session['order_statuses'] = order_statuses
+
+
     if sales_by_date:
         # Convert queryset to pandas DataFrame
         df = pd.DataFrame.from_records(sales_by_date)
@@ -405,27 +412,68 @@ def sales_chart(request):
     qs = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date], status__in=order_statuses)
     df_detailed = pd.DataFrame(list(qs.values()))
 
-    # Drop unnecessary columns
-    columns_to_drop = ['endereco_entrega_id', 'data_atualizacao', 'comprovante', 'numero_pedido_tiny',
-                       'mercado_pago_id', 'rastreamento', 'producao', 'observacoes',
-                       'observacoes_internas', 'link_mercado_pago']
-    df_detailed = df_detailed.drop(columns=columns_to_drop)
-    df_detailed['data_pedido'] = df_detailed['data_pedido'].dt.strftime('%d/%m/%Y')
+    # Create a table with more detailed data
+    qs = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date], status__in=order_statuses)
+    df_detailed = pd.DataFrame(list(qs.values()))
 
-    # Add a row with the sum of the desired columns
-    df_sum = df_detailed[['desconto', 'subtotal', 'total', 'valor_frete']].sum().to_frame().T
+    if not df_detailed.empty:
+        # Drop unnecessary columns
+        columns_to_drop = ['endereco_entrega_id', 'data_atualizacao', 'comprovante', 'numero_pedido_tiny',
+                           'mercado_pago_id', 'rastreamento', 'producao', 'observacoes',
+                           'observacoes_internas', 'link_mercado_pago']
+        # Check if columns exist before dropping
+        columns_to_drop = [col for col in columns_to_drop if col in df_detailed.columns]
+        df_detailed = df_detailed.drop(columns=columns_to_drop)
 
-    # Append the sum row to the DataFrame
-    df_detailed = df_detailed.append(df_sum)
+        df_detailed['data_pedido'] = df_detailed['data_pedido'].dt.strftime('%d/%m/%Y')
 
-    # Replace NaN values with '-' in the entire DataFrame
-    df_detailed = df_detailed.fillna('-')
+        # Add a row with the sum of the desired columns
+        df_sum = df_detailed[['desconto', 'subtotal', 'total', 'valor_frete']].sum().to_frame().T
+        df_sum = df_sum.rename(index={df_sum.index[-1]: 'TOTAL'})
+        # Append the sum row to the DataFrame
+        df_detailed = df_detailed.append(df_sum)
 
-    # Rename the index of the last row
-    df_detailed = df_detailed.rename(index={df_detailed.index[-1]: 'TOTAL'})
+        # Replace NaN values with '-' in the entire DataFrame
+        df_detailed = df_detailed.fillna('-')
 
-    table_div = df_detailed.to_html(classes='table table-striped table-hover')
+        table_div = df_detailed.to_html(classes='table table-striped table-hover')
+    else:
+        table_div = 'Não há dados para exibir.'
 
     return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
 
 
+def download_sales_data(request):
+    start_date = request.session.get('start_date')
+    end_date = request.session.get('end_date')
+    value_type = request.session.get('value_type')
+    order_statuses = request.session.get('order_statuses')
+
+    qs = Pedido.objects.filter(data_pedido__date__range=[start_date, end_date], status__in=order_statuses)
+    df = pd.DataFrame(list(qs.values()))
+
+    # Drop unnecessary columns
+    columns_to_drop = ['endereco_entrega_id', 'data_atualizacao', 'comprovante', 'numero_pedido_tiny',
+                       'mercado_pago_id', 'rastreamento', 'producao', 'observacoes',
+                       'observacoes_internas', 'link_mercado_pago']
+    # Check if columns exist before dropping
+    columns_to_drop = [col for col in columns_to_drop if col in df.columns]
+    df = df.drop(columns=columns_to_drop)
+
+    # Convert 'data_pedido' column to the correct format
+    df['data_pedido'] = df['data_pedido'].dt.strftime('%d/%m/%Y')
+
+    # Add a row with the sum of the desired columns
+    df_sum = df[['desconto', 'subtotal', 'total', 'valor_frete']].sum().to_frame().T
+    df_sum = df_sum.rename(index={df_sum.index[-1]: 'TOTAL'})
+    # Append the sum row to the DataFrame
+    df = df.append(df_sum)
+
+    # Replace NaN values with '-' in the entire DataFrame
+    df = df.fillna('-')
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(df.to_csv(index=False), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sales_data.csv"'
+
+    return response
