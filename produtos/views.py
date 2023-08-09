@@ -133,7 +133,7 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
         produtos = produtos.order_by('-num_vendas')
 
     # Paginação dos produtos
-    produtos_por_pagina = 5
+    produtos_por_pagina = 20
     paginator = Paginator(produtos, produtos_por_pagina)
     pagina_numero = request.GET.get('pagina')
     pagina = paginator.get_page(pagina_numero)
