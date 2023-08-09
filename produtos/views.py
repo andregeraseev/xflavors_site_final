@@ -113,6 +113,9 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
 
     # Ordenação dos produtos
     ordenacao = request.GET.get('ordenacao')
+    if ordenacao:
+        produtos = Produto.objects.filter(category=category_filter, subcategory=subcategory).order_by('name')
+
     if ordenacao == 'alfabetica':
         # Ordena em ordem alfabética pelo nome
         produtos = produtos.order_by('name')
