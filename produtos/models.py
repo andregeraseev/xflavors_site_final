@@ -45,6 +45,7 @@ class MateriaPrima(models.Model):
 
 
 
+
 class Produto(models.Model):
     """
     Model de produto
@@ -86,6 +87,17 @@ class Produto(models.Model):
         Retorna a URL para acessar este produto
         """
         return reverse('product_detail', args=[str(self.slug)])
+    @property
+    def get_stock(self):
+        if self.variation_set.exists():
+            variation = self.variation_set.first()
+            if variation.materia_prima:
+                return variation.materia_prima.stock
+            else:
+                return variation.stock
+        else:
+            return self.stock
+
 
 
 class Favorito(models.Model):

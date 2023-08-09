@@ -99,6 +99,18 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
     # Filtra os produtos pela categoria e subcategoria selecionada
     produtos = Produto.objects.filter(category=category_filter, subcategory=subcategory).order_by('name')
 
+    produtos_com_estoque = []
+    produtos_sem_estoque = []
+
+    for produto in produtos:
+        if produto.get_stock > 10:
+            produtos_com_estoque.append(produto)
+        else:
+            produtos_sem_estoque.append(produto)
+
+    # Concatena as listas de produtos com estoque e sem estoque
+    produtos = produtos_com_estoque + produtos_sem_estoque
+
     # Ordenação dos produtos
     ordenacao = request.GET.get('ordenacao')
     if ordenacao == 'alfabetica':

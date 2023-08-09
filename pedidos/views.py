@@ -29,10 +29,7 @@ def detalhes_pedido(request, pedido_id):
     itens = pedido.itens.all()
 
     for item in itens:
-        if item.variation:
-            preco = item.variation.price
-        else:
-            preco = item.product.price
+        preco = preco_item(item)
         total += item.quantity * preco
 
 
@@ -114,11 +111,7 @@ def checkout(request):
     cliente = Cliente.objects.get(user= user)
     total = 0
     for item in itens:
-        if item.variation:
-            preco= item.variation.price
-
-        else:
-            preco = item.product.price
+        preco = preco_item(item)
         total += item.quantity * preco
         # print("TOTAL", total)
 
@@ -515,10 +508,7 @@ def criar_pedido(request):
 
             print('COLOCANDO ITEM NO CARRINHO')
             print(item)
-            if item.variation:
-                preco = item.variation.price
-            else:
-                preco = item.product.price
+            preco = preco_item(item)
             try:
                 pedido_item = PedidoItem.objects.create(
                     product=item.product,
@@ -578,6 +568,15 @@ def criar_pedido(request):
     else:
         e='Nao foram encontrados items no carrinho'
         return JsonResponse({'success': False, 'error': str(e)})
+
+
+def preco_item(item):
+    if item.variation:
+        preco = item.variation.price
+    else:
+        preco = item.product.price
+    return preco
+
 
 def atualizar_estoque(item):
     produto = item.product
