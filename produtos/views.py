@@ -113,7 +113,7 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
 
     # Ordenação dos produtos
     ordenacao = request.GET.get('ordenacao')
-    if ordenacao and ordenacao != None:
+    if ordenacao and not "None" in ordenacao:
         produtos = Produto.objects.filter(category=category_filter, subcategory=subcategory).order_by('name')
 
     if ordenacao == 'alfabetica':
@@ -133,7 +133,7 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
         produtos = produtos.order_by('-num_vendas')
 
     # Paginação dos produtos
-    produtos_por_pagina = 20
+    produtos_por_pagina = 5
     paginator = Paginator(produtos, produtos_por_pagina)
     pagina_numero = request.GET.get('pagina')
     pagina = paginator.get_page(pagina_numero)
