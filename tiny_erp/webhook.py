@@ -473,8 +473,9 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     print("PRECOPROMOCIONAL", produto['produto']['preco_promocional'])
     preco_promocional = produto['produto']['preco_promocional']
     preco = produto['produto']['preco']
-    id_mapeamento_tiny = produto['produto']["idMapeamento"]
-    sku_mapeamento_tiny = produto['produto']["skuMapeamento"]
+    print('IDMAPEAMENTO',produto['produto']['idMapeamento'])
+
+
     try:
         Variation.objects.update_or_create(
             id=produto['produto']['id'],
@@ -487,8 +488,8 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
                       'materia_prima': materia_prima,
                       'unidade': unidade,
                       'preco_promocional':preco_promocional,
-                      'id_mapeamento_tiny':id_mapeamento_tiny,
-                      'sku_mapeamento_tiny': sku_mapeamento_tiny
+                      # 'id_mapeamento_tiny':id_mapeamento_tiny,
+                      # 'sku_mapeamento_tiny': sku_mapeamento_tiny
                       }
         )
     except ValidationError as e:
