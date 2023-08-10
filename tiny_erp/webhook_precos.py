@@ -28,14 +28,14 @@ def tiny_webhook_price_update(request):
     try:
         if not payload['dados'].get('skuMapeamentoPai'):
             # Trata como um Produto
-            produto, created = Produto.objects.get_or_create(codigo=payload['dados']['codigo'])
+            produto, created = Produto.objects.get_or_create(sku_mapeamento_tiny=payload['dados']['skuMapeamento'])
             produto.name = payload['dados']['nome']
             produto.price = payload['dados']['preco']
             produto.preco_promocional = payload['dados'].get('precoPromocional', None)
             produto.save()
         else:
             # Trata como uma Variation
-            variation, created = Variation.objects.get_or_create(sku=payload['dados']['skuMapeamento'])
+            variation, created = Variation.objects.get_or_create(skuMapeamento=payload['dados']['skuMapeamento'])
             variation.name = payload['dados']['nome']
             variation.price = payload['dados']['preco']
             variation.promotional_price = payload['dados'].get('precoPromocional', None)
