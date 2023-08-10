@@ -48,7 +48,7 @@ admin.site.register(Subcategory)
 
 
 class VariantionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'stock', 'materia_prima', 'gasto','num_vendas')
+    list_display = ('id','name', 'price', 'stock', 'materia_prima', 'gasto','num_vendas', 'preco_promocional')
     list_editable = ('materia_prima',)
     search_fields = ('name',)
 
