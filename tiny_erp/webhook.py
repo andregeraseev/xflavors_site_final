@@ -160,9 +160,12 @@ def print_payload_data(payload):
         print("  ID:", variacao["id"])
         variacao_id = variacao["id"]
         print("tentando obter infomacao da varicao")
-        obter_info_produto(variacao_id, produto_pai)
         print("  ID Mapeamento:", variacao["idMapeamento"])
         print("  SKU Mapeamento:", variacao["skuMapeamento"])
+        id_mapeamento = variacao["idMapeamento"]
+        sku_mapeamento = variacao["skuMapeamento"]
+        obter_info_produto(variacao_id, produto_pai,sku_mapeamento,id_mapeamento)
+
 
         print("  Código:", variacao["codigo"])
         print("  GTIN:", variacao["gtin"])
@@ -297,7 +300,7 @@ def categoria_subcategoria(payload):
 
 
 
-def obter_info_produto(product_id, produtopai):
+def obter_info_produto(product_id, produtopai,sku_mapeamento,id_mapeamento):
     time.sleep(5)
     print("Obtendo Informacao do produto:", product_id)
     url = 'https://api.tiny.com.br/api2/produto.obter.php'
@@ -348,7 +351,7 @@ def obter_info_produto(product_id, produtopai):
     print("obtendo_materia_prima")
     obtendo_materia_prima(materia_prima)
     print('tentando salvar variacao')
-    salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade)
+    salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade,sku_mapeamento,id_mapeamento)
 
 
 
@@ -444,7 +447,7 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
     print(obj, created)
 
 
-def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade):
+def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado, gasto, unidade,sku_mapeamento,id_mapeamento):
     print('salvando variacao')
     dicionario = nome_simplificado
     nome_simplificado = ' '.join([str(chave) + ' ' + str(valor) for chave, valor in dicionario.items()])
@@ -473,7 +476,7 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     print("PRECOPROMOCIONAL", produto['produto']['preco_promocional'])
     preco_promocional = produto['produto']['preco_promocional']
     preco = produto['produto']['preco']
-    print('IDMAPEAMENTO',produto['produto']['idMapeamento'])
+
 
 
     try:
@@ -488,8 +491,8 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
                       'materia_prima': materia_prima,
                       'unidade': unidade,
                       'preco_promocional':preco_promocional,
-                      # 'id_mapeamento_tiny':id_mapeamento_tiny,
-                      # 'sku_mapeamento_tiny': sku_mapeamento_tiny
+                      'id_mapeamento_tiny':id_mapeamento,
+                      'sku_mapeamento_tiny': sku_mapeamento
                       }
         )
     except ValidationError as e:
