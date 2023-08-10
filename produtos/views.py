@@ -41,15 +41,15 @@ def search(request):
     for product in products:
         has_variation = product.variation_set.exists()
         url = product.get_absolute_url()
-        product_data = {'id': product.id, 'name': product.name, 'url': url, 'price': product.price, 'image_url': product.image.url, 'has_variation': has_variation}
+        product_data = {'id': product.id, 'name': product.name, 'url': url, 'price': product.preco_ou_valor_promocional, 'image_url': product.image.url, 'has_variation': has_variation}
         variations = []
 
         if product.variation_set.exists():
             for variation in product.variation_set.all():
                 if variation.nome_simplificado:
-                    variation_data = {'id': variation.id, 'name': variation.nome_simplificado, 'price': variation.price}
+                    variation_data = {'id': variation.id, 'name': variation.nome_simplificado, 'price': variation.preco_ou_valor_promocional}
                 else:
-                    variation_data = {'id': variation.id, 'name': variation.name, 'price': variation.price}
+                    variation_data = {'id': variation.id, 'name': variation.name, 'price': variation.preco_ou_valor_promocional}
                 variations.append(variation_data)
             product_data['variations'] = variations
 
