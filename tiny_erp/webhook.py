@@ -72,7 +72,9 @@ def print_payload_data(payload):
     produto_pai = payload["id"]
 
     print("ID Mapeamento:", payload["idMapeamento"])
+    id_mapeamento_tiny = payload["idMapeamento"]
     print("SKU Mapeamento:", payload["skuMapeamento"])
+    sku_mapeamento_tiny = payload["skuMapeamento"]
     print("Nome:", payload["nome"])
 
     print("Código:", payload["codigo"])
@@ -148,11 +150,11 @@ def print_payload_data(payload):
     print("Classe do produto", payload['classeProduto'])
     if payload['classeProduto'] == "M":
         print("Materia Prima")
-        salvar_ou_atualizar_materia_prima(nome, estoque, product_id)
+        salvar_ou_atualizar_materia_prima(nome, estoque, product_id, id_mapeamento_tiny, sku_mapeamento_tiny)
     else:
         print("Produto")
         salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao,
-                                    marca, localizacao,preco_promocional)
+                                    marca, localizacao,preco_promocional,id_mapeamento_tiny, sku_mapeamento_tiny)
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
@@ -161,6 +163,7 @@ def print_payload_data(payload):
         obter_info_produto(variacao_id, produto_pai)
         print("  ID Mapeamento:", variacao["idMapeamento"])
         print("  SKU Mapeamento:", variacao["skuMapeamento"])
+
         print("  Código:", variacao["codigo"])
         print("  GTIN:", variacao["gtin"])
         print("  Preço:", variacao["preco"])
@@ -401,7 +404,7 @@ def obter_info_estoque_materia_prima(product_id):
 
 
 
-def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca,localizacao,preco_promocional):
+def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca,localizacao,preco_promocional,id_mapeamento_tiny, sku_mapeamento_tiny):
     print("Nome", nome,
           "Id", product_id,
           "Preco", preco,
@@ -428,7 +431,9 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
                 'image': image_path,
                 'marca': marca,
                 'localizacao':localizacao,
-                'preco_promocional':preco_promocional
+                'preco_promocional':preco_promocional,
+                "id_mapeamento_tiny": id_mapeamento_tiny,
+                "sku_mapeamento_tiny" : sku_mapeamento_tiny
             }
         )
     except ValidationError as e:
@@ -468,6 +473,8 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     print("PRECOPROMOCIONAL", produto['produto']['preco_promocional'])
     preco_promocional = produto['produto']['preco_promocional']
     preco = produto['produto']['preco']
+    id_mapeamento_tiny = produto['produto']["idMapeamento"]
+    sku_mapeamento_tiny = produto['produto']["skuMapeamento"]
     try:
         Variation.objects.update_or_create(
             id=produto['produto']['id'],
@@ -479,7 +486,9 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
                       'gasto': gasto,
                       'materia_prima': materia_prima,
                       'unidade': unidade,
-                      'preco_promocional':preco_promocional
+                      'preco_promocional':preco_promocional,
+                      'id_mapeamento_tiny':id_mapeamento_tiny,
+                      'sku_mapeamento_tiny': sku_mapeamento_tiny
                       }
         )
     except ValidationError as e:
@@ -487,7 +496,7 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     except Exception as e:
         print(f"Erro inesperado ao atualizar ou criar Variacao: {e}")
 
-def salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima_id):
+def salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima_id,id_mapeamento_tiny, sku_mapeamento_tiny):
     print("salvando materia prima")
     print("Nome materia prima" , materia_prima_nome)
     print("Estoque materia prima", estoque)
@@ -499,6 +508,8 @@ def salvar_ou_atualizar_materia_prima(materia_prima_nome, estoque, materia_prima
             defaults={'id': materia_prima_id,
                       'name': materia_prima_nome,
                       'stock': estoque,
+                      "id_mapeamento_tiny":id_mapeamento_tiny,
+                      "sku_mapeamento_tiny" : sku_mapeamento_tiny
                       }
         )
         print("Materia prima Salva ou atualizada")

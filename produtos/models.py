@@ -38,6 +38,8 @@ class MateriaPrima(models.Model):
     name = models.CharField(max_length=100)
     stock = models.PositiveIntegerField()
     unidade = models.CharField(max_length=100, default='mls')
+    id_mapeamento_tiny = models.IntegerField(blank=True, null=True)
+    sku_mapeamento_tiny = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -66,6 +68,8 @@ class Produto(models.Model):
     preco_promocional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     promocao_ativa = models.BooleanField(default=True)
     ativo = models.BooleanField(default=True)
+    id_mapeamento_tiny = models.IntegerField(blank=True, null=True)
+    sku_mapeamento_tiny = models.IntegerField(blank=True, null=True)
     def save(self, *args, **kwargs):
         """
         Sobrescreve o método de salvar para atribuir o valor ao campo slug
@@ -138,6 +142,8 @@ class Variation(models.Model):
     preco_promocional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     promocao_ativa = models.BooleanField(default=True)
     ativo = models.BooleanField(default=True)
+    id_mapeamento_tiny = models.IntegerField(blank=True, null=True)
+    sku_mapeamento_tiny = models.IntegerField(blank=True, null=True)
     def __str__(self):
         return self.name
 
