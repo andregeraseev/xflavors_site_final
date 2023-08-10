@@ -63,6 +63,9 @@ class Produto(models.Model):
     localizacao = models.CharField(max_length=100, blank=True, null=True, default="Sem localizacao")
     num_vendas = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    preco_promocional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    promocao_ativa = models.BooleanField(default=True)
+    ativo = models.BooleanField(default=True)
     def save(self, *args, **kwargs):
         """
         Sobrescreve o método de salvar para atribuir o valor ao campo slug
@@ -98,7 +101,19 @@ class Produto(models.Model):
         else:
             return self.stock
 
+    @property
+    def verifica_promocao(self):
+        if self.preco_promocional and self.promocao_ativa == True:
+            return True
+        else:
+            return False
 
+    @property
+    def preco_ou_valor_promocional(self):
+        if self.preco_promocional and self.promocao_ativa == True:
+            return self.preco_promocional
+        else:
+            return self.price
 
 class Favorito(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
@@ -120,9 +135,24 @@ class Variation(models.Model):
     unidade= models.CharField(max_length=100, default='unidade')
     num_vendas = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-
+    preco_promocional = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    promocao_ativa = models.BooleanField(default=True)
+    ativo = models.BooleanField(default=True)
     def __str__(self):
         return self.name
+
+    @property
+    def verifica_promocao(self):
+        if self.preco_promocional and self.promocao_ativa == True:
+            return True
+        else:
+            return False
+    @property
+    def preco_ou_valor_promocional(self):
+        if self.preco_promocional and self.promocao_ativa == True:
+            return self.preco_promocional
+        else:
+            return self.price
 
 
 class Kit(models.Model):

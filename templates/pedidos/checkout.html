@@ -204,7 +204,15 @@ function fecharAlerta(id) {
       <tr id="linha-{{ item.id }}">
         <td class="w-50">{% if item.variation %}  {{ item.variation.name }} {% else %}  {{ item.product.name }}  {% endif %}</td>
         <td class="text-center">{{ item.quantity }}</td>
-        <td class="text-center">R$ {% if item.variation %}  {{ item.variation.price }}{% else %}  {{ item.product.price }}  {% endif %}</td>
+        <td>R${%if item.variation %}
+                {% if item.variation.verifica_promocao %}
+                <del>{{ item.variation.price}}</del> - R${{ item.variation.preco_ou_valor_promocional }}
+                      {% else %}{{ item.variation.preco_ou_valor_promocional }}
+                {%endif%}
+            {% else %}
+                {% if item.product.verifica_promocao %}
+                <del>{{ item.product.price}}</del> - R${{ item.product.preco_ou_valor_promocional }}
+                {% else %}{{ item.product.preco_ou_valor_promocional }}{% endif %}{% endif %}</td>
         <td class="text-center">R$ {{ item.total_price }}</td>
       </tr>
       {% endfor %}

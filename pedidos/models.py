@@ -24,8 +24,8 @@ class PedidoItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
     def valor_total(self):
         if self.variation:
-            return self.quantity * self.variation.price
-        return self.quantity * self.product.price
+            return self.quantity * self.variation.preco_ou_valor_promocional
+        return self.quantity * self.product.preco_ou_valor_promocional
 
 
     def atualizar_vendas(self):

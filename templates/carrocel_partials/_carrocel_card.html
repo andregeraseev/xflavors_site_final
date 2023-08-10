@@ -75,8 +75,16 @@
                             <select name="variation" class="variation-select form-select form-control-sm w-100"
                                     data-product-id="{{ product.id }}">
                                 {% for variation in product.variation_set.all %}
-                                <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{variation.nome_simplificado }}
-                                    - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}
+                                <option value="{{ variation.id }}" data-original-price="{{ variation.price }}"
+                                        data-promo-price="{{ variation.preco_ou_valor_promocional }}"
+                                        data-preco-promocional="{{ variation.preco_promocional }}"
+                                        data-promocao_ativa="{{ variation.promocao_ativa }}" >
+                                {% if variation.nome_simplificado %}
+                                    {{variation.nome_simplificado }} - R${{ variation.preco_ou_valor_promocional }}
+
+                                {% else %}
+                                    {{ variation.name }} - R${{ variation.preco_ou_valor_promocional }}
+                                    {% endif %}
                                 </option>
                                 {% endfor %}
                             </select>
@@ -84,7 +92,7 @@
                             {% else %}
                             <p class="mb-1 "
                                style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 37px">
-                                R${{ product.price }}</p>
+                                {% if product.preco_promocional and product.promocao_ativa %}<span class="original-price">De <del>R${{ product.price }}</del></span> por ${{ product.preco_ou_valor_promocional }} {%else%} R${{ product.preco_ou_valor_promocional }} {%endif%}</p>
                             {% endif %}
 
                             <div id="botao-container{{ product.id }}">

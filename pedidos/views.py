@@ -572,9 +572,10 @@ def criar_pedido(request):
 
 def preco_item(item):
     if item.variation:
-        preco = item.variation.price
+        preco = item.variation.preco_ou_valor_promocional
     else:
-        preco = item.product.price
+        preco = item.product.preco_ou_valor_promocional
+
     return preco
 
 

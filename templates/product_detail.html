@@ -17,7 +17,7 @@
 
 
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-6 mb-3 card-deck">
             <h1>{{ product.name }}
             <button id="favorite-btn-{{ product.id }}" class="btn favorite-btn  m-3 text-danger" onclick="addToFavorites({{ product.id }})">
             {% if product.id in favoritos %}
@@ -34,17 +34,28 @@
             <h6>{{ product.description|safe }}</h6>
 
             {% if product.variation_set.exists %}
-                <h4>Selecione uma variação:</h4>
-                <select name="variation" id="variation" class="w-100 mb-3">
-                    {% for variation in product.variation_set.all %}
-                     <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{ variation.nome_simplificado }} - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}</option>
+                            <select name="variation" id="variation" class="variation-select form-select form-control-sm w-100"
+                                    data-product-id="{{ product.id }}">
+                                {% for variation in product.variation_set.all %}
+                                <option value="{{ variation.id }}" data-original-price="{{ variation.price }}"
+                                        data-promo-price="{{ variation.preco_ou_valor_promocional }}"
+                                        data-preco-promocional="{{ variation.preco_promocional }}"
+                                        data-promocao_ativa="{{ variation.promocao_ativa }}" >
+                                {% if variation.nome_simplificado %}
+                                    {{variation.nome_simplificado }} - R${{ variation.preco_ou_valor_promocional }}
 
-                    {% endfor %}
-                </select>
-                <h3 id="price">R$ {{ product.variation_set.first.price }}</h3>
-            {% else %}
-                <h5 id="price">R$ {{ product.price }}</h5>
-            {% endif %}
+                                {% else %}
+                                    {{ variation.name }} - R${{ variation.preco_ou_valor_promocional }}
+                                    {% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
+                            {% else %}
+                            <p class="mb-1 "
+                               style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 37px">
+                                {% if product.preco_promocional and product.promocao_ativa %}<span class="original-price">De <del>R${{ product.price }}</del></span> por ${{ product.preco_ou_valor_promocional }} {%else%} R${{ product.preco_ou_valor_promocional }} {%endif%}</p>
+                            {% endif %}
             <div id="botao-container{{ product.id }}">
                                 <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
                                     {% if product.variation_set.exists %}
@@ -112,9 +123,20 @@
 
 
                 {% if product.variation_set.exists %}
-                  <select name="variation" class="variation-select form-select form-control-sm w-100" data-product-id="{{ product.id }}" >
+                  <select name="variation" class="variation-select form-select form-control-sm w-100"
+                          data-product-id="{{ product.id }}" >
                     {% for variation in product.variation_set.all %}
-                      <option value="{{ variation.id }}">{{ variation.name }} - R$ {{ variation.price }}</option>
+                     <option value="{{ variation.id }}" data-original-price="{{ variation.price }}"
+                             data-promo-price="{{ variation.preco_ou_valor_promocional }}"
+                             data-preco-promocional="{{ variation.preco_promocional }}"
+                             data-promocao_ativa="{{ variation.promocao_ativa }}" >
+                      {% if variation.nome_simplificado %}
+                          {{variation.nome_simplificado }} - R${{ variation.preco_ou_valor_promocional }}
+
+                     {% else %}
+                          {{ variation.name }} - R${{ variation.preco_ou_valor_promocional }}
+                     {% endif %}
+                                </option>
                     {% endfor %}
                   </select>
                   <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
@@ -131,7 +153,7 @@
             </div>
           </div>
         {% empty %}
-          <p>Nenhum produto encontrado.</p>
+          <p class="paragrafo">Nenhum produto encontrado.</p>
         {% endfor %}
       </div>
     </div>
@@ -160,7 +182,42 @@
 
 </style>
 
+<style>
+      <!--formatacao preco-->
 
+
+    .original-price {
+
+    }
+
+    .original-price {
+        color: grey; /* Cor verde para o preço promocional */
+        font-weight: 700; /* Texto em negrito */
+        font-size: 0.9rem
+    }
+
+
+    .promo-text {
+        margin-right: 5px; /* Espaçamento à direita do texto "por" */
+    }
+
+    .promo-price {
+    <!--    color: green; /* Cor verde para o preço promocional */-->
+        font-weight: bold; /* Texto em negrito */
+    }
+   .card-deck {
+	margin: 0 auto; /* centralizar o container na tela */
+	font-size: 20px; /* tamanho da fonte */
+	text-align: center; /* centralizar o texto */
+	padding: 2px 20px; /* adicionar padding à esquerda e à direita */
+	line-height: 2; /* altura da linha */
+	font-weight: 700; /* peso da fonte */
+  }
+
+
+
+
+</style>
 
 
 <script>
@@ -168,10 +225,23 @@
 $('#compre-com .variation-select').change(function() {
   let productId = $(this).data('product-id');
   let selectedVariationId = $(this).val();
-  let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+  let selectedOption = $(this).find('option:selected');
+    let originalPrice = selectedOption.data('original-price');
+    let promoPrice = selectedOption.data('promo-price');
+    let precoPromocional = selectedOption.data('preco-promocional');
+    let promocaoAtiva = selectedOption.data('promocao_ativa');
 
-  // Atualiza o preço exibido
-  $('#compre-com #price'+productId).text('R$ ' + selectedVariationPrice);
+    let priceDisplay;
+    if (precoPromocional !== "None" && precoPromocional !== '0,00' && precoPromocional !== '' && promocaoAtiva === 'True') {
+    priceDisplay = '<span class="original-price">De <del>R$ ' + originalPrice + '</del> por </span> <span class="promo-price">R$' + promoPrice + '</span>';
+
+    } else {
+      priceDisplay = 'R$ ' + promoPrice;
+    }
+
+    // Atualiza o preço exibido
+    $('#price'+productId).html(priceDisplay);
+
 
   // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
   $('.add-to-cart-button-2[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
@@ -350,14 +420,22 @@ $(function() {
     let productId = $(this).data('product-id');
     let quantity = $('#quantity').val();
     let selectedVariationId = $('#variation').val();
-    let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+    let selectedOption = $(this).find('option:selected');
+    let originalPrice = selectedOption.data('original-price');
+    let promoPrice = selectedOption.data('promo-price');
+    let precoPromocional = selectedOption.data('preco-promocional');
+    let promocaoAtiva = selectedOption.data('promocao_ativa');
 
-    console.log('productId:', productId);
-    console.log('selectedVariationId:', selectedVariationId);
-    console.log('selectedVariationPrice:', selectedVariationPrice);
+    let priceDisplay;
+    if (precoPromocional !== "None" && precoPromocional !== '0,00' && precoPromocional !== '' && promocaoAtiva === 'True') {
+    priceDisplay = '<span class="original-price">De <del>R$ ' + originalPrice + '</del> por </span> <span class="promo-price">R$' + promoPrice + '</span>';
+
+    } else {
+      priceDisplay = 'R$ ' + promoPrice;
+    }
 
     // Atualiza o preço exibido
-    $('#price'+productId).text('R$ ' + selectedVariationPrice);
+    $('#price'+productId).html(priceDisplay);
 
     // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
     $('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);

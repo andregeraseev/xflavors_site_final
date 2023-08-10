@@ -69,12 +69,12 @@
                                             <td style="width: 20%;">
                                                 <input class="quantity-input" type="number" name="quantities[]" value="1" min="0"
                                                 max="{{ variation.materia_prima.stock|divisor:variation.gasto }}"
-                                                data-price="{{ variation.price }}" style="width: 100%;">
+                                                data-price="{{ variation.preco_ou_valor_promocional }}" style="width: 100%;">
                                                 <input type="hidden" name="variation_ids[]" value="{{ variation.id }}">
                                             </td>
                                             {% endif %}
 
-                                            <td class="price-cell">R${{ variation.price|floatformat:2 }}</td>
+                                            <td class="price-cell price-display">R${{ variation.preco_ou_valor_promocional|floatformat:2 }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -106,7 +106,11 @@
       var priceString = $(this).data('price').toString().replace(',', '.');
       var price = parseFloat(priceString);
       var totalPrice = quantity * price;
-      $(this).closest('tr').find('.price-display').text(totalPrice.toFixed(2).replace('.', ','));
+      console.log(quantity)
+      console.log(priceString)
+      console.log(price)
+      console.log(totalPrice)
+      $(this).closest('tr').find('.price-display').text("R$" + totalPrice.toFixed(2).replace('.', ','));
     });
   });
 </script>

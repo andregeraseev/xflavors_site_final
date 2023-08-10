@@ -22,7 +22,29 @@
 
 
 
+<style>
+    <!--formatacao preco-->
 
+
+    .original-price {
+
+    }
+
+    .original-price {
+        color: grey; /* Cor verde para o preço promocional */
+        font-weight: 700; /* Texto em negrito */
+        font-size: 0.9rem
+    }
+
+    .promo-text {
+        margin-right: 5px; /* Espaçamento à direita do texto "por" */
+    }
+
+    .promo-price {
+    <!--    color: green; /* Cor verde para o preço promocional */-->
+        font-weight: bold; /* Texto em negrito */
+    }
+</style>
 
 
 
@@ -38,11 +60,25 @@ $(document).ready(function() {
     let productId = $(this).data('product-id');
     let selectedVariationId = $(this).val();
     let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+    let selectedOption = $(this).find('option:selected');
+    let originalPrice = selectedOption.data('original-price');
+    let promoPrice = selectedOption.data('promo-price');
+    let precoPromocional = selectedOption.data('preco-promocional');
+    let promocaoAtiva = selectedOption.data('promocao_ativa');
 
+    let priceDisplay;
+    if (precoPromocional !== "None" && precoPromocional !== '0,00' && precoPromocional !== '' && promocaoAtiva === 'True') {
+    priceDisplay = '<span class="original-price">De <del>R$ ' + originalPrice + '</del> por </span> <span class="promo-price">R$' + promoPrice + '</span>';
 
+    } else {
+      priceDisplay = 'R$ ' + promoPrice;
+    }
 
     // Atualiza o preço exibido
-    $('#price'+productId).text('R$ ' + selectedVariationPrice);
+    $('#price'+productId).html(priceDisplay);
+
+    // Atualiza o preço exibido
+    $('#price'+productId).html(priceDisplay);
 
     // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
     $('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);

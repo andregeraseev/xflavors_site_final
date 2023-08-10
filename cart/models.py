@@ -133,9 +133,9 @@ class Cart(models.Model):
         # Percorre todos os itens de carrinho
         for item in self.cartitem_set.all():
             if item.variation:
-                total += item.quantity * item.variation.price
+                total += item.quantity * item.variation.preco_ou_valor_promocional
             else:
-                total += item.quantity * item.product.price
+                total += item.quantity * item.product.preco_ou_valor_promocional
         return total
 
     def total_quantity(self):
@@ -167,9 +167,9 @@ class CartItem(models.Model):
 
     def total_price(self):
         if self.variation:
-            return self.quantity * self.variation.price
+            return self.quantity * self.variation.preco_ou_valor_promocional
         else:
-            return self.quantity * self.product.price
+            return self.quantity * self.product.preco_ou_valor_promocional
 
     # Representação em string do item no carrinho, no formato: quantidade x nome do produto no carrinho username do usuário
     def __str__(self):

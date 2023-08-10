@@ -22,7 +22,7 @@
                                 <tr>
                                     <td>{% if item.variation %}  {{ item.variation.name }} {% else %}  {{ item.product.name }}  {% endif %}</td>
                                     <td>{{ item.quantity }}</td>
-                                    <td>R$ {% if item.variation %}  {{ item.variation.price }}{% else %}  {{ item.product.price }}  {% endif %}</td>
+                                    <td>{% include 'partials/_detalhes_pedido.html' %}</td>
                                     <td>R$ {{ item.valor_total }} </td>
                                 </tr>
                                 {% endfor %}

@@ -12,6 +12,14 @@ class CartView(TemplateView):
     template_name = "carrinho.html"
 
 
+def preco_item(item):
+    if item.variation:
+        preco = item.variation.preco_ou_valor_promocional
+    else:
+        preco = item.product.preco_ou_valor_promocional
+
+    return preco
+
 @login_required
 def carrinho(request):
     total_quantity_cart = 0
@@ -29,10 +37,7 @@ def carrinho(request):
     # Calcula o valor total dos itens no carrinho
     total = 0
     for item in itens:
-        if item.variation:
-            preco = item.variation.price
-        else:
-            preco = item.product.price
+        preco = preco_item(item)
         total += item.quantity * preco
 
     total_do_item = item.quantity * item.product.price if itens else 0

@@ -132,13 +132,9 @@ def print_payload_data(payload):
     print("localizacao:",localizacao)
     nome = payload["nome"]
     print("nome:", nome)
-    try:
-        if payload["precoPromocional"] > 0:
-            preco = payload["precoPromocional"]
-        else:
-            preco = payload["preco"]
-    except:
-        preco = payload["preco"]
+    print(payload["precoPromocional"])
+    preco_promocional = payload["precoPromocional"]
+    preco = payload["preco"]
     estoque = payload["estoqueAtual"]
     product_id = payload["id"]
     descricao = payload["descricaoComplementar"]
@@ -156,7 +152,7 @@ def print_payload_data(payload):
     else:
         print("Produto")
         salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao,
-                                    marca, localizacao)
+                                    marca, localizacao,preco_promocional)
     print("Variações:")
     for variacao in payload["variacoes"]:
         print("  ID:", variacao["id"])
@@ -405,7 +401,7 @@ def obter_info_estoque_materia_prima(product_id):
 
 
 
-def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca,localizacao):
+def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria, estoque, image_path, descricao, marca,localizacao,preco_promocional):
     print("Nome", nome,
           "Id", product_id,
           "Preco", preco,
@@ -415,7 +411,8 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
           "Image_path", image_path,
           "Descricao", descricao,
           "Marca", marca,
-          "Localizacao",localizacao)
+          "Localizacao",localizacao,
+          "preco_promocional",preco_promocional)
     print("Criando/Atualizando produto")
     try:
         obj, created = Produto.objects.update_or_create(
@@ -430,7 +427,8 @@ def salvar_ou_atualizar_produto(nome, product_id, preco, category, subcategoria,
                 'stock': estoque,
                 'image': image_path,
                 'marca': marca,
-                'localizacao':localizacao
+                'localizacao':localizacao,
+                'preco_promocional':preco_promocional
             }
         )
     except ValidationError as e:
@@ -468,14 +466,8 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
     print("PRECO", produto['produto'])
     print("PRECO", produto['produto']['preco'])
     print("PRECOPROMOCIONAL", produto['produto']['preco_promocional'])
-    try:
-        preco_promocional = produto['produto']['preco_promocional']
-        if preco_promocional > 0:
-            preco = preco_promocional
-        else:
-            preco = produto['produto']['preco']
-    except:
-        preco = produto['produto']['preco']
+    preco_promocional = produto['produto']['preco_promocional']
+    preco = produto['produto']['preco']
     try:
         Variation.objects.update_or_create(
             id=produto['produto']['id'],
@@ -486,7 +478,8 @@ def salvar_ou_atualizar_variacao(produtopai, produto, estoque, nome_simplificado
                       'nome_simplificado': nome_simplificado,
                       'gasto': gasto,
                       'materia_prima': materia_prima,
-                      'unidade': unidade
+                      'unidade': unidade,
+                      'preco_promocional':preco_promocional
                       }
         )
     except ValidationError as e:

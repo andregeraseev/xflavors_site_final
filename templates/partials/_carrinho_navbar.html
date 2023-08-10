@@ -23,8 +23,7 @@
                         <p class="mb-0">Preço total:</p>
                     </div>
                     <div>
-                        <p class="mb-0 mx-5">R${% if item.variation %}{{ item.variation.price }}{% else %}
-                            {{item.product.price}}{%endif%}</p>
+                        <p class="mb-0 mx-5"><td>{% include 'partials/_detalhes_pedido.html' %}</td></p>
                         <p class="mb-0 mx-5">R${{ item.total_price }}</p>
                     </div>
                 </div>
