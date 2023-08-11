@@ -40,7 +40,7 @@ def tiny_webhook_price_update(request):
             variation, created = Variation.objects.get_or_create(sku_mapeamento_tiny=payload['dados']['skuMapeamento'])
             variation.name = payload['dados']['nome']
             variation.price = payload['dados']['preco']
-            variation.promotional_price = payload['dados'].get('precoPromocional', None)
+            variation.preco_promocional = payload['dados'].get('precoPromocional', None)
             # Aqui você pode definir outros campos da Variation, se necessário
             variation.save()
     except Exception as e:
