@@ -49,6 +49,22 @@
     document.addEventListener('DOMContentLoaded', adjustCardTitleHeight);
 </script>
 
+<!--                            ordenacao de variaveis no select-->
+<script>
+$(document).ready(function() {
+    $(".variation-select").each(function() {
+        var select = $(this);
+        var options = select.find('option');
+        options.sort(function(a, b) {
+            var aVal = parseInt($(a).text().match(/\d+/));
+            var bVal = parseInt($(b).text().match(/\d+/));
+            return aVal - bVal;
+        });
+        select.empty().append(options);
+        select.val(options.first().val()); // Seleciona o primeiro item após a reordenação
+    });
+});
+</script>
 
 
                             {% if product.marca %} <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small> {% else %} <br> {% endif %}
@@ -140,5 +156,4 @@
                         </div>
                     </div>
                 </div>
-
 
