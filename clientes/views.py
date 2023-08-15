@@ -62,12 +62,12 @@ def verificar_cpf(request):
 from django.core.mail import send_mail
 
 def verificar_email(request):
-    print('aqui')
+    # print('verificando email')
     if request.method == 'POST':
-        print('eaqui')
+        # print('Verificação email metodo POST')
 
         email = request.POST.get('email', None)
-        print(email)
+        # print(email)
         if email:
             if User.objects.filter(email=email).exists():
 
@@ -125,7 +125,7 @@ def cadastro(request):
 
         # Autentica o usuário recém-criado
 
-        print(user)
+        # print('Usuario Criado',user)
         # envia um email de confirmacao
         enviar_email_confirmacao(user.email, user.username)
 
@@ -151,7 +151,7 @@ def dashboard(request):
 
     favorito, created = Favorito.objects.get_or_create(cliente=cliente)
     produtos_favoritos = favorito.produto.all()
-    print(produtos_favoritos)
+    # print('Adicionando produto favorito', cliente, produtos_favoritos)
 
     context = {'cliente': cliente, 'enderecos': enderecos, 'pedidos':pedidos, "avisos":avisos, "produtos_favoritos" : produtos_favoritos}
     return render(request, 'dashboard.html', context)

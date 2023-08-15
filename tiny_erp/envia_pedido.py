@@ -7,7 +7,12 @@ import requests
 import json
 
 from xflavors.settings import TINY_ERP_API_KEY
+import logging
 
+# Configuring logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler('envia_pedido.log'), logging.StreamHandler()])
+logger = logging.getLogger(__name__)
 
 def enviar_pedido_para_tiny(pedido):
     # Informações necessárias para criar o pedido no TinyERP
@@ -29,9 +34,11 @@ def enviar_pedido_para_tiny(pedido):
     cidade = pedido.endereco_entrega.cidade
     uf = pedido.endereco_entrega.estado
     forma_frete = "SEDEX CONTRATO AG (03220)" if pedido.frete == "sedex" else "PAC CONTRATO AG (03298)"
-    print(forma_frete)
+    # print(forma_frete)
     observacao = pedido.observacoes
     id_ecommerce = os.getenv('NUMERO_ECOMMERC_TINY')
+
+    logger.info(f"Enviando pedido {id_pedido} para o Tiny")
     if pedido.status == "Pago":
         status= "aprovado"
     else:
@@ -118,7 +125,8 @@ def enviar_pedido_para_tiny(pedido):
       "id_ecommerce" : id_ecommerce,
   }
 }
-    print(forma_frete)
+    # print(pedido_data)
+    logger.info(f"Pedido data: {pedido_data}")
 
     # Envia o pedido para o TinyERP via API
     url = 'https://api.tiny.com.br/api2/pedido.incluir.php'
@@ -134,15 +142,20 @@ def enviar_pedido_para_tiny(pedido):
     try:
         json.dumps(pedido_data)
     except ValueError as e:
-        print('Erro ao criar JSON do pedido:')
-        print(str(e))
+        # print('Erro ao criar JSON do pedido:')
+        # print(str(e))
+        logger.error(f"Erro ao criar JSON do pedido: {id_pedido}, {str(e)}")
         return False
-    print(params)
+    # print(params)
+    logger.info(f'Params: {params}' )
     # response = requests.post(url, json=pedido_data, headers=headers, params=params)
-    print(response)
+    # print(response)
+    logger.info(f'Resposta:{response}')
+
     if response.status_code == 200:
         response_data = response.json()
-        print(response_data)
+        # print(response_data)
+        logger.info(f'Response Data: {response_data}')
         status_processamento = response_data.get('retorno', {}).get('status_processamento')
 
         if status_processamento == '3':
@@ -150,15 +163,21 @@ def enviar_pedido_para_tiny(pedido):
                 numero_pedido = response_data.get('retorno', {}).get('registros', {}).get('registro', {}).get('numero')
                 pedido.numero_pedido_tiny = numero_pedido
                 pedido.save()
-                print(f'O número do pedido é {numero_pedido}')
+                # print(f'O número do pedido é {numero_pedido}')
+                logger.info(f'O número do pedido é {numero_pedido}')
+
                 return True
             except:
-                print("erro ao pegar o numero do pedido no tiny")
+                # print("erro ao pegar o numero do pedido no tiny")
+                logger.error("erro ao pegar o numero do pedido no tiny")
+
                 return True
         else:
-            print('Erro ao enviar pedido para o TinyERP')
+            # print('Erro ao enviar pedido para o TinyERP')
+            logger.error('Erro ao enviar pedido para o TinyERP')
             response_data = response.json()
             if response_data['retorno']['status'] == 'Erro':
-                print(response_data['retorno']['registros'])
+                # print(response_data['retorno']['registros'])
+                logger.error(f" Erro respose_data: {response_data['retorno']['registros']}")
     return False
 
