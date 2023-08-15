@@ -582,7 +582,30 @@ $(document).ready(function() {
 </style>
 
 
+<!--RASTREADOR BREVO-->
 
+<script type="text/javascript">
+    // Adicionar um manipulador de eventos ao botão de finalização de compra
+    document.getElementById('ir-para-meios-de-pagamento').addEventListener('click', function() {
+        // Pegar o valor da receita do elemento com ID "subtotal"
+        var subtotalElement = document.getElementById('subtotal');
+        var revenueValue = subtotalElement.textContent || subtotalElement.innerText;
+
+        // Remover caracteres não numéricos (como "R$")
+        revenueValue = revenueValue.replace(/[^\d,.-]/g, '').replace(',', '.');
+
+        // Converter para número
+        revenueValue = parseFloat(revenueValue);
+
+        // Código para enviar o evento de conversão
+        // Exemplo para SendinBlue (adapte conforme sua ferramenta de rastreamento)
+        window.sendinblue.track('order_completed', {
+            revenue: revenueValue // Usar o valor da receita obtido
+        });
+
+        // Código adicional, como redirecionar para a página de confirmação, etc.
+    });
+</script>
 
 
 <!--VALIDAR CUPOM-->
