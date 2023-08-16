@@ -31,19 +31,29 @@
 
     <h2 class="mb-4">Cotação de Frete</h2>
     <div class="card mb-3">
+
       <div class="card-header">Selecione uma opção de frete:</div>
       <ul class="list-group list-group-flush">
+        <span style="display:none;" id="mostra-frete-sedex">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <input type="radio" name="frete" id="frete-sedex" value="sedex" class="form-check-input">
           <label for="frete-sedex" class="form-check-label font-weight-bold">SEDEX</label>
           <span class="badge badge-primary badge-pill text-dark" id="valor-sedex"></span>
         </li>
+        </span>
+        <span style="display:none;" id="mostra-frete-pac">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <input type="radio" name="frete" id="frete-pac" value="pac" class="form-check-input">
           <label for="frete-pac" class="form-check-label font-weight-bold">PAC</label>
           <span class="badge badge-primary badge-pill text-dark" id="valor-pac"></span>
         </li>
+        </span>
       </ul>
+      <div class="d-flex justify-content-center align-items-center " style="display:none;">
+      <div id="frete-loading" class="spinner-border text-primary" role="status">
+        <span class="sr-only">Calculando...</span>
+      </div>
+      </div>
     </div>
 
 <!--CPF-->
@@ -326,8 +336,11 @@ $(document).ready(function() {
 
 
 $(document).ready(function () {
+<!--    desmarca o frete caso a pagina seja reiniciada-->
+    $('input[type=radio][name=frete]').prop('checked', false);
 
     var cep = '{{ endereco_primario.cep }}'; // coloque aqui o CEP a ser cotado
+    $('#frete-loading').show();
     $.ajax({
         url: '{% url "cotacao_frete_correios" %}',
         type: 'POST',
@@ -337,20 +350,26 @@ $(document).ready(function () {
         },
         dataType: 'json',
         success: function (data) {
+            $('#frete-loading').hide();
+
             if (data.results) {
                 for (var i = 0; i < data.results.length; i++) {
                     var result = data.results[i];
                     if (result.codigo == '03220') {
                         $('#valor-sedex').text('R$' + result.valor +  ' - ' +result.prazodeentrega);
+                        $('#mostra-frete-sedex').show();
                     } else if (result.codigo == '03298') {
                         $('#valor-pac').text('R$' + result.valor + ' - ' +result.prazodeentrega);
+                        $('#mostra-frete-pac').show();
                     }
                 }
             } else {
+                $('#frete-loading').hide();
                 alert('Erro ao obter os valores de frete.');
             }
         },
         error: function () {
+            $('#frete-loading').hide();
             alert('Erro ao obter os valores de frete ERROR.');
         }
     });
