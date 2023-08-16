@@ -137,7 +137,8 @@ def enviar_pedido_para_tiny(pedido):
         'pedido': json.dumps(pedido_data),
     }
 
-    response = requests.post(url, params=params)
+    response = requests.post(url, data={'token': token, 'formato': 'json', 'pedido': json.dumps(pedido_data)})
+
 
     try:
         json.dumps(pedido_data)
