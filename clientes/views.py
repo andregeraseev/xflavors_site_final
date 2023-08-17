@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
 from django.utils import timezone
-
+from clientes.brevo import create_brevo_contact
 from avise.models import AvisoEstoque
 from cart.models import Cart
 from enviadores.email import enviar_email_confirmacao
@@ -106,6 +106,7 @@ def cadastro(request):
         neighborhood = request.POST['neighborhood']
         state = request.POST['state']
         complement = request.POST['complement']
+        test = request.POST.get('test', False)
 
         # Verifica se já existe um usuário com o e-mail fornecido
         if User.objects.filter(email=email).exists():
@@ -127,8 +128,20 @@ def cadastro(request):
 
         # print('Usuario Criado',user)
         # envia um email de confirmacao
-        enviar_email_confirmacao(user.email, user.username)
-
+        try:
+            if test == False:
+                enviar_email_confirmacao(user.email, user.username)
+            else:
+                print("testeando")
+        except:
+            print("email invalido do usuario",user.username, user.email)
+        try:
+            if test == False:
+                create_brevo_contact(client, address)
+            else:
+                print("testeando")
+        except:
+            print("Erro ao enviar para brevo")
         if user is not None:
             # Faz o login do usuário na sessão
             login(request, user)
