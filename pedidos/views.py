@@ -336,7 +336,7 @@ def cotacao_frete_correios(request):
     try:
 
         # envia a requisição SOAP e trata a resposta
-        response = requests.post(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino={cep}&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=03220,03298&nVlDiametro=0&StrRetorno=xml")
+        response = requests.post(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino={cep}&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=03220,03298&StrRetorno=xml")
         # print(f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem=12233400&sCepDestino=12245500&nVlPeso={peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=40010,41106&nVlDiametro=0&StrRetorno=xml")
         if response.status_code == 200:
 
@@ -358,7 +358,8 @@ def cotacao_frete_correios(request):
                 days = int(servico.find('PrazoEntrega').text)
 
                 prazo_entrega = f"{days} {'dia útil' if days == 1 else 'dias úteis'}"
-
+                # erro = str(servico.find('Erro').text)
+                # print(erro)
                 results.append({
                     'codigo': code,
                     'valor': preco,
@@ -366,15 +367,17 @@ def cotacao_frete_correios(request):
                 })
             #     print(results, 'results')
             # print('Cotação de frete realizada com sucesso.')
+
             return JsonResponse({'results': results})
+
 
         else:
             # print(f'Resposta da requisição inválida: {response.status_code}')
-            return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
+            return JsonResponse({'error': 'Tivemos um erro ao cotar o frete por favor recarregue o frete'})
 
     except Exception as e:
         # print(f'Erro na requisição: {e}')
-        return JsonResponse({'error': 'Houve um problema ao processar sua requisição.'})
+        return JsonResponse({'error': 'Tivemos um erro ao cotar o frete por favor recarregue o frete'})
 
 
 

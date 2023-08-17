@@ -48,6 +48,11 @@
           <span class="badge badge-primary badge-pill text-dark" id="valor-pac"></span>
         </li>
         </span>
+        <span style="display:none;" id="retry-frete">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <button  class="btn btn-primary" >Tentar Novamente</button>
+        </li>
+           </span>
       </ul>
       <div class="d-flex justify-content-center align-items-center " style="display:none;">
       <div id="frete-loading" class="spinner-border text-primary" role="status">
@@ -77,6 +82,10 @@
 
 
     <script>
+
+
+
+
   $(document).ready(function() {
     $('#form-cpf').submit(function(e) {
       e.preventDefault();
@@ -97,6 +106,10 @@
 </script>
 
     <script>
+
+
+
+
   $(document).ready(function() {
   var $cpfInput = $("#cpf");
   var $btnSave = $("#btn-save-cpf");
@@ -285,6 +298,22 @@ function fecharAlerta(id) {
 </div>
 
 
+
+
+<script>
+
+
+$('#retry-frete').click(function() {
+        location.reload(); // Recarrega a página inteira
+    });
+
+
+</script>
+
+
+
+
+
     <script>
 
 
@@ -335,12 +364,15 @@ $(document).ready(function() {
 });
 
 
+
 $(document).ready(function () {
 <!--    desmarca o frete caso a pagina seja reiniciada-->
     $('input[type=radio][name=frete]').prop('checked', false);
 
     var cep = '{{ endereco_primario.cep }}'; // coloque aqui o CEP a ser cotado
     $('#frete-loading').show();
+
+    setTimeout(function(){
     $.ajax({
         url: '{% url "cotacao_frete_correios" %}',
         type: 'POST',
@@ -365,14 +397,17 @@ $(document).ready(function () {
                 }
             } else {
                 $('#frete-loading').hide();
-                alert('Erro ao obter os valores de frete.');
+                $('#retry-frete').show(); // Mostra o botão de tentar novamente
+                alert(data.error);
             }
         },
-        error: function () {
+        error: function (data) {
             $('#frete-loading').hide();
-            alert('Erro ao obter os valores de frete ERROR.');
+            $('#retry-frete').show(); // Mostra o botão de tentar novamente
+            alert('Erro ao obter os valores de frete.' + "erro:" + error);
         }
     });
+    }, 500);
 });
 
 
@@ -518,10 +553,10 @@ $(document).ready(function() {
       }
     // Obtém o valor do frete
     var frete = parseFloat($('#frete').text().replace('R$ ', ''));
-    console.log(frete)
+
     // Obtém o valor total com o frete
     var total = parseFloat($('#total-com-frete').text().replace('R$ ', ''));
-    console.log(total)
+
     // Obtém o método de pagamento selecionado
     var metodoPagamento = $('input[name=metodo_pagamento]:checked').val();
 
