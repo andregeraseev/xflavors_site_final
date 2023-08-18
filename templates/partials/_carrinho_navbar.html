@@ -4,8 +4,9 @@
         <i class="fas fa-shopping-cart text-dark"></i>
         <span class="badge bg-danger">{{ total_quantity_cart }}</span>
     </a>
-    <div class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="navbarDropdown" style="max-height: 400px; overflow-y: auto;">
-        {% for item in cart.cartitem_set.all %}
+    <div class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="navbarDropdown">
+        <div style="max-height: 400px; overflow-y: auto;">
+            {% for item in cart.cartitem_set.all %}
         <div class="dropdown-item d-flex justify-content-between text-dark align-items-center bg-light rounded mb-2 p-2" >
             <div class="cart-item-details">
                 <div class="d-flex align-items-center">
@@ -35,6 +36,7 @@
             </button>
         </div>
         {% endfor %}
+        </div>
         {% if cart.cartitem_set.count > 0 %}
         <div class="d-flex justify-content-between text-dark align-items-center mb-3">
             <h6 class="mb-0">Total:</h6>
