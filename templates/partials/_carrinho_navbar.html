@@ -18,7 +18,7 @@
                 <div class="d-flex align-items-center" >
                     <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50" height="50"
                          class="mr-2">
-                    <div>
+                    <div style="max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                         <h6 class="mx-1">{% if item.variation %} {{ item.variation.name }} {% else %}
                             {{ item.product.name }} {% endif %}</h6>
                         <p class="mb-0">Quantidade: {{ item.quantity }}</p>
