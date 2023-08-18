@@ -9,11 +9,11 @@ import re
 Brevo_Api = os.getenv('Brevo_Api')
 # @receiver(post_save, sender=Cliente,)
 def create_brevo_contact(client, address):
-    print("BREVO")
+    # print("BREVO")
     cliente = Cliente.objects.get(user__username=client)
-    print("Detalhes do usuário recém-criado:")
-    print("Cliente", client)
-    print("Endereço:", address)
+    # print("Detalhes do usuário recém-criado:")
+    # print("Cliente", client)
+    # print("Endereço:", address)
 
 
     # Dividir o username em primeiro nome e sobrenome
@@ -21,8 +21,8 @@ def create_brevo_contact(client, address):
     first_name = full_name[0]
     last_name = full_name[1] if len(full_name) > 1 else ''  # Usar a segunda parte, se existir
 
-    print(f"Primeiro nome: {first_name}")
-    print(f"Sobrenome: {last_name}")
+    # print(f"Primeiro nome: {first_name}")
+    # print(f"Sobrenome: {last_name}")
 
 
 
@@ -35,17 +35,17 @@ def create_brevo_contact(client, address):
     except:
         celular_formatado = None
     endereço = EnderecoEntrega.objects.get(cliente__id = cliente_id)
-    print(endereço)
+    # print(endereço)
     CEP = endereço.cep
     CIDADE = endereço.cidade
     ESTADO = endereço.estado
-    print("BREVO DADOS",
-    celular,
-    cliente,
-    endereço,
-    CEP,
-    CIDADE,
-    ESTADO)
+    # print("BREVO DADOS",
+    # celular,
+    # cliente,
+    # endereço,
+    # CEP,
+    # CIDADE,
+    # ESTADO)
 
     # Configure a chave API
     configuration = sib_api_v3_sdk.Configuration()
@@ -62,7 +62,7 @@ def create_brevo_contact(client, address):
       list_ids=[2], # ID(s) da lista a que o contato deve ser associado
       update_enabled=False
     )
-    print(create_contact)
+    # print(create_contact)
 
     try:
         # Crie o contato no Brevo

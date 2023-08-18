@@ -17,7 +17,7 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="input-celular" class="form-label">Celular:</label>
-                            <input type="text" class="form-control"  name="celular" value="{{ cliente.celular }}"
+                            <input type="text" class="form-control" name="celular" value="{{ cliente.celular }}"
                                    id="input-celular" disabled>
                         </div>
                         <button type="button" class="btn btn-primary" id="btn-edit-celular">Editar</button>
@@ -62,73 +62,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-<!--        &lt;!&ndash;    ENDERECOS    &ndash;&gt;-->
-<!--        <div class="col-md-8">-->
-<!--            <div class="card mt-4">-->
-<!--                <div class="card-header">-->
-
-<!--                    <ul class="nav nav-tabs card-header-tabs">-->
-<!--                      <li class="nav-item">-->
-<!--                        <a class="nav-link active" aria-current="true" href="#">Endereço</a>-->
-<!--                      </li>-->
-<!--                      <li class="nav-item">-->
-<!--                        <a class="nav-link" href="#">Aguardando reestoque</a>-->
-<!--                      </li>-->
-<!--                    </ul>-->
-<!--                </div>-->
-<!--                <div class="card-body" id="card-body">-->
-<!--                    <h5 class="card-title">Endereços</h5>-->
-<!--                    <ul class="list-group" style="max-height: 250px; overflow-y: auto;">-->
-<!--                        {% for endereco in enderecos %}-->
-<!--                        <li class="list-group-item d-flex" style="font-size: 14px">-->
-<!--                            <div class="col-9">-->
-<!--                                <strong>Endereço:</strong> {{ endereco.rua }} , {{ endereco.numero }},-->
-<!--                                {{ endereco.bairro }} <br>-->
-<!--                                <strong>Cidade: </strong>{{ endereco.cidade }} / {{ endereco.estado }} <br>-->
-<!--                                <strong>Cep:</strong> {{ endereco.cep }}-->
-<!--                                {% if endereco.complemento %} <br> <strong>Complemento:</strong>-->
-<!--                                {{ endereco.complemento }}-->
-<!--                                {% endif %}-->
-
-<!--                            </div>-->
-<!--                            <div class="col-3 ms-auto">-->
-<!--                                <button id="editar-endereco" data-endereco-id="{{ endereco.id }}"-->
-<!--                                        class="btn btn-primary me-2">Editar-->
-<!--                                </button>-->
-<!--                                <button id="excluir-endereco" data-endereco-id="{{ endereco.id }}"-->
-<!--                                        class="btn btn-danger">Excluir-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </li>-->
-<!--                        {% empty %}-->
-<!--                        <li class="list-group-item">Nenhum endereço cadastrado.</li>-->
-<!--                        {% endfor %}-->
-<!--                    </ul>-->
-
-<!--                    <div id="editar-endereco-container" data-endereco-id="{{ endereco.id }}"></div>-->
-<!--                </div>-->
-<!--                <button id="adicionar_endereco" data-endereco-id="{{ endereco.id }}" class="btn btn-primary mt-3">-->
-<!--                    Adicionar-->
-<!--                    Endereço-->
-<!--                </button>-->
-<!--                <div id="adicionar_endereco_container"></div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--    </div>-->
-
-
-
-
 
 <div class="col-md-8">
     <div class="card">

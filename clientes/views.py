@@ -132,14 +132,14 @@ def cadastro(request):
             if test == False:
                 enviar_email_confirmacao(user.email, user.username)
             else:
-                print("testeando")
+                print("testando")
         except:
             print("email invalido do usuario",user.username, user.email)
         try:
             if test == False:
                 create_brevo_contact(client, address)
             else:
-                print("testeando")
+                print("testando")
         except:
             print("Erro ao enviar para brevo")
         if user is not None:
