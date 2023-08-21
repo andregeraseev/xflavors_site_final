@@ -280,6 +280,9 @@ def receitas(request):
     elif ordenacao == 'mais-vendidos':
         # Ordena pelo número de vendas dos produtos, do maior para o menor
         kits = kits.order_by('-num_vendas')
+    else:
+        # Ordenação padrão, caso nenhuma seja especificada
+        kits = kits.order_by('name')  # ou qualquer outro campo que faça sentido
 
     # Paginação dos produtos
     produtos_por_pagina = 20
