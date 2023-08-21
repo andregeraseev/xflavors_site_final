@@ -1,0 +1,5 @@
+INFO 2023-08-21 10:24:12,933 views Tentativa de login com email: ageraseev@gmail.com
+INFO 2023-08-21 10:24:13,534 views Usuário andre autenticado com sucesso
+INFO 2023-08-21 10:24:13,620 views Last login atualizado para o usuário andre
+INFO 2023-08-21 10:24:46,338 views Tentativa de login com email: ageraseev@gmail.com
+WARNING 2023-08-21 10:24:46,553 views Falha na autenticação para o email ageraseev@gmail.com

@@ -16,34 +16,52 @@ from pedidos.models import Pedido
 from .models import Cliente, EnderecoEntrega
 from django.contrib.auth.models import User
 from produtos.models import Produto, Favorito
+import logging
+logger = logging.getLogger('clientes')
+
+import logging
+
+logger = logging.getLogger('clientes')
 
 
 def login_view(request):
-    if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        # Procura um usuário com o email informado
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            user = None
-        # Autentica o usuário com o email e a senha informados
-        if user is not None:
-            user = authenticate(request, username=user.username, password=password)
-        if user is not None:
-            login(request, user)
+    try:
+        if request.method == 'POST':
+            email = request.POST['email']
+            password = request.POST['password']
+            logger.info(f'Tentativa de login com email: {email}')
 
-            # Atualiza last_login do Cliente
-            cliente = Cliente.objects.get(user=request.user)
-            cliente.last_login = timezone.now()
-            cliente.save()
+            # Procura um usuário com o email informado
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                user = None
+                logger.warning(f'Usuário com email {email} não encontrado')
 
-            return redirect('home')
+            # Autentica o usuário com o email e a senha informados
+            if user is not None:
+                user = authenticate(request, username=user.username, password=password)
+            if user is not None:
+                login(request, user)
+                logger.info(f'Usuário {user.username} autenticado com sucesso')
+
+                # Atualiza last_login do Cliente
+                cliente = Cliente.objects.get(user=request.user)
+                cliente.last_login = timezone.now()
+                cliente.save()
+                logger.info(f'Last login atualizado para o usuário {user.username}')
+
+                return redirect('home')
+            else:
+                context = {'error': 'Email ou senha inválidos!'}
+                logger.warning(f'Falha na autenticação para o email {email}')
+                return render(request, 'login.html', context)
         else:
-            context = {'error': 'Email ou senha inválidos!'}
-            return render(request, 'login.html', context)
-    else:
-        return render(request, 'login.html')
+            return render(request, 'login.html')
+    except Exception as e:
+        logger.error(f'Erro inesperado na view de login: {str(e)}')
+        raise
+
 
 def logout_view(request):
     logout(request)
