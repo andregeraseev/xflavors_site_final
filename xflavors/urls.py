@@ -5,7 +5,7 @@ from django.urls import path,include
 from clientes import views
 from frontend.views import termos, envio
 from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search, pagina_search, add_to_favorites, receitas, adicionar_kit_ao_carrinho, kit_detail
-from .views import index
+from .views import index, error_view
 from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
 from tiny_erp.webhook import tiny_webhook
 from tiny_erp.webhook_estoque import tiny_webhook_stock_update
@@ -17,6 +17,7 @@ from mercado_pago.mercado_livre_weebhook import mercado_pago_webhook
 from Importador.clientes import ImportClientesView
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from logs.view import view_logs
 
 
 urlpatterns = [
@@ -109,5 +110,11 @@ urlpatterns = [
     path('receitas/', receitas, name='receitas'),
     path('adicionar_kit_ao_carrinho/', adicionar_kit_ao_carrinho, name='adicionar_kit_ao_carrinho'),
     path('receitas/<slug:slug>/', kit_detail, name='kit_detail'),
+
+# logs
+    path('view-logs/', view_logs, name='view-logs'),
+
+#error
+    path('error/', error_view, name='error'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

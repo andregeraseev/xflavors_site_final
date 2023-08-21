@@ -353,6 +353,7 @@ from django.utils import timezone
 import json
 
 from datetime import datetime
+@staff_member_required
 def sales_chart(request):
     message = ''
     value_type = 'total'  # Default value
@@ -442,7 +443,7 @@ def sales_chart(request):
 
     return render(request, "administracao/sales_chart.html", context={'plot_div': plot_div, 'table_div': table_div, 'message': message})
 
-
+@staff_member_required
 def download_sales_data(request):
     start_date = request.session.get('start_date')
     end_date = request.session.get('end_date')

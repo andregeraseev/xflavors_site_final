@@ -86,3 +86,5 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
+def error_view(request, message="Ocorreu um erro. Por favor, tente novamente mais tarde."):
+    return render(request, 'error.html', {'message': message})
