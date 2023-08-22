@@ -3,7 +3,7 @@ import os
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'xflavors.settings') # Substitua 'myproject.settings' pelo caminho correto para o seu arquivo de configurações
-django.setup()
+# django.setup()
 from avise.models import AvisoEstoque
 from avise.views import check_aviso_estoque
 
