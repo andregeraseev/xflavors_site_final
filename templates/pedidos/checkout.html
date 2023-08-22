@@ -583,20 +583,14 @@ $(document).ready(function() {
       },
       dataType: 'json',
       success: function(data) {
-<!--      alert('sucesso?.');-->
 
 
       if (data.success) {
       $('#loading').hide();
-<!--      alert('Pedido criado.');-->
       var pedido_id = data.pedido_id;
-      console.log('pedido_id:', pedido_id);
 
         // Constrói a URL de redirecionamento
-<!--        alert('criando url');-->
         var url_pagamento = `/pagina_pagamento/`+pedido_id;
-        console.log('URL de pagamento:', url_pagamento);
-<!--        alert('redirecionando');-->
         // Redireciona o usuário para a página de pagamento
         window.location.href = url_pagamento;
 
@@ -604,6 +598,10 @@ $(document).ready(function() {
 
   else {
         $('#loading').hide();
+        alert('Erro ao criar o pedido. ' + data.error);
+
+        $('#loading').hide();
+        if (data.errors) {
     // Adiciona a classe CSS "linha-estoque-insuficiente" na linha do item com estoque insuficiente
     for (var i = 0; i < data.errors.length; i++) {
         var itemId = data.errors[i].item_id;
@@ -614,15 +612,13 @@ $(document).ready(function() {
         $('#alert-erro-'+itemId).html(data.errors[i].message + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(' + itemId + ')">' +
   '<span aria-hidden="true">&times;</span>' +
 '</button>');
-    }
-    $('#loading').hide();
-    alert('Erro ao criar o pedido.');
-    console.log('ERROS:', data.errors);
+    }}
+
 }
     },
-      error: function(response) {
+      error: function(data) {
         $('#loading').hide();
-        alert('Erro ao criar o pedido.');
+        alert(data.error);
       }
     });
   });
