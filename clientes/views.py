@@ -326,18 +326,19 @@ def editar_endereco_dashboard(request):
     return render(request, 'editar_endereco_dashboard.html', {'endereco': endereco})
 
 
-
-
-
 @login_required
 @require_POST
 def excluir_endereco_dashboard(request):
     endereco_id = request.POST.get('endereco_id')
+    logger.info(f'solicitacao do usuario {request.user.username} para excluir o endereco {endereco_id}')
     try:
         endereco = EnderecoEntrega.objects.get(id=endereco_id, cliente=request.user.cliente)
         endereco.delete()
+        logger.info(f'endeco do usuario {request.user.username} para excluido com sucesso {endereco_id}')
         return JsonResponse({'success': True})
     except EnderecoEntrega.DoesNotExist:
+        logger.error(f'Erro excluir o endereco do usuario {request.user.username} endereco nao exixte')
         return JsonResponse({'success': False, 'message': 'Endereço não encontrado.'})
     except Exception as e:
+        logger.error(f'Erro excluir o endereco do usuario {request.user.username} {e}')
         return JsonResponse({'success': False, 'message': str(e)})
