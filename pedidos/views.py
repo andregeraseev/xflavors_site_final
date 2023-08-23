@@ -64,6 +64,8 @@ def validar_cupom(request):
     estado_entrega = request.POST.get('estado_frete')
     subtotal = request.POST.get('subtotal')
     codigo_cupom = codigo_cupom.upper()
+    email = user.email
+    print(email)
     try:
         # Verifica se o cupom existe
         cupom = get_object_or_404(Cupom, codigo=codigo_cupom)
@@ -73,9 +75,9 @@ def validar_cupom(request):
         return JsonResponse({'status': 'error', 'mensagem': 'Cupom não encontrado.'})
     try:
         # Calcula o valor a ter desconto e se o cupom pode ser utulizado
-        subtotal = float(request.POST.get('total_pedido'))
+        subtotal = float(request.POST.get('subtotal'))
 
-        cupom_pode_ser_utilizado, mensagem_cupom = cupom.pode_ser_utilizado(total=subtotal, estado_entrega=estado_entrega, tipo_frete=frete_selecionado)
+        cupom_pode_ser_utilizado, mensagem_cupom = cupom.pode_ser_utilizado(total=subtotal, estado_entrega=estado_entrega, tipo_frete=frete_selecionado, user=email)
         if not cupom_pode_ser_utilizado:
             logger.warning(f"Cupom com código {codigo_cupom} não pode ser utilizado pelo Usuario {request.user},"
                            f" {mensagem_cupom} ")
