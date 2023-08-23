@@ -59,7 +59,7 @@ class Cupom(models.Model):
 
         if self.max_uso_por_cliente:
             from pedidos.models import Pedido
-            usos_por_usuario = Pedido.objects.filter(user__username=user, cupom=self).count()
+            usos_por_usuario = Pedido.objects.filter(user__email=user, cupom=self).count()
             if usos_por_usuario >= self.max_uso_por_cliente:
                 return False, 'Limite de uso do cupom atingido para este usuário.'
 
