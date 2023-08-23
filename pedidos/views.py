@@ -109,8 +109,7 @@ def validar_cupom_finalizando_pedido(user,cart,frete_selecionado,estado_frete,su
     logger.info(f"Usuário {user} iniciou a validação de um cupom ao clicar em finalizar pedido")
 
     codigo_cupom = cart.cupom
-    logger.info('VERIFICANDO CUPOM AO FINALIZAR PEDIDO','estado:',estado_frete,'tipo frete:',
-                frete_selecionado,'subtotal',subtotal)
+
     try:
         # Verifica se o cupom existe
         cupom = get_object_or_404(Cupom, codigo=codigo_cupom)
