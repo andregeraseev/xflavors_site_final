@@ -43,8 +43,8 @@ class Cupom(models.Model):
     def esta_ativo(self):
         return self.status == 'Ativo'
 
-    def pode_ser_utilizado(self, total=None, produto=None, categoria=None, estado_entrega=None, tipo_frete=None):
-        print('PODESER VALIDADO')
+    def pode_ser_utilizado(self, total=None, produto=None, categoria=None, estado_entrega=None, tipo_frete=None, user= None):
+
         # Verifica status e validade
         if not self.esta_ativo():
             return False, "Cupom inativo ou expirado."
@@ -56,6 +56,12 @@ class Cupom(models.Model):
         # Verifica o limite mínimo de compra, se aplicável
         if total and not self.atende_limite_minimo(total):
             return False, "O valor total do pedido não atende ao mínimo necessário para usar este cupom."
+
+        if self.max_uso_por_cliente:
+            from pedidos.models import Pedido
+            usos_por_usuario = Pedido.objects.filter(user__username=user, cupom=self).count()
+            if usos_por_usuario >= self.max_uso_por_cliente:
+                return False, 'Limite de uso do cupom atingido para este usuário.'
 
         # Verifica se o cupom é aplicável a um produto específico, se aplicável
         if produto and not self.aplicavel_a_produto(produto):
