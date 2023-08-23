@@ -317,13 +317,17 @@ def editar_endereco_dashboard(request):
 
             # messages.error(request, 'Endereço não encontrado.')
             return redirect('dashboard')
+
+    if request.method == 'GET':
+        endereco_id = request.GET.get('endereco_id')
+        endereco = get_object_or_404(EnderecoEntrega, pk=endereco_id, cliente=request.user.cliente)
+        return render(request, 'editar_endereco_dashboard.html', {'endereco': endereco})
+
     else:
         logger.error(f'Erro alterar endereco do usuario {request.user.username} Método de requisição inválido')
         return JsonResponse({'error': 'Método de requisição inválido.'})
 
-    endereco_id = request.GET.get('endereco_id')
-    endereco = get_object_or_404(EnderecoEntrega, pk=endereco_id, cliente=request.user.cliente)
-    return render(request, 'editar_endereco_dashboard.html', {'endereco': endereco})
+
 
 
 @login_required
