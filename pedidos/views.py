@@ -75,7 +75,7 @@ def validar_cupom(request):
         return JsonResponse({'status': 'error', 'mensagem': 'Cupom não encontrado.'})
     try:
         # Calcula o valor a ter desconto e se o cupom pode ser utulizado
-        subtotal = float(request.POST.get('subtotal'))
+        subtotal = float(request.POST.get('total_pedido'))
 
         cupom_pode_ser_utilizado, mensagem_cupom = cupom.pode_ser_utilizado(total=subtotal, estado_entrega=estado_entrega, tipo_frete=frete_selecionado, user=email)
         if not cupom_pode_ser_utilizado:
