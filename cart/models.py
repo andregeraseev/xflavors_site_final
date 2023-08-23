@@ -2,8 +2,7 @@
 
 # Codigo para modelo de carrinho de compras
 from django.http import JsonResponse
-
-from produtos.models import Produto, Variation
+from produtos.models import Produto, Variation, Category
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
@@ -13,18 +12,27 @@ from django.utils import timezone
 class Cupom(models.Model):
     STATUS_CHOICES = (
         ('Ativo', 'Ativo'),
+        ('Inativo', 'Inativo'),
         ('Expirado', 'Expirado'),
         ('Utilizado', 'Utilizado'),
     )
 
     codigo = models.CharField(max_length=15, unique=True)
-    desconto_percentual = models.DecimalField(max_digits=5, decimal_places=2)
+    desconto_percentual = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     maximo_usos = models.IntegerField(default=1)
     usos_atuais = models.IntegerField(default=0)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='Ativo')
     data_validade = models.DateTimeField(default=timezone.now)
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_modificacao = models.DateTimeField(auto_now=True)
+    estados_frete_gratis = models.CharField(max_length=100, blank=True, null=True, help_text="Estados para frete grátis, separados por vírgula")
+    max_uso_por_cliente = models.PositiveIntegerField(default=None, null=True, blank=True, help_text="Máximo de uso por cliente. Deixe em branco ou coloque None para uso ilimitado.")
+    tipo_de_frete_gratis = models.CharField(max_length=100, blank=True, null=True, help_text="Escolha o tipo de fretes que seram gratis, separados por vírgula")
+    desconto_percentual_frete = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    desconto_fixo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    minimo_compra = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    produtos_aplicaveis = models.ManyToManyField(Produto, blank=True)
+    categorias_aplicaveis = models.ManyToManyField(Category, blank=True)
 
     def __str__(self):
         return self.codigo
@@ -35,14 +43,152 @@ class Cupom(models.Model):
     def esta_ativo(self):
         return self.status == 'Ativo'
 
-    def pode_ser_utilizado(self):
-        return self.esta_ativo() and self.usos_atuais < self.maximo_usos and timezone.now() < self.data_validade
+    def pode_ser_utilizado(self, total=None, produto=None, categoria=None, estado_entrega=None, tipo_frete=None):
+        print('PODESER VALIDADO')
+        # Verifica status e validade
+        if not self.esta_ativo():
+            return False, "Cupom inativo ou expirado."
+        if self.usos_atuais >= self.maximo_usos:
+            return False, "Este cupom já foi totalmente utilizado."
+        if timezone.now() > self.data_validade:
+            return False, "Este cupom já expirou."
+
+        # Verifica o limite mínimo de compra, se aplicável
+        if total and not self.atende_limite_minimo(total):
+            return False, "O valor total do pedido não atende ao mínimo necessário para usar este cupom."
+
+        # Verifica se o cupom é aplicável a um produto específico, se aplicável
+        if produto and not self.aplicavel_a_produto(produto):
+            return False, "Este cupom não é válido para o produto selecionado."
+
+        # Verifica se o cupom é aplicável a uma categoria específica, se aplicável
+        if categoria and not self.aplicavel_a_categoria(categoria):
+
+            return False, "Este cupom não é válido para a categoria do produto selecionado."
+
+        # Verifica se o cupom oferece frete grátis para o estado de entrega
+        if estado_entrega and not self.aplicar_frete_gratis(estado_entrega):
+
+            return False, "Este cupom não é válido para frete grátis no estado selecionado."
+
+        # Verifica se o tipo de frete está entre os permitidos para frete grátis, se aplicável
+        if tipo_frete and self.tipo_de_frete_gratis:
+            tipos_permitidos = self.tipo_de_frete_gratis.split(',')
+            if tipo_frete not in tipos_permitidos:
+                return False, f"Este cupom só é válido para frete do tipo: {', '.join(tipos_permitidos)}."
+
+        # Caso o usuário não tenha selecionado um tipo de frete, mas o cupom oferece frete grátis
+        if self.tipo_de_frete_gratis and not tipo_frete:
+            return False, "Por favor, selecione um tipo de frete para aplicar o cupom."
+
+        return True, "Cupom aplicado com sucesso."
+
+    def pode_ser_utilizado_finalizar_pedido(self, total=None, produto=None, categoria=None, estado_entrega=None, tipo_frete=None):
+        """Verificacao para quando o cliente cliar em finalizar pedido para caso tenha mudado algo depois de aplicar o cupom"""
+        # Verifica status e validade
+        if not self.esta_ativo():
+            return False, "Cupom inativo ou expirado."
+
+        if timezone.now() > self.data_validade:
+            return False, "Este cupom já expirou."
+
+        # Verifica o limite mínimo de compra, se aplicável
+        if total and not self.atende_limite_minimo(total):
+            return False, "O valor total do pedido não atende ao mínimo necessário para usar este cupom."
+
+        # Verifica se o cupom é aplicável a um produto específico, se aplicável
+        if produto and not self.aplicavel_a_produto(produto):
+            return False, "Este cupom não é válido para o produto selecionado."
+
+        # Verifica se o cupom é aplicável a uma categoria específica, se aplicável
+        if categoria and not self.aplicavel_a_categoria(categoria):
+
+            return False, "Este cupom não é válido para a categoria do produto selecionado."
+
+        # Verifica se o cupom oferece frete grátis para o estado de entrega
+        if estado_entrega and not self.aplicar_frete_gratis(estado_entrega):
+
+            return False, "Este cupom não é válido para frete grátis no estado selecionado."
+
+        # Verifica se o tipo de frete está entre os permitidos para frete grátis, se aplicável
+        if tipo_frete and self.tipo_de_frete_gratis:
+            tipos_permitidos = self.tipo_de_frete_gratis.split(',')
+            if tipo_frete not in tipos_permitidos:
+                return False, f"Este cupom só é válido para frete do tipo: {', '.join(tipos_permitidos)}."
+
+        # Caso o usuário não tenha selecionado um tipo de frete, mas o cupom oferece frete grátis
+        if self.tipo_de_frete_gratis and not tipo_frete:
+            return False, "Por favor, selecione um tipo de frete para aplicar o cupom."
+
+        return True, "Cupom aplicado com sucesso."
 
     def adicionar_uso(self):
         self.usos_atuais += 1
         self.save()
 
+    def aplicar_cupom(self, codigo_cupom):
+        from pedidos.models import Pedido
+        if not self.cupom:
+            try:
+                cupom = Cupom.objects.get(codigo=codigo_cupom)
 
+                # Se max_uso_por_cliente não for None, verifique o uso
+                if cupom.max_uso_por_cliente:
+                    usos_por_usuario = Pedido.objects.filter(user=self.user, cupom=cupom).count()
+                    if usos_por_usuario >= cupom.max_uso_por_cliente:
+                        return False, 'Limite de uso do cupom atingido para este usuário.'
+
+                if cupom.pode_ser_utilizado():
+                    cupom.adicionar_uso()
+                    self.cupom = cupom
+                    self.save()
+                    return True, 'Cupom aplicado com sucesso.'
+                else:
+                    return False, 'Cupom expirado ou limite de uso atingido.'
+            except Cupom.DoesNotExist:
+                return False, 'Cupom inválido.'
+        else:
+            return False, 'Já existe um cupom aplicado neste pedido.'
+
+    def aplicar_frete_gratis(self, estado_entrega):
+
+        if self:
+            # Se estados_frete_gratis estiver vazio ou None, retorna True
+            if not self.estados_frete_gratis:
+
+                return True
+
+            estados_frete_gratis = self.estados_frete_gratis.split(',')
+            if estado_entrega in estados_frete_gratis:
+
+                return True
+        return False
+
+    def aplicar_desconto(self, total):
+        if self.desconto_percentual:
+            valor_com_desconto = total * (1 - (self.desconto_percentual / 100))
+            desconto = total - valor_com_desconto
+            return desconto,valor_com_desconto
+        elif self.desconto_fixo:
+            valor_com_desconto = max(0, total - self.desconto_fixo)
+            desconto = total - valor_com_desconto
+            return desconto,valor_com_desconto
+        return 0, total
+
+    def aplicavel_a_produto(self, produto):
+        if self.produtos_aplicaveis.exists():
+            return produto in self.produtos_aplicaveis.all()
+        return True
+
+    def aplicavel_a_categoria(self, categoria):
+        if self.categorias_aplicaveis.exists():
+            return categoria in self.categorias_aplicaveis.all()
+        return True
+
+    def atende_limite_minimo(self, total):
+        if self.minimo_compra:
+            return total >= self.minimo_compra
+        return True
 
 
 # Classe Cart, que representa o carrinho de compras de um usuário

@@ -60,7 +60,10 @@ def validar_cupom(request):
     user = request.user
     cart = Cart.get_or_create_cart(user)
     codigo_cupom = request.POST.get('codigo_cupom')
-
+    frete_selecionado = request.POST.get('frete_selecionado')
+    estado_entrega = request.POST.get('estado_frete')
+    subtotal = request.POST.get('subtotal')
+    codigo_cupom = codigo_cupom.upper()
     try:
         # Verifica se o cupom existe
         cupom = get_object_or_404(Cupom, codigo=codigo_cupom)
@@ -71,9 +74,12 @@ def validar_cupom(request):
     try:
         # Calcula o valor a ter desconto e se o cupom pode ser utulizado
         subtotal = float(request.POST.get('total_pedido'))
-        if not cupom.pode_ser_utilizado():
-            logger.warning(f"Cupom com código {codigo_cupom} não pode ser utilizado pelo Usuario {request.user}")
-            return JsonResponse({'status': 'error', 'mensagem': 'O cupom não pode ser utilizado.'})
+
+        cupom_pode_ser_utilizado, mensagem_cupom = cupom.pode_ser_utilizado(total=subtotal, estado_entrega=estado_entrega, tipo_frete=frete_selecionado)
+        if not cupom_pode_ser_utilizado:
+            logger.warning(f"Cupom com código {codigo_cupom} não pode ser utilizado pelo Usuario {request.user},"
+                           f" {mensagem_cupom} ")
+            return JsonResponse({'status': 'error', 'mensagem': mensagem_cupom})
 
         valor_desconto = round(float(cupom.desconto_percentual) / 100 * subtotal, 2)
         valor_total_com_desconto = subtotal - valor_desconto
@@ -95,6 +101,50 @@ def validar_cupom(request):
     logger.info(f"Cupom com código {codigo_cupom} aplicado com sucesso para o usuario {request.user}")
 
     return JsonResponse({'status': 'success', 'valor_total_com_desconto': valor_total_com_desconto, 'valor_desconto': valor_desconto})
+
+
+def validar_cupom_finalizando_pedido(user,cart,frete_selecionado,estado_frete,subtotal):
+    """Def para validacao de cupom ao clicar em finalizar pedido"""
+
+    logger.info(f"Usuário {user} iniciou a validação de um cupom ao clicar em finalizar pedido")
+
+    codigo_cupom = cart.cupom
+    logger.info('VERIFICANDO CUPOM AO FINALIZAR PEDIDO','estado:',estado_frete,'tipo frete:',
+                frete_selecionado,'subtotal',subtotal)
+    try:
+        # Verifica se o cupom existe
+        cupom = get_object_or_404(Cupom, codigo=codigo_cupom)
+        logger.info(f"Cupom com código {codigo_cupom} encontrado")
+    except:
+        mensagem_cupom = 'Cupom não encontrado.'
+        logger.warning(f"Cupom com código {codigo_cupom} não encontrado para o usuário {user}")
+        raise ValueError(mensagem_cupom)
+    try:
+        # Calcula o valor a ter desconto e se o cupom pode ser utulizado
+
+
+        cupom_pode_ser_utilizado, mensagem_cupom = cupom.pode_ser_utilizado(total=subtotal, estado_entrega=estado_frete, tipo_frete=frete_selecionado)
+        if not cupom_pode_ser_utilizado:
+            logger.warning(f"Cupom com código {codigo_cupom} não pode ser utilizado pelo Usuario {user},"
+                           f" {mensagem_cupom} ")
+            raise ValueError(mensagem_cupom)
+
+
+
+        valor_desconto = round(float(cupom.desconto_percentual) / 100 * subtotal, 2)
+        valor_total_com_desconto = subtotal - valor_desconto
+
+        logger.info(
+            f"Desconto calculado para o cupom {codigo_cupom}: {valor_desconto}. Total após desconto: {valor_total_com_desconto}")
+
+    except Exception as e:
+
+        logger.error(f"Erro ao calcular o desconto para o cupom {codigo_cupom}. Detalhes do erro: {str(e)}")
+        raise ValueError(mensagem_cupom)
+
+
+
+    return JsonResponse({'status': 'success', 'resposta': 'true'})
 
 
 def remover_cupom(request):
@@ -169,10 +219,14 @@ def checkout(request):
 
     # Se houver um cupom associado ao carrinho, calcule o desconto
     if cart.cupom:
-        valor_desconto = round(float(cart.cupom.desconto_percentual) / 100 * float(total), 2)
-        desconto = - valor_desconto
-        total = round(float(total) + desconto, 2)
-        logger.info(f"Desconto calculado para o carrinho ID: {cart.id}: {valor_desconto}. Total após desconto: {total}")
+
+
+        desconto, valor_com_desconto = cart.cupom.aplicar_desconto(subtotal)
+        desconto = round(float(desconto),2)
+
+        valor_com_desconto = float(valor_com_desconto)
+        total = round(valor_com_desconto, 2)
+        logger.info(f"Desconto calculado para o carrinho ID: {cart.id}: {desconto}. Total após desconto: {total}")
 
     enderecos = []
     endereco_primario = None
@@ -489,6 +543,7 @@ def criar_pedido(request):
     frete_selecionado = request.POST['frete_selecionado']
     metodo_pagamento = request.POST['metodo_pagamento']
     observacao = request.POST['observacao']
+    estado_frete = request.POST['estado_frete']
 
     try:
         cart = Cart.objects.get(user=request.user)
@@ -497,6 +552,16 @@ def criar_pedido(request):
         return JsonResponse({'success': False, 'error': 'Nao foi encontrado um carrinho,'
                                                         ' por gentileza volte para home'})
     cupom = cart.cupom
+
+    if cupom:
+        try:
+            validar_cupom_finalizando_pedido(user,cart,frete_selecionado,estado_frete,subtotal)
+            logger.info(f"cupom {cupom}, valido para o finalizar o pedido do usuario {user}")
+        except ValueError as e:
+
+            logger.error(f"Erro validar cupom {user.username}. Erro: {str(e)}")
+            return JsonResponse({'success': False, 'error': f'Erro validar cupom:\n{str(e)}'})
+
 
     items = cart.cartitem_set.all()
 

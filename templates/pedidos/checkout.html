@@ -2,38 +2,44 @@
 {% load static %}
 {% block content %}
 <div class="row">
-  <div class="col-12 col-md-6">
-    <h2 class="mb-4">Endereço de Entrega</h2>
-    {% if endereco_primario %}
-    <p>{{ endereco_primario.rua }}, {{ endereco_primario.numero }} - {{ endereco_primario.complemento }}<br>
-      {{ endereco_primario.bairro }}, {{ endereco_primario.cidade }} - {{ endereco_primario.estado }}<br>
-      CEP: {{ endereco_primario.cep }}</p>
+    <div class="col-12 col-md-6">
+        <h2 class="mb-4">Endereço de Entrega</h2>
+        {% if endereco_primario %}
 
-    <div class="mb-4">
-      <button id="editar-endereco" data-endereco-id="{{ endereco_primario.id }}" class="btn btn-primary mb-3">Alterar Endereço</button>
-      <div id="editar-endereco-container" data-endereco-id="{{ endereco_primario.id }}"></div>
-    </div>
-    {% else %}
-    <p>Você não tem um endereço de entrega cadastrado.</p>
-    {% endif %}
+        <p>{{ endereco_primario.rua }}, {{ endereco_primario.numero }} - {{ endereco_primario.complemento }}<br>
+            {{ endereco_primario.bairro }}, {{ endereco_primario.cidade }} - <span id="estadoId">{{ endereco_primario.estado }}</span>
+            <br>
+            CEP: {{ endereco_primario.cep }}</p>
 
-    <h4>Outros endereços:</h4>
-    {% if endereco %}
-    <select name="endereco_entrega" class="form-select mb-4" id="endereco_entrega">
-      <option selected>Selecione um novo endereço</option>
-      {% for e in endereco %}
-      <option value="{{ e.id }}">{{ e.rua }}, {{ e.numero }} - {{ e.complemento }} {{ e.bairro }}, {{ e.cidade }} - {{ e.estado }} CEP: {{ e.cep }}</option>
-      {% endfor %}
-    </select>
-    {% else %}
-    <p>Você não tem um endereço de entrega cadastrado.</p>
-    {% endif %}
+        <div class="mb-4">
+            <button id="editar-endereco" data-endereco-id="{{ endereco_primario.id }}" class="btn btn-primary mb-3">
+                Alterar Endereço
+            </button>
+            <div id="editar-endereco-container" data-endereco-id="{{ endereco_primario.id }}"></div>
+        </div>
+        {% else %}
+        <p>Você não tem um endereço de entrega cadastrado.</p>
+        {% endif %}
 
-    <h2 class="mb-4">Cotação de Frete</h2>
-    <div class="card mb-3">
+        <h4>Outros endereços:</h4>
+        {% if endereco %}
+        <select name="endereco_entrega" class="form-select mb-4" id="endereco_entrega">
+            <option selected>Selecione um novo endereço</option>
+            {% for e in endereco %}
+            <option value="{{ e.id }}">{{ e.rua }}, {{ e.numero }} - {{ e.complemento }} {{ e.bairro }}, {{ e.cidade }}
+                - {{ e.estado }} CEP: {{ e.cep }}
+            </option>
+            {% endfor %}
+        </select>
+        {% else %}
+        <p>Você não tem um endereço de entrega cadastrado.</p>
+        {% endif %}
 
-      <div class="card-header">Selecione uma opção de frete:</div>
-      <ul class="list-group list-group-flush">
+        <h2 class="mb-4">Cotação de Frete</h2>
+        <div class="card mb-3">
+
+            <div class="card-header">Selecione uma opção de frete:</div>
+            <ul class="list-group list-group-flush">
         <span style="display:none;" id="mostra-frete-sedex">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <input type="radio" name="frete" id="frete-sedex" value="sedex" class="form-check-input">
@@ -41,47 +47,48 @@
           <span class="badge badge-primary badge-pill text-dark" id="valor-sedex"></span>
         </li>
         </span>
-        <span style="display:none;" id="mostra-frete-pac">
+                <span style="display:none;" id="mostra-frete-pac">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <input type="radio" name="frete" id="frete-pac" value="pac" class="form-check-input">
           <label for="frete-pac" class="form-check-label font-weight-bold">PAC</label>
           <span class="badge badge-primary badge-pill text-dark" id="valor-pac"></span>
         </li>
         </span>
-        <span style="display:none;" id="retry-frete">
+                <span style="display:none;" id="retry-frete">
         <li class="list-group-item d-flex justify-content-between align-items-center">
-        <button  class="btn btn-primary" >Tentar Novamente</button>
+        <button class="btn btn-primary">Tentar Novamente</button>
         </li>
            </span>
-      </ul>
-      <div class="d-flex justify-content-center align-items-center " style="display:none;">
-      <div id="frete-loading" class="spinner-border text-primary" role="status">
-        <span class="sr-only">Calculando...</span>
-      </div>
-      </div>
-    </div>
 
-<!--CPF-->
-    {% if not cliente.cpf %}
-
-    <h2 class="mb-4">Cadastro CPF</h2>
-    <form method="POST" id="form-cpf">
-      {% csrf_token %}
-      <div class="mb-3">
-        <label for="cpf" class="form-label">CPF:</label>
-        <input type="text" class="form-control" maxlength="15" name="cpf" id="cpf">
-        <div class="invalid-feedback">
-          CPF inválido.
+            </ul>
+            <div class="d-flex justify-content-center align-items-center " style="display:none;">
+                <div id="frete-loading" class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Calculando...</span>
+                </div>
+            </div>
         </div>
-        <div class="valid-feedback">
-          CPF válido.
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary" id="btn-save-cpf">Salvar</button>
-    </form>
+
+        <!--CPF-->
+        {% if not cliente.cpf %}
+
+        <h2 class="mb-4">Cadastro CPF</h2>
+        <form method="POST" id="form-cpf">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="cpf" class="form-label">CPF:</label>
+                <input type="text" class="form-control" maxlength="15" name="cpf" id="cpf">
+                <div class="invalid-feedback">
+                    CPF inválido.
+                </div>
+                <div class="valid-feedback">
+                    CPF válido.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btn-save-cpf">Salvar</button>
+        </form>
 
 
-    <script>
+        <script>
 
 
 
@@ -97,15 +104,16 @@
           window.location.reload();
         },
         error: function(xhr, status, error) {
-          console.error(error);
         }
       });
     });
   });
 
-</script>
 
-    <script>
+
+        </script>
+
+        <script>
 
 
 
@@ -116,7 +124,7 @@
 
   $cpfInput.on("input", function() {
     var cpf = $(this).val().replace(/\D/g, "");
-    console.log(cpf);
+
     // Verifica se o CPF é composto por onze dígitos
     if (cpf.length != 11 || !validateCPF(cpf)) {
       $(this).addClass("is-invalid");
@@ -159,145 +167,56 @@
     $(this).addClass("d-none");
   });
 });
-</script>
-
-    {% endif %}
-<!--FORMAS DE PAGAMENTO-->
-
-    <h2 class="mb-4">Formas de Pagamento</h2>
-    <form action="" method="POST">
-      {% csrf_token %}
-      <div class="form-check mb-0 d-flex align-items-center">
-        <input type="radio" name="metodo_pagamento" id="pagamento-mercadopago" value="MercadoPago"
-               class="form-check-input">
-        <label for="pagamento-mercadopago" class="form-check-label"><img
-                src="{% static 'imagens/mercado_pago_pagamentos.png' %}" alt="Descrição da imagem" width="180"></label>
-      </div>
-      <div class="form-check mb-0 d-flex align-items-center">
-        <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="Pix" class="form-check-input">
-        <label for="pagamento-pix" class="form-check-label"><img
-                src="{% static 'imagens/logo-pix-png-1024x1024.png' %}" alt="Descrição da imagem" width="180"></label>
-      </div>
-      <div class="form-check mb-0 d-flex align-items-center">
-        <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="Deposito" class="form-check-input">
-        <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
-      </div>
-
-      <button id="ir-para-meios-de-pagamento" class="btn btn-danger my-2">Fechar Pedido</button>
-    </form>
-  </div>
 
 
-  <!--FIM   FORMAS DE PAGAMENTO-->
+        </script>
 
-  <div id="tabela_pedido" class="table-responsive col-12 col-md-6">
+        {% endif %}
+        <!--FORMAS DE PAGAMENTO-->
 
-  <h3 class="mb-4">Observação</h3>
-<textarea name="observacao" class="form-control mb-3" rows="3"></textarea>
+        <h2 class="mb-4">Formas de Pagamento</h2>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="form-check mb-0 d-flex align-items-center">
+                <input type="radio" name="metodo_pagamento" id="pagamento-mercadopago" value="MercadoPago"
+                       class="form-check-input">
+                <label for="pagamento-mercadopago" class="form-check-label"><img
+                        src="{% static 'imagens/mercado_pago_pagamentos.png' %}" alt="Descrição da imagem" width="180"></label>
+            </div>
+            <div class="form-check mb-0 d-flex align-items-center">
+                <input type="radio" name="metodo_pagamento" id="pagamento-pix" value="Pix" class="form-check-input">
+                <label for="pagamento-pix" class="form-check-label"><img
+                        src="{% static 'imagens/logo-pix-png-1024x1024.png' %}" alt="Descrição da imagem"
+                        width="180"></label>
+            </div>
+            <div class="form-check mb-0 d-flex align-items-center">
+                <input type="radio" name="metodo_pagamento" id="pagamento-deposito" value="Deposito"
+                       class="form-check-input">
+                <label for="pagamento-deposito" class="form-check-label">Depósito Bancário</label>
+            </div>
 
-
-  <h3>Detalhes do Pedido</h3>
-
-<script>
-function fecharAlerta(id) {
-  $('#alert-container-erro-' + id).hide();
-}
-</script>
-
-    {% for item in itens %}
-
-    <div id="alert-container-erro-{{ item.id }}" style="display: none;">
-      <div id="alert-erro-{{ item.id }}" class="alert alert-danger alert-dismissible fade show" role="alert">
-      </div>
+            <button id="ir-para-meios-de-pagamento" class="btn btn-danger my-2">Fechar Pedido</button>
+        </form>
     </div>
-    {% endfor %}
-  <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-  <table class="table table-sm">
-
-    <thead>
-      <tr>
-        <th class="w-50">Produto</th>
-        <th class="text-center">Quant.</th>
-        <th class="text-center">Preço unitário</th>
-        <th class="text-center">Preço total</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in itens %}
-      <tr id="linha-{{ item.id }}">
-        <td class="w-50">{% if item.variation %}  {{ item.variation.name }} {% else %}  {{ item.product.name }}  {% endif %}</td>
-        <td class="text-center">{{ item.quantity }}</td>
-        <td>R${%if item.variation %}
-                {% if item.variation.verifica_promocao %}
-                <del>{{ item.variation.price}}</del> - R${{ item.variation.preco_ou_valor_promocional }}
-                      {% else %}{{ item.variation.preco_ou_valor_promocional }}
-                {%endif%}
-            {% else %}
-                {% if item.product.verifica_promocao %}
-                <del>{{ item.product.price}}</del> - R${{ item.product.preco_ou_valor_promocional }}
-                {% else %}{{ item.product.preco_ou_valor_promocional }}{% endif %}{% endif %}</td>
-        <td class="text-center">R$ {{ item.total_price }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-    <tfoot>
-      <tr>
-        <th colspan="3">Subtotal:</th>
-        <td id="subtotal">R$ {{ subtotal }}</td>
-      </tr>
-      <tr>
-        <th colspan="3">Frete:</th>
-        <td id="frete">R$ 0.00</td>
-      </tr>
-      {% if cart.cupom %}
-      <tr>
-        <th colspan="3">Desconto:</th>
-        <td id="total-com-desconto">R$ {{ desconto }}</td>
-      </tr>
-      {% endif %}
-      <tr>
-        <th colspan="3">Total:</th>
-        <td id="total-com-frete">R$ {{ total }} </td>
-      </tr>
 
 
-
-    </tfoot>
-  </table>
+    <!--FIM   FORMAS DE PAGAMENTO-->
+    <div id="detalhes_pedido_checkout_html" class=" col-12 col-md-6">
+    {% include 'partials/_detalhes_pedido_checkout.html' %}
     </div>
-    {% if cart.cupom %}
-  <div class="mt-4">
 
-    <p class="mb-1"><strong>Cupom:</strong> {{ cart.cupom }}</p>
-    <button id="remover-cupom-btn" class="btn btn-danger">Remover Cupom</button>
-  </div>
-{% else %}
-  <div class="mt-4">
-    <form id="cupom-form" method="POST">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="id_codigo_cupom">Código do Cupom</label>
-        <input type="text" class="form-control" id="id_codigo_cupom" name="codigo_cupom">
-      </div>
-      <button type="submit" class="btn btn-primary">Aplicar Cupom</button>
-    </form>
-  </div>
-{% endif %}
-</div>
 </div>
 
 <div class="col-12">
-  <div class="text-center mt-4">
-    <div class="d-inline-block">
-      <a href="{% url 'cart:carrinho' %}" class="btn btn-dark">Voltar Carrinho</a>
+    <div class="text-center mt-4">
+        <div class="d-inline-block">
+            <a href="{% url 'cart:carrinho' %}" class="btn btn-dark">Voltar Carrinho</a>
+        </div>
+        <div class="d-inline-block ml-3">
+            <a href="{% url 'home' %}" class="btn btn-dark">Voltar para Home</a>
+        </div>
     </div>
-    <div class="d-inline-block ml-3">
-      <a href="{% url 'home' %}" class="btn btn-dark">Voltar para Home</a>
-    </div>
-  </div>
 </div>
-
-
 
 
 <script>
@@ -308,13 +227,11 @@ $('#retry-frete').click(function() {
     });
 
 
+
 </script>
 
 
-
-
-
-    <script>
+<script>
 
 
 
@@ -365,9 +282,52 @@ $(document).ready(function() {
 
 
 
+
+    function atualizarValorFrete() {
+    var valorFrete = 0;
+    var freteSelecionado = $('input[type=radio][name=frete]:checked').val();
+
+
+    var matchSedex = $('#valor-sedex').text().match(/\d+\.\d+/);
+    var matchPac = $('#valor-pac').text().match(/\d+\.\d+/);
+
+
+
+    if (freteSelecionado === 'sedex' && matchSedex) {
+        valorFrete = parseFloat(matchSedex[0]);
+    } else if (freteSelecionado === 'pac' && matchPac) {
+        valorFrete = parseFloat(matchPac[0]);
+    }
+
+    $('#frete').text('R$ ' + valorFrete.toFixed(2));
+
+    var valor = "{{ total }}";
+    var total = valor.replace(",", ".");
+    var totalComFrete = parseFloat(total) + valorFrete;
+    $('#total-com-frete').text('R$ ' + totalComFrete.toFixed(2));
+}
+
+    // Atualizar o valor do frete ao alterar a seleção
+    $('input[type=radio][name=frete]').on('change', function() {
+        atualizarValorFrete();
+        localStorage.setItem('freteSelecionado', $(this).val());
+    });
+
+    // Recuperar a seleção do frete do localStorage e aplicá-la
+
+function atualizarValorFreteantigo() {
+    var freteArmazenado = localStorage.getItem('freteSelecionado');
+    var freteSelecionado = $('input[type=radio][name=frete]:checked').val();
+
+    if (freteArmazenado) {
+    $('input[type=radio][name=frete][value="' + freteArmazenado + '"]').prop('checked', true);
+    atualizarValorFrete();
+}
+}
+
+
 $(document).ready(function () {
-<!--    desmarca o frete caso a pagina seja reiniciada-->
-    $('input[type=radio][name=frete]').prop('checked', false);
+
 
     var cep = '{{ endereco_primario.cep }}'; // coloque aqui o CEP a ser cotado
     $('#frete-loading').show();
@@ -383,16 +343,39 @@ $(document).ready(function () {
         dataType: 'json',
         success: function (data) {
             $('#frete-loading').hide();
+            // Declare a variável fora do loop
+            var desconto_frete = 0;
+            var tipo_de_frete_gratis = '';
+            // Use lógica do Django template para definir o valor de desconto_frete
+            {% if cart.cupom.desconto_percentual_frete %}
+                desconto_frete = {{ cart.cupom.desconto_percentual_frete }};
+                tipo_de_frete_gratis = '{{ cart.cupom.tipo_de_frete_gratis }}';
+
+            {% endif %}
 
             if (data.results) {
                 for (var i = 0; i < data.results.length; i++) {
                     var result = data.results[i];
+
+                    var valorComDesconto = result.valor * (1 - (desconto_frete / 100));
+
                     if (result.codigo == '03220') {
+                        if(tipo_de_frete_gratis == 'sedex'){
+                        $('#valor-sedex').text('R$' + valorComDesconto +  ' - ' +result.prazodeentrega);
+                        }
+                        else{
                         $('#valor-sedex').text('R$' + result.valor +  ' - ' +result.prazodeentrega);
+                        }
                         $('#mostra-frete-sedex').show();
                     } else if (result.codigo == '03298') {
+                        if(tipo_de_frete_gratis == 'pac'){
+                        $('#valor-pac').text('R$' + valorComDesconto +  ' - ' +result.prazodeentrega);
+                        }
+                        else{
                         $('#valor-pac').text('R$' + result.valor + ' - ' +result.prazodeentrega);
+                        }
                         $('#mostra-frete-pac').show();
+                        atualizarValorFreteantigo();
                     }
                 }
             } else {
@@ -411,30 +394,7 @@ $(document).ready(function () {
 });
 
 
-$(document).ready(function () {
-  // ...
 
-  $('input[type=radio][name=frete]').on('change', function() {
-    var valorFrete = 0;
-    if (this.value === 'sedex') {
-      valorFrete = parseFloat($('#valor-sedex').text().match(/\d+\.\d+/)[0]);
-    } else if (this.value === 'pac') {
-      valorFrete = parseFloat($('#valor-pac').text().match(/\d+\.\d+/)[0]);
-    }
-    $('#frete').text('R$ ' + valorFrete.toFixed(2));
-    var valor = "{{ total }}" ;
-<!--    var desconto =  "{{ total_com_desconto }}";-->
-<!--    var desconto = desconto.replace(",", ".");-->
-<!--    console.log("desconto", desconto)-->
-    var total = valor.replace(",", ".");
-    console.log("total", total)
-<!--    console.log("total - desconto", parseFloat(total) + parseFloat(desconto))-->
-
-
-    var totalComFrete = parseFloat(total) + valorFrete ;
-    $('#total-com-frete').text('R$ ' + totalComFrete.toFixed(2));
-  });
-});
 
 
 
@@ -442,6 +402,7 @@ $(document).ready(function() {
   // Adiciona um evento de clique no botão "Ir para meios de pagamento"
   $('#ir-para-meios-de-pagamento').on('click', function() {
     event.preventDefault();
+
 
 
     // Verifique se o usuário possui um CPF cadastrado
@@ -463,7 +424,6 @@ $(document).ready(function() {
       alert('Selecione uma forma de pagamento.');
       return false;
       }
-
 
 
 <!--&lt;!&ndash;TESTE INICIO&ndash;&gt;-->
@@ -493,7 +453,6 @@ $(document).ready(function() {
 <!--      alert('estoque insuficiente.');-->
 <!--      estoqueInsuficiente = true;-->
 
-<!--      console.log('estoqueInsuficiente:', estoqueInsuficiente)-->
 <!--      $('#linha-{{ item.id }}' ).addClass('linha-estoque-insuficiente');-->
 <!--      return false ;-->
 <!-- // Exibe uma mensagem de erro-->
@@ -517,10 +476,8 @@ $(document).ready(function() {
 <!--    }-->
 <!--  });-->
 <!--{% endif %}-->
-<!--console.log('estoqueInsuficiente final repeticao:', estoqueInsuficiente);-->
 <!--if (estoqueInsuficiente) {-->
 <!--alert('estoque insuficiente final.');-->
-<!--console.log('estoqueInsuficiente final:', estoqueInsuficiente);-->
 <!--    return false ;-->
 <!--    }-->
 <!--{% endfor %}-->
@@ -528,22 +485,18 @@ $(document).ready(function() {
 
 <!--if (estoqueInsuficiente) {-->
 <!--alert('estoque insuficiente final.');-->
-<!--console.log('estoqueInsuficiente final:', estoqueInsuficiente);-->
 <!--    return false ;-->
 <!--    }-->
 <!--else { alert('estoque suficiente final.');-->
-<!-- console.log('estoqueInsuficiente:', estoqueInsuficiente); };-->
-
-
 
 
 <!--    alert('CRIANDO PEDIDO.');-->
     // Obtém o valor do subtotal
 <!--    var valor_subtotal = '#subtotal';-->
 <!--    var valor_subtotal = valor.replace(",", ".");-->
-<!--    console.log(total)-->
+
     var subtotal = parseFloat($('#subtotal').text().replace('R$ ', '').replace(',', '.'));
-    console.log(subtotal)
+
 
     // Obtém o valor do desconto
      var desconto = 0;
@@ -556,6 +509,9 @@ $(document).ready(function() {
 
     // Obtém o valor total com o frete
     var total = parseFloat($('#total-com-frete').text().replace('R$ ', ''));
+
+    // Obtém o Estado do endereco selecionado
+    var estado_frete = $('#estadoId').text();
 
     // Obtém o método de pagamento selecionado
     var metodoPagamento = $('input[name=metodo_pagamento]:checked').val();
@@ -572,6 +528,7 @@ $(document).ready(function() {
       url: '{% url "criar_pedido" %}',
       type: 'POST',
       data: {
+        'estado_frete':estado_frete,
         'desconto':desconto,
         'observacao' : observacao,
         'subtotal': subtotal,
@@ -598,7 +555,7 @@ $(document).ready(function() {
 
   else {
         $('#loading').hide();
-        alert('Erro ao criar o pedido. ' + data.error);
+        alert('Erro ao criar o pedido: \n' + data.error);
 
         $('#loading').hide();
         if (data.errors) {
@@ -624,11 +581,13 @@ $(document).ready(function() {
   });
 });
 
-    </script>
+
+</script>
 <style>
 .linha-estoque-insuficiente {
   background-color: #ffcccc;
 }
+
 </style>
 
 
@@ -655,6 +614,7 @@ $(document).ready(function() {
 
         // Código adicional, como redirecionar para a página de confirmação, etc.
     });
+
 </script>
 
 
@@ -664,15 +624,19 @@ $(document).ready(function() {
     $('#cupom-form').submit(function(event) {
       event.preventDefault();
       var subtotal = parseFloat($('#subtotal').text().replace('R$ ', '').replace(',', '.'));
-      console.log(subtotal);
+
       var codigo_cupom = $('#id_codigo_cupom').val();
-      console.log(codigo_cupom);
+      var estado_frete = $('#estadoId').text();
+      var frete_selecionado = $('input[name=frete]:checked').val();
+
       $.ajax({
         type: 'POST',
         url: '{% url "validar_cupom" %}',
         data: {
           codigo_cupom: codigo_cupom,
           'total_pedido': subtotal,
+          'estado_frete': estado_frete,
+          'frete_selecionado': frete_selecionado,
           'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(data) {
@@ -690,9 +654,10 @@ $(document).ready(function() {
       });
     });
   });
+
 </script>
 
-<!--remocer cupom-->
+<!--remover cupom-->
 
 <script>
     $(document).ready(function() {
@@ -714,7 +679,8 @@ $(document).ready(function() {
             });
         });
     });
+
 </script>
 
 
-    {% endblock %}
+{% endblock %}
