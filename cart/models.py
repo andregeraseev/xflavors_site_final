@@ -7,6 +7,10 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 from django.utils import timezone
+import logging
+
+# Configuração inicial para logs
+logger = logging.getLogger(__name__)
 
 
 class Cupom(models.Model):
@@ -211,7 +215,6 @@ class Cart(models.Model):
     # Produtos contidos no carrinho
     cart_items = models.ManyToManyField(Produto, through='CartItem')
     # variassoes contidos no carrinho
-    # todo
     variations = models.ManyToManyField(Variation, related_name='carts', blank=True)
     # Método que retorna ou cria o carrinho de um determinado usuário
     cupom = models.ForeignKey(Cupom, on_delete=models.SET_NULL, null=True, blank=True)
@@ -302,6 +305,80 @@ class Cart(models.Model):
                 total += item.quantity
         return total
 
+    def add_item(self, product, quantity=1, variation=None):
+        """
+        Adiciona um produto ou variação ao carrinho.
+        """
+        try:
+            # Verificar se o produto possui variações ou se uma variação específica foi fornecida
+            if variation:
+                # Verificar se a variação pertence ao produto
+                if variation.produto_pai != product:
+                    raise ValueError("A variação não pertence ao produto fornecido.")
+
+                # Verificar o estoque da variação
+                if not variation.tem_estoque_suficiente(quantity, self, self.user):
+                    existing_items = CartItem.objects.filter(cart=self, variation__materia_prima=variation.materia_prima)
+                    total_in_cart = sum(item.quantity * item.variation.gasto for item in existing_items)
+                    raise ValueError(f"Estoque insuficiente para a variação {variation.name}. estoque disponivel {variation.materia_prima.stock} {variation.materia_prima.unidade}, {total_in_cart}{variation.materia_prima.unidade} ja estao no seu carrinho")
+
+                # Adicionar ou atualizar o item do carrinho com a variação
+                cart_item, created = CartItem.objects.get_or_create(cart=self, product=product, variation=variation)
+            else:
+                # Verificar o estoque do produto
+                if not product.tem_estoque_suficiente(quantity, self, self.user):
+                    existing_items = CartItem.objects.filter(cart=self, product__stock=product.stock)
+                    total_in_cart = sum(item.quantity for item in existing_items)
+                    print('Total in',total_in_cart)
+                    pluralizar_unidade = "unidade" if product.stock == 1 else "unidades"
+
+                    if total_in_cart:
+                        raise ValueError(f"Estoque insuficiente para o produto {product.name}. estoque disponivel {product.stock} {pluralizar_unidade} e {total_in_cart}unidades ja estao no carrinho")
+                    else:
+                        raise ValueError(f"Estoque insuficiente para o produto {product.name}. estoque disponivel {product.stock} {pluralizar_unidade}.")
+
+                # Adicionar ou atualizar o item do carrinho com o produto
+                cart_item, created = CartItem.objects.get_or_create(cart=self, product=product)
+
+            # Atualizar a quantidade do item do carrinho
+            cart_item.quantity += quantity
+            cart_item.save()
+
+            return cart_item
+
+        except Exception as e:
+            logger.error(f"Erro ao adicionar item ao carrinho para o usuário {self.user.id}. Detalhes: {str(e)}")
+            raise e
+
+    def update_item(self, product_id, quantity, variation_id=None, fechamento=2):
+        try:
+            product = Produto.objects.get(id=product_id)
+            variation = Variation.objects.get(id=variation_id) if variation_id else None
+            quantity = int(quantity)
+            if variation:
+                if not variation.tem_estoque_suficiente(quantity, self, self.user, update=True):
+                    raise ValueError(f"Estoque insuficiente para a variação {variation.name}. Temos {variation.materia_prima.stock} {variation.materia_prima.unidade} disponiveis")
+
+                cart_item = CartItem.objects.get(cart=self, product=product, variation=variation)
+            else:
+                pluralizar_unidade = "unidade" if product.stock == 1 else "unidades"
+                if not product.tem_estoque_suficiente(quantity, self, self.user, update=True):
+                    raise ValueError(f"Estoque insuficiente para o produto {product.name}. Temos {product.stock} {pluralizar_unidade} disponiveis")
+
+                cart_item = CartItem.objects.get(cart=self, product=product)
+
+            cart_item.quantity = quantity
+            cart_item.save()
+            return True, 'Item atualizado com sucesso'
+
+        except Produto.DoesNotExist:
+            return False, 'Produto não encontrado'
+        except Variation.DoesNotExist:
+            return False, 'Variação não encontrada'
+        except CartItem.DoesNotExist:
+            return False, 'Item não encontrado no carrinho'
+        except ValueError as e:
+            return False, str(e)
 
     # Método que retorna a representação em string do carrinho
     def __str__(self):

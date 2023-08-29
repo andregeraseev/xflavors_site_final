@@ -179,6 +179,11 @@ def enviar_pedido_para_tiny(pedido):
             response_data = response.json()
             if response_data['retorno']['status'] == 'Erro':
                 # print(response_data['retorno']['registros'])
-                logger.error(f" Erro respose_data: {response_data['retorno']['registros']}")
+                logger.error(f" Erro respose_data: {response_data['retorno']['erros']}")
+                error = response_data['retorno']['erros']
+                error = error[0]
+                print('ERROR',error)
+                raise Exception(error)
+
     return False
 

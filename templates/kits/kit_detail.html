@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %}Receita: {{ kit.name }}{% endblock %}
 {% load custom_filters %}
 {% block content %}
 
@@ -148,6 +149,8 @@ $(function() {
 
 
       } else {
+        // Recarrega o ícone do carrinho
+        $('#cart-icon').load(document.URL + ' #cart-icon');
         // Exibe uma mensagem de erro
         $('#available-stock').text(data.stock);
         $('#alert-erro').show();
@@ -162,6 +165,8 @@ $(function() {
       }
     },
       error: function(response) {
+        // Recarrega o ícone do carrinho
+        $('#cart-icon').load(document.URL + '#cart-icon');
         console.log(response);
         // Manipule o erro aqui, se necessário
       }

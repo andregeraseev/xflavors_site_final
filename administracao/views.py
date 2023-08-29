@@ -81,18 +81,7 @@ def dashboard_adm(request):
     year = request.GET.get('year', today.year)
     month = request.GET.get('month', today.month)
 
-    try:
-        start_date = datetime.strptime(f"{year}-{month}-01", "%Y-%m-%d").date()
-        end_date = (start_date + timedelta(days=30)).replace(day=1) - timedelta(days=1)
-    except ValueError:
-        start_date = today.replace(day=1)
-        end_date = today
 
-
-
-    pedidos = Pedido.objects.filter(data_pedido__year=year, data_pedido__month=month).annotate(
-        data_pedido_annotate=TruncDay('data_pedido')
-    ).values('data_pedido_annotate').annotate(total=Sum('total'))
 
     pedidos = Pedido.objects.filter()
 
@@ -144,10 +133,15 @@ def enviar_tiny(request):
         pedido_id = request.POST.get("pedido_id")
         pedido = Pedido.objects.get(id=pedido_id)
 
-        enviar_pedido_para_tiny(pedido)
-        return HttpResponse("OK")
+        try:
+            enviar_pedido_para_tiny(pedido)
+            return JsonResponse({'success': True, 'message': f'Status do pedido {pedido_id} alterado para Pago', "status": "OK",})
+
+        except Exception as e:
+            print('erro ao enviar',e)
+            return JsonResponse({'success': False, 'erro': str(e)})
     else:
-        return HttpResponse("Método não permitido")
+        return JsonResponse({'success': False, 'erro': "Metodo não permetido"})
 
 
 @staff_member_required
@@ -161,12 +155,16 @@ def atualizar_status(request):
         pedido.atualizar_status(novo_status)
 
         if pedido.status=='Pago':
-            enviar_pedido_para_tiny(pedido)
+            try:
+                enviar_pedido_para_tiny(pedido)
+                return JsonResponse({'success': True, 'message':'OK', "status": "OK",})
+            except Exception as e:
+                return JsonResponse({'success': False, 'erro': str(e)})
 
 
-        return HttpResponse("OK")
     else:
-        return HttpResponse("Método não permitido")
+        return JsonResponse({'success': False, 'erro': "Metodo não permetido"})
+
 
 @staff_member_required
 def adicionar_rastreamento(request):

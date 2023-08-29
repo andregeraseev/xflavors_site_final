@@ -96,11 +96,11 @@
                 </td>
 
                 <!-- ID do pedido -->
-                <td> <strong style="font-size: 16px;">{{ pedido.id }}</strong>
+                <td> <strong style="font-size: 16px;">#{{ pedido.id }}</strong>
                 </td>
 
                 <td>{{ pedido.user }}<br>
-                    <span style="font-size: 8px;"><a href="https://api.whatsapp.com/send?phone={{ pedido.user.cliente.celular }}&text=Olá, {{ pedido.user.username }}! Andre da Xflavors aqui, estou entrando em contato para falar sobre o sobre o pedido {{ pedido.id }}"
+                    <span style="font-size: 8px;"><a href="https://api.whatsapp.com/send?phone=55{{ pedido.user.cliente.celular }}&text=Olá, {{ pedido.user.username }}! Andre da Xflavors aqui, estou entrando em contato para falar sobre o sobre o pedido {{ pedido.id }}"
                        target="_blank">
                         <i class="fab fa-whatsapp fa-lg"></i>
                     </a></span>
@@ -527,8 +527,13 @@
         "novo_status": "Pago",
         csrfmiddlewaretoken: '{{ csrf_token }}'
       },
-      success: function(response) {
-        alert("Status do pedido atualizado com sucesso!");
+      success: function(data) {
+      if (data.success) {
+        alert(data.message);
+        }
+      else {
+      alert(data.erro)
+      };
         $('#loading').hide();
         window.location.reload();
 
@@ -555,8 +560,14 @@
         "novo_status": "Pago",
         csrfmiddlewaretoken: '{{ csrf_token }}'
       },
-      success: function(response) {
-        alert("Enviado para o tiny!");
+      success: function(data) {
+
+      if (data.success){
+        alert(data.message);
+        }
+      else {
+        alert(data.error)
+        };
         $('#loading').hide();
         window.location.reload();
 

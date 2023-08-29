@@ -2,8 +2,11 @@
 from django.urls import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
-
 from clientes.models import Cliente
+import logging
+
+# Configuração inicial para logs
+logger = logging.getLogger(__name__)
 
 
 class Category(models.Model):
@@ -105,6 +108,29 @@ class Produto(models.Model):
         else:
             return self.stock
 
+    def tem_estoque_suficiente(self, quantity, cart, user, update=False):
+        from cart.models import CartItem
+
+        # Verifique se o carrinho pertence ao usuário
+        if cart.user != user:
+            logger.warning(f"Usuário {user} tentou acessar o carrinho de outro usuário {cart.user}")
+            raise ValueError("O carrinho não pertence ao usuário atual.")
+
+        try:
+            existing_items = CartItem.objects.filter(cart=cart, product=self)
+            total_in_cart = sum(item.quantity for item in existing_items)
+            if update == True:
+                total_in_cart = 0
+            if quantity + total_in_cart  > self.stock:
+                logger.info(f"Estoque insuficiente para o produto {self} com id{self.id} para o usuário {user}")
+                return False
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"Erro ao verificar o estoque do produto {self} com id{self.id} para o usuário {user}. Detalhes: {str(e)}")
+            raise e
+
     @property
     def verifica_promocao(self):
         if self.preco_promocional and self.promocao_ativa == True:
@@ -159,6 +185,34 @@ class Variation(models.Model):
             return self.preco_promocional
         else:
             return self.price
+
+    def tem_estoque_suficiente(self, quantity, cart, user, update=False):
+        from cart.models import CartItem
+
+        # Verifique se o carrinho pertence ao usuário
+        if cart.user != user:
+            logger.warning(f"Usuário {user} tentou acessar o carrinho de outro usuário {cart.user}")
+            raise ValueError("O carrinho não pertence ao usuário atual.")
+
+        try:
+            total_required = quantity * self.gasto
+            existing_items = CartItem.objects.filter(cart=cart, variation__materia_prima=self.materia_prima)
+            total_in_cart = sum(item.quantity * item.variation.gasto for item in existing_items)
+            print("TPADADE",update)
+            if update == True:
+                total_in_cart -= (cart.cartitem_set.get(variation=self).quantity) * self.gasto
+
+            if total_required + total_in_cart > self.materia_prima.stock:
+                print("TOTAL2", total_in_cart)
+                print(total_required)
+                logger.info(f"Estoque insuficiente para a variação {self} com id{self.id} para o usuário {user}")
+                return False
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"Erro ao verificar o estoque da variação {self} com id{self.id} para o usuário {user}. Detalhes: {str(e)}")
+            raise e
 
 
 class Kit(models.Model):

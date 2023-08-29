@@ -6,13 +6,13 @@ from clientes import views
 from frontend.views import termos, envio
 from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search, pagina_search, add_to_favorites, receitas, adicionar_kit_ao_carrinho, kit_detail
 from .views import index, error_view
-from cart.views import add_to_cart_carrocel,verifica_qunatidade_carrinho_varivel
+from cart.views import add_to_cart_carrocel#,verifica_qunatidade_carrinho_varivel
 from tiny_erp.webhook import tiny_webhook
 from tiny_erp.webhook_estoque import tiny_webhook_stock_update
 from tiny_erp.webhook_rastreio import tiny_rastreio
 from tiny_erp.webhook_precos import tiny_webhook_price_update
 from pedidos.views import checkout,  atualizar_endereco_entrega, editar_endereco, cotacao_frete_correios,criar_pedido,\
-    pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,verifica_carrinho, success,failure,pending, validar_cupom, remover_cupom,validar_cupom_finalizando_pedido
+    pagina_pagamento, visualizar_pedidos,detalhes_pedido,paga_pix,payment_success,success,failure,pending, validar_cupom, remover_cupom,validar_cupom_finalizando_pedido #verfica_carrinho
 from mercado_pago.mercado_livre_weebhook import mercado_pago_webhook
 from Importador.clientes import ImportClientesView
 from django.urls import path, include
@@ -67,8 +67,8 @@ urlpatterns = [
     path('paga_pix/', paga_pix, name='paga_pix'),
     path('pagamento/sucesso/<int:pedido_id>', payment_success, name='payment_success'),
     path('import_products/', import_products_view, name='import_products'),
-    path('verificar_quantidade_carrinho/', verifica_qunatidade_carrinho_varivel, name='verificar_quantidade_carrinho'),
-    path('verifica_carrinho/', verifica_carrinho, name='verifica_carrinho'),
+    # path('verificar_quantidade_carrinho/', verifica_qunatidade_carrinho_varivel, name='verificar_quantidade_carrinho'),
+    # path('verifica_carrinho/', verifica_carrinho, name='verifica_carrinho'),
 
     # MERCADO PAGO
 

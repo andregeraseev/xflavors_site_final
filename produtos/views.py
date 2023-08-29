@@ -1,24 +1,16 @@
 from django.db.models import Count
-
 from avise.models import AvisoEstoque
 from cart.models import Cart, CartItem
 from django.shortcuts import render, get_object_or_404
-
-from cart.views import verifica_estoque_produto_com_variacao, verifica_qunatidade_carrinho_varivel, cria_item_carrinho
+#from cart.views import cria_item_carrinho ,verifica_qunatidade_carrinho_varivel, verifica_estoque_produto_com_variacao
 from clientes.models import Cliente
 from pedidos.models import PedidoItem, Pedido
 from .models import Category, Subcategory, Produto, Favorito, Kit, Variation
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import redirect
-
 from tiny_erp.tiny_api import import_products
-
-
 from tiny_erp.tiny_api import import_products
-
-
-
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 
@@ -340,19 +332,23 @@ def adicionar_kit_ao_carrinho(request):
                 materia_prima_id = variation.materia_prima.id
                 quantity = int(quantity)
                 product = variation.produto_pai
-                try:
-                    verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
-                                                         materia_prima_id, product)
-                except ValueError as e:
-                    return JsonResponse({'success': False, 'error': str(e)})
-
+                # try:
+                #     verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+                #                                          materia_prima_id, product)
                 # except ValueError as e:
                 #     return JsonResponse({'success': False, 'error': str(e)})
-                quantity = int(quantity)
-                if quantity <= 0:
-                    continue
+                #
+                # # except ValueError as e:
+                # #     return JsonResponse({'success': False, 'error': str(e)})
+                # quantity = int(quantity)
+                # if quantity <= 0:
+                #     continue
                 # print(quantity,'QUANTIDE')
-                cria_item_carrinho(cart, product, variation, quantity)
+                # cria_item_carrinho(cart, product, variation, quantity)
+                try:
+                    cart.add_item(product, quantity, variation)
+                except ValueError as e:
+                    return JsonResponse({'success': False, 'error': str(e)})
 
 
         data = {"success": True, "message": "Kit adicionado ao carrinho com sucesso!"}

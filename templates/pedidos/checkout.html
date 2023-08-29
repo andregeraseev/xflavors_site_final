@@ -426,74 +426,7 @@ $(document).ready(function() {
       }
 
 
-<!--&lt;!&ndash;TESTE INICIO&ndash;&gt;-->
 
-<!--var estoqueInsuficiente = false;-->
-
-
-<!--{% for item in itens %}-->
-<!--  {% if item.variation %}-->
-<!--    var item = {{ item.id }};-->
-
-<!--$.ajax({-->
-<!--    type: 'POST',-->
-<!--    url: '{% url "verifica_carrinho" %}',-->
-<!--    data: {-->
-
-<!--      'item': item,-->
-
-<!--      'csrfmiddlewaretoken': '{{ csrf_token }}'-->
-<!--    },-->
-<!--    dataType: 'json',-->
-<!--    success: function(data) {-->
-<!--      if (data.success) {-->
-<!--      alert('estoque Suficiente.');-->
-
-<!--      } else {-->
-<!--      alert('estoque insuficiente.');-->
-<!--      estoqueInsuficiente = true;-->
-
-<!--      $('#linha-{{ item.id }}' ).addClass('linha-estoque-insuficiente');-->
-<!--      return false ;-->
-<!-- // Exibe uma mensagem de erro-->
-
-<!--        $('#alert-erro-{{ item.id }}').show();-->
-<!--        $('#alert-container-erro-{{ item.id }}').show();-->
-<!--        $('#alert-erro-{{ item.id }}').html(data.error + '<button type="button" class="close" data-dismiss="alert" aria-label="Fechar" onclick="fecharAlerta(\'{{ item.id }}\')">' +-->
-<!--  '<span aria-hidden="true">&times;</span>' +-->
-<!--'</button>');-->
-
-<!--        // Oculta a mensagem de erro após 5 segundos-->
-<!--        setTimeout(function() {-->
-<!--          $('#alert-erro-{{ item.id }}').hide();-->
-<!--          $('#alert-container-erro-{{ item.id }}').hide();-->
-<!--        }, 20000);-->
-
-<!--      }-->
-<!--    },-->
-<!--    error: function(data) {-->
-
-<!--    }-->
-<!--  });-->
-<!--{% endif %}-->
-<!--if (estoqueInsuficiente) {-->
-<!--alert('estoque insuficiente final.');-->
-<!--    return false ;-->
-<!--    }-->
-<!--{% endfor %}-->
-
-
-<!--if (estoqueInsuficiente) {-->
-<!--alert('estoque insuficiente final.');-->
-<!--    return false ;-->
-<!--    }-->
-<!--else { alert('estoque suficiente final.');-->
-
-
-<!--    alert('CRIANDO PEDIDO.');-->
-    // Obtém o valor do subtotal
-<!--    var valor_subtotal = '#subtotal';-->
-<!--    var valor_subtotal = valor.replace(",", ".");-->
 
     var subtotal = parseFloat($('#subtotal').text().replace('R$ ', '').replace(',', '.'));
 

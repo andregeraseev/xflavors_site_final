@@ -147,7 +147,7 @@ $(document).ready(function() {
 
         $('#alert_success').show();
         $('#alert_container_success').show();
-        $('#alert_success').html(data.mensagem);
+        $('#alert_success').html(data.message);
 
         // Oculta a mensagem de sucesso após 5 segundos
         setTimeout(function() {
@@ -156,7 +156,7 @@ $(document).ready(function() {
         }, 5000);
         } else {
           // Exibe uma mensagem de erro
-          alert(data.error)
+          alert(data.message)
 <!--          $('#available-stock').text(data.stock);-->
 <!--          $('#alert-erro').show();-->
 <!--          $('#alert-container-erro').show();-->

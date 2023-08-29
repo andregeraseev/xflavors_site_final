@@ -2,7 +2,7 @@ import os
 from enviadores.email import enviar_email_pedido_criado
 import mercadopago
 from django.contrib import messages
-from cart.views import verifica_qunatidade_carrinho_varivel
+# from cart.views import verifica_qunatidade_carrinho_varivel
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponse
@@ -63,6 +63,7 @@ def validar_cupom(request):
     frete_selecionado = request.POST.get('frete_selecionado')
     estado_entrega = request.POST.get('estado_frete')
     subtotal = request.POST.get('subtotal')
+
     codigo_cupom = codigo_cupom.upper()
     email = user.email
     print(email)
@@ -440,46 +441,46 @@ def cotacao_frete_correios(request):
         logger.error('Erro ao cotar frete dos Correios para o usuário %s. Erro: %s', request.user, str(e))
         return JsonResponse({'error': 'Tivemos um erro ao cotar o frete. Por favor, recarregue o frete.'})
 
-
-def verifica_carrinho(request):
-    """
-    Verifica a disponibilidade de itens no carrinho em relação ao estoque de matéria-prima.
-    Parameters:
-    - request: objeto HttpRequest contendo os detalhes do item do carrinho a ser verificado.
-    Returns:
-    - JsonResponse indicando o sucesso ou falha da verificação.
-    """
-    logger.info('Iniciando a verificação do carrinho para o usuário %s', request.user)
-    try:
-        cart = Cart.objects.get(user=request.user)
-    except Cart.DoesNotExist:
-        logger.error('Erro ao obter o carrinho do usuário %s', request.user)
-        return JsonResponse({'success': False, 'error': 'Carrinho não encontrado.'})
-
-    if request.method == 'POST':
-        item_id = int(request.POST.get('item'))
-        logger.debug('Verificando item com ID: %s', item_id)
-        try:
-            item = CartItem.objects.get(id=item_id, cart=cart)
-            variation = item.variation
-            quantity = item.quantity
-            quantidade_materia_prima = item.variation.materia_prima.stock
-            materia_prima_id = item.variation.materia_prima.id
-            product = item.product
-            fechamento = 2
-            try:
-                verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
-                                                     materia_prima_id, product, fechamento)
-                return JsonResponse({'success': True})
-            except ValueError as e:
-                logger.warning('Erro ao verificar a quantidade do carrinho: %s', str(e))
-                return JsonResponse({'success': False, 'error': str(e)})
-        except CartItem.DoesNotExist:
-            logger.error('Item com ID %s não encontrado no carrinho do usuário %s', item_id, request.user)
-            return JsonResponse({'success': False})
-    else:
-        logger.warning('Método não permitido para a verificação do carrinho')
-        return JsonResponse({'success': False, 'error': 'Método não permitido.'})
+#
+# def verifica_carrinho(request):
+#     """
+#     Verifica a disponibilidade de itens no carrinho em relação ao estoque de matéria-prima.
+#     Parameters:
+#     - request: objeto HttpRequest contendo os detalhes do item do carrinho a ser verificado.
+#     Returns:
+#     - JsonResponse indicando o sucesso ou falha da verificação.
+#     """
+#     logger.info('Iniciando a verificação do carrinho para o usuário %s', request.user)
+#     try:
+#         cart = Cart.objects.get(user=request.user)
+#     except Cart.DoesNotExist:
+#         logger.error('Erro ao obter o carrinho do usuário %s', request.user)
+#         return JsonResponse({'success': False, 'error': 'Carrinho não encontrado.'})
+#
+#     if request.method == 'POST':
+#         item_id = int(request.POST.get('item'))
+#         logger.debug('Verificando item com ID: %s', item_id)
+#         try:
+#             item = CartItem.objects.get(id=item_id, cart=cart)
+#             variation = item.variation
+#             quantity = item.quantity
+#             quantidade_materia_prima = item.variation.materia_prima.stock
+#             materia_prima_id = item.variation.materia_prima.id
+#             product = item.product
+#             fechamento = 2
+#             try:
+#                 verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
+#                                                      materia_prima_id, product, fechamento)
+#                 return JsonResponse({'success': True})
+#             except ValueError as e:
+#                 logger.warning('Erro ao verificar a quantidade do carrinho: %s', str(e))
+#                 return JsonResponse({'success': False, 'error': str(e)})
+#         except CartItem.DoesNotExist:
+#             logger.error('Item com ID %s não encontrado no carrinho do usuário %s', item_id, request.user)
+#             return JsonResponse({'success': False})
+#     else:
+#         logger.warning('Método não permitido para a verificação do carrinho')
+#         return JsonResponse({'success': False, 'error': 'Método não permitido.'})
 
 
 def verifica_carrinho_2(item_id, user):
@@ -501,19 +502,18 @@ def verifica_carrinho_2(item_id, user):
 
         if item.variation:
             variation = item.variation
-            quantidade_materia_prima = item.variation.materia_prima.stock
-            materia_prima_id = item.variation.materia_prima.id
+            quantity = item.quantity
+            if not variation.tem_estoque_suficiente(quantity, cart, user, update=True):
+                raise ValueError(
+                    f"Desculpe, não há estoque suficiente do produto {variation.name}. Somente {variation.materia_prima.stock} {variation.materia_prima.unidade} disponíveis.")
+
         else:
-            variation = None
-            quantidade_materia_prima = item.product.stock
-            materia_prima_id = item.product.id
+            quantity = item.quantity
+            product = item.product
+            if not product.tem_estoque_suficiente(quantity, cart, user, update=True):
+                raise ValueError(
+                    f"Desculpe, não há estoque suficiente do produto {product.name}. Somente {product.stock} unidades disponíveis.")
 
-        quantity = item.quantity
-        product = item.product
-
-        # Verificar a disponibilidade do item no carrinho
-        verifica_qunatidade_carrinho_varivel(quantity, quantidade_materia_prima, variation, cart,
-                                             materia_prima_id, product, fechamento=2, update=True)
 
     except CartItem.DoesNotExist:
         logger.error(f"Item com ID {item_id} não encontrado no carrinho do usuário {user.username}.")
