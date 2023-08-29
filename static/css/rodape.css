@@ -1,0 +1,29 @@
+
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    main {
+        font-size: 14px;
+        flex-grow: 1; /* o conteúdo principal ocupa
+        padding: 20px;
+    }
+
+    footer {
+        margin-top: auto; /* empurra o rodapé para o final da página */
+        height: 50px; /* define a altura do seu footer */
+    }
+
+    footer a {
+        color: #ffffff;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
+    }

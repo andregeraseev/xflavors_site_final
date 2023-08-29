@@ -2,57 +2,41 @@
 {% load static %}
 <html lang="pt">
 <head>
-    <title>{% block title %}Home{% endblock %} | Xflavors</title>
+
     <!-- Favicon -->
     <link rel="icon" href="{% static 'imagens/18LogoXflavors.png' %}" type="image/x-icon">
+     <!-- Metadados -->
+    <meta charset="UTF-8">
+    <title>{% block title %}Home{% endblock %} | Xflavors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+    <!-- Estilos Externos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-{% if user.is_authenticated %}
-    <script type="text/javascript">
-        (function() {
-            window.sib = {
-                equeue: [],
-                client_key: "ggrbiekqd5csdp05a93p0e21"
-            };
-            window.sib.email_id = '{{ user.email }}'; // Adiciona o email do usuário
 
-    window.sendinblue = {};
+    <!-- Estilos internos -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/rodape.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading.css' %}">
 
-    for (var j = ['track', 'identify', 'trackLink', 'page'], i = 0; i < j.length; i++) {
-    (function(k) {
-        window.sendinblue[k] = function() {
-            var arg = Array.prototype.slice.call(arguments);
-            (window.sib[k] || function() {
-                    var t = {};
-                    t[k] = arg;
-                    window.sib.equeue.push(t);
-                })(arg[0], arg[1], arg[2], arg[3]);
-            };
-        })(j[i]);
-    }
-    var n = document.createElement("script"),
-        i = document.getElementsByTagName("script")[0];
+<!-- Scripts para autenticação -->
 
-    n.type = "text/javascript", n.id = "sendinblue-js", n.async = !0, n.src = "https://sibautomation.com/sa.js?key=" + window.sib.client_key, i.parentNode.insertBefore(n, i), window.sendinblue.page();
-})();
-    sendinblue.identify('{{ user.email }}'
-);
-</script>
-{% endif %}
+    {% if user.is_authenticated %}
+    <script>
+    var userEmail = '{{ user.email }}'
+    </script>
+    <script type="text/javascript" src="{% static 'js/autenticacao_brevo.js' %}"></script>
+    {% endif %}
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
-
+{% include 'partials/_loading.html' %}
 {% include 'partials/_alertas.html' %}
 {% include 'partials/_navbar.html' %}
-{% include 'partials/_loading.html' %}
+<!--{% include 'partials/_loading.html' %}-->
 {% include 'partials/_whatsappfixo.html' %}
 
 
@@ -62,69 +46,16 @@
   <div class="container mt-5">
   {% block content %}{% endblock %}
   </div>
-<main class="flex-grow-1 text-white mt-5" style="background-color: #d9534f">
-    <div class="container">
-        <div class="row justify-content-center px-md-0  px-sm-0 px-lg-5">
-            <div class="col-sm-12 col-md-3 col-lg-3 mb-4 m-md-0 mx-lg-4">
-                <h4 class="mb-4">Informações</h4>
-                <p><a href="{% url 'termos' %}" class="text-decoration-none text-white fw-bold">Termos e Condições</a></p>
-                <p><a href="{% url 'envio' %}" class="text-decoration-none text-white fw-bold">Informações de envio</a></p>
-            </div>
-            <div class="col-sm-12 col-md-3 col-lg-3 m-4 m-md-0 mx-lg-4">
-                <h4 class="mb-4">Entre em Contato</h4>
-                <p>Cel: (12)981298667</p>
-                <p>Email: xflavors@gmail.com</p>
-            </div>
-            <div class="col-sm-12 col-md-3 col-lg-3 m-md-0 mx-lg-4">
-                <h4 class="mb-4">Links Uteis</h4>
-                <p><a href="{% url 'dashboard' %}" class="text-decoration-none text-white fw-bold">Dashboard</a></p>
-                <p><a href="{% url 'cart:carrinho' %}" class="text-decoration-none text-white fw-bold">Carrinho</a></p>
-            </div>
 
-        </div>
-    </div>
-</main>
-<footer class="bg-dark text-white p-2 ">
-    <div class="container d-flex justify-content-between align-items-end">
-        <div>
-            <span class="align-middle"><i class="far fa-registered"></i></span>
-            <span class="text-uppercase fw-bold fs-5 align-middle">Xflavors</span>
-        </div>
-        <span class=" fs-6 align-middle" ><a href="https://www.linkedin.com/in/andregeraseev/" class="text-decoration-none text-white fw-bold" style="font-size: 12px;">
-Desenvolvido por Agerasev</a></span>
-    </div>
-</footer>
 
-<style>
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
 
-    body {
-        display: flex;
-        flex-direction: column;
-    }
+{% include 'partials/_rodape.html' %}
+<!-- Scripts Externos -->
 
-    main {
-        font-size: 14px;
-        flex-grow: 1; /* o conteúdo principal ocupa todo o espaço disponível */
-        padding: 20px;
-    }
+<!-- Scripts internos -->
+<!--RODAPE-->
 
-    footer {
-        margin-top: auto; /* empurra o rodapé para o final da página */
-        height: 50px; /* define a altura do seu footer */
-    }
-
-    footer a {
-        color: #ffffff;
-    }
-
-    footer a:hover {
-        text-decoration: underline;
-    }
-</style>
-
+<!--LOADING/CARREGANDO-->
+<script src="{% static 'js/loading.js' %}"></script>
 </body>
 </html>
