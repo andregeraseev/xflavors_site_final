@@ -320,14 +320,6 @@
 
 
 <!-- Adicione o evento de mudança de valor aos botões de opção de coluna -->
-<script>
-
-</script>
-
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-
-
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
 
@@ -338,11 +330,6 @@
     $(filterElement).parent().find('.filter-label').text(selectedOption);
   }
 
-  function updateTableWithSavedFilters() {
-    var filtro_status = localStorage.getItem('filtro-status') || '';
-    var filtro_prod = localStorage.getItem('filtro-prod') || '';
-    $("#tabela-pedidos").DataTable().column(3).search(filtro_status).column(8).search(filtro_prod).draw();
-  }
 
 $(document).ready(function() {
     const filtroStatusElement = $("#filtro-status");
