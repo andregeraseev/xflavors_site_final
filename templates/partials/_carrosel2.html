@@ -1,73 +1,21 @@
 <div class="carousel-container">
-    <div id="carousel-2" class="container ">
+    <div id="carousel_2" class="container ">
         <!-- Título -->
-        <h3 class="text-center mt-5">Produtos mais vendidos</h3>
+        <h3 class="text-center mt-5">Juices mais vendidos</h3>
         <hr style="border: none; border-top: 1px solid black;">
 
         <!-- Carrossel -->
-        <div class="card-deck  slick-list ">
-            {% for product in produtos_mais_vendidos|slice:":10" %}
-            <div class="col  product-card">
-                <div class="card ">
-                    <a href="{% url 'product_detail' product.slug %}">
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top">
-                    </a>
-                    <div class="card-body" style="height: 220px;">
-                        <h5 class="card-title"
-                            style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;"
-                            onclick="window.location.href='{% url 'product_detail' product.slug %}';">{{ product.name}}</h5>
+            <div class="card-deck  slick-list ">
+                {% for product in juices_mais_vendidos|slice:":10" %}
 
-                        <small style="font-size: 0.8rem; color: #999;">{{ product.marca }}</small>
-                        {% if product.variation_set.exists %}
-                        <select name="variation" class="variation-select form-select form-control-sm w-100"
-                                data-product-id="{{ product.id }}">
-                            {% for variation in product.variation_set.all %}
-                            <option value="{{ variation.id }}">{% if variation.nome_simplificado %} {{variation.nome_simplificado }}
-                                - R$ {{ variation.price }} {% else %} {{ variation.name }} - R$ {{ variation.price }} {% endif %}
-                            </option>
-                            {% endfor %}
-                        </select>
-                        <p class="mb-1" id="price{{ product.id }}">R$ {{ product.variation_set.first.price }}</p>
-                        {% else %}
-                        <p class="mb-1"
-                           style="max-height: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            R${{ product.price }}</p>
-                        {% endif %}
-                        <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
-                            {% if product.variation_set.exists %}
-                            {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
-                            {% if materia_prima_stock > 10 %}
-                            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
-                                    data-product-id="{{ product.id }}" data-variation-id="">Adicionar
-                            </button>
-                            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
-                                   data-product-id="{{ product.id }}" value="1" min="1"
-                                   max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
-                            {% else %}
-                            <button class="btn btn-danger btn-sm w-100 ">Sem estoque</button>
 
-                            {% endif %}
+                {% include 'carrocel_partials/_carrocel_card.html' %}
 
-                            {% endwith %}
-                            {% else %}
-                            <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button-2"
-                                    data-product-id="{{ product.id }}" data-variation-id="">Adicionar
-                            </button>
-                            <input type="number" class="form-control form-control-sm mr-2 w-25 quantity-input"
-                                   data-product-id="{{ product.id }}" value="1" min="1"
-                                   max="{%if product.variation %} {{ product.variation.materia_prima.stock }} {{ else }} {{ product.stock }} {% endif %}">
+                {% endfor %}
 
-                            {% endif %}
 
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            {% endfor %}
-
-
-        </div>
     </div>
 </div>
 
@@ -86,24 +34,38 @@
 
 $(document).ready(function() {
   // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
-  $('#carousel .variation-select').change(function() {
+  $('#carousel_2 .variation-select').change(function() {
+    let $carousel_2 = $(this).closest('#carousel_2');
     let productId = $(this).data('product-id');
     let selectedVariationId = $(this).val();
     let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
+    let selectedOption = $(this).find('option:selected');
+    let originalPrice = selectedOption.data('original-price');
+    let promoPrice = selectedOption.data('promo-price');
+    let precoPromocional = selectedOption.data('preco-promocional');
+    let promocaoAtiva = selectedOption.data('promocao_ativa');
 
+    let priceDisplay;
+    if (precoPromocional !== "None" && precoPromocional !== '0,00' && precoPromocional !== '' && promocaoAtiva === 'True') {
+    priceDisplay = '<span class="original-price">De <del>R$ ' + originalPrice + '</del> por </span> <span class="promo-price">R$' + promoPrice + '</span>';
 
-
+    } else {
+      priceDisplay = 'R$ ' + promoPrice;
+    }
+    console.log(promocaoAtiva, precoPromocional, promoPrice, selectedVariationId,productId)
     // Atualiza o preço exibido
-    $('#price'+productId).text('R$ ' + selectedVariationPrice);
+    $carousel_2.find('#price'+productId).html(priceDisplay);
+
 
     // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
-    $('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
+    $carousel_2.find('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
   }).trigger('change'); // Dispara o evento 'change' após a página ser carregada
 });
 
 
 // Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
-$('.add-to-cart-button').click(function() {
+$('#carousel_2 .add-to-cart-button').click(function() {
+  let $carousel_2 = $(this).closest('#carousel_2');
   let productId = $(this).data('product-id');
   let variationId = $(this).data('variation-id');
   let quantity = $(this).siblings('.quantity-input').val();
@@ -159,8 +121,12 @@ $('.add-to-cart-button').click(function() {
       alert('Ocorreu um erro ao adicionar o produto ao carrinho. Tente novamente mais tarde.');
     }
   });
+
 });
 
+
+
+</script>
 
 
 

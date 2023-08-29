@@ -57,6 +57,7 @@
 $(document).ready(function() {
   // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
   $('#carousel .variation-select').change(function() {
+    let $carousel = $(this).closest('#carousel');
     let productId = $(this).data('product-id');
     let selectedVariationId = $(this).val();
     let selectedVariationPrice = $(this).find('option:selected').text().split(' - R$ ')[1];
@@ -75,19 +76,18 @@ $(document).ready(function() {
     }
 
     // Atualiza o preço exibido
-    $('#price'+productId).html(priceDisplay);
+    $carousel.find('#price'+productId).html(priceDisplay);
 
-    // Atualiza o preço exibido
-    $('#price'+productId).html(priceDisplay);
 
     // Define o ID da variação selecionada no botão "Adicionar ao carrinho"
-    $('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
+    $carousel.find('.add-to-cart-button[data-product-id=' + productId + ']').data('variation-id', selectedVariationId);
   }).trigger('change'); // Dispara o evento 'change' após a página ser carregada
 });
 
 
 // Associa a função abaixo ao evento "click" do botão "Adicionar ao carrinho"
-$('.add-to-cart-button').click(function() {
+$('#carousel .add-to-cart-button').click(function() {
+  let $carousel = $(this).closest('#carousel');
   let productId = $(this).data('product-id');
   let variationId = $(this).data('variation-id');
   let quantity = $(this).siblings('.quantity-input').val();
@@ -184,3 +184,9 @@ function addToFavorites(productId) {
 {% load static %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/carrocel.css' %}">
+
+<style>
+.carousel-container .form-select {
+  font-size: 0.8rem;
+}
+    </style>

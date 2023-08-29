@@ -34,6 +34,12 @@ def index(request):
         count=Sum('pedidoitem__quantity')
     ).order_by('-count')[:10]
 
+    juices_mais_vendidos = Produto.objects.filter(
+        pk__in=products_in_orders, category__name='Juices'
+    ).annotate(
+        count=Sum('pedidoitem__quantity')
+    ).order_by('-count')[:10]
+
 
 
     category = Category.objects.all()
@@ -75,6 +81,7 @@ def index(request):
         'favoritos': favoritos,
         'essencias_mais_vendidos': essencias_mais_vendidos,
         'produtos_mais_vendidos': produtos_mais_vendidos,
+        'juices_mais_vendidos': juices_mais_vendidos,
         'active_banners_menor': active_banners_menor,
         'active_banners': active_banners,
         # 'products': products,
