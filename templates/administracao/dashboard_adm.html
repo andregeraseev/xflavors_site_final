@@ -344,44 +344,61 @@
     $("#tabela-pedidos").DataTable().column(3).search(filtro_status).column(8).search(filtro_prod).draw();
   }
 
-  $(document).ready(function() {
+$(document).ready(function() {
     const filtroStatusElement = $("#filtro-status");
     const filtroProdElement = $("#filtro-prod");
 
+    // Recupere os filtros do localStorage apenas uma vez
+    var filtro_status = localStorage.getItem('filtro-status') || '';
+    var filtro_prod = localStorage.getItem('filtro-prod') || '';
+
+    // Inicialize a DataTable com os filtros recuperados
+    $("#tabela-pedidos").DataTable({
+      "columnDefs": [
+        { "searchable": true, "targets": [1, 2, 4] },
+        { "searchable": false, "targets": [0, 5, 6, 7, 9] }
+      ],
+      "searchCols": [
+        null,
+        null,
+        null,
+        { "search": filtro_status },
+        null,
+        null,
+        null,
+        null,
+        { "search": filtro_prod },
+        null
+      ]
+    });
+
+    // Atualize os elementos de filtro com os valores recuperados
+    if (filtro_status) {
+      filtroStatusElement.val(filtro_status);
+      updateFilterText(filtroStatusElement[0]);
+    }
+
+    if (filtro_prod) {
+      filtroProdElement.val(filtro_prod);
+      updateFilterText(filtroProdElement[0]);
+    }
+
+    // Adicione os manipuladores de eventos
     filtroStatusElement.on("change", function() {
       var filtro_status = filtroStatusElement.val();
       localStorage.setItem('filtro-status', filtro_status);
-      updateTableWithSavedFilters();
-      updateFilterText(this); // Atualiza o texto do filtro de status
+      $("#tabela-pedidos").DataTable().column(3).search(filtro_status).draw();
+      updateFilterText(this);
     });
 
     filtroProdElement.on("change", function() {
       var filtro_prod = filtroProdElement.val();
       localStorage.setItem('filtro-prod', filtro_prod);
-      updateTableWithSavedFilters();
-      updateFilterText(this); // Atualiza o texto do filtro de produção
+      $("#tabela-pedidos").DataTable().column(8).search(filtro_prod).draw();
+      updateFilterText(this);
     });
+});
 
-    $("#tabela-pedidos").DataTable({
-      "columnDefs": [
-        { "searchable": true, "targets": [1, 2, 4] }, // torna as colunas 1 e 2 pesquisáveis
-        { "searchable": false, "targets": [0, 5, 6, 7, 9] }, // torna as outras colunas não pesquisáveis
-      ]
-    });
-
-    // Atualiza a tabela com os filtros salvos e o texto dos filtros ao carregar a página
-    updateTableWithSavedFilters();
-
-    if (localStorage.getItem('filtro-status')) {
-      filtroStatusElement.val(localStorage.getItem('filtro-status'));
-      updateFilterText(filtroStatusElement[0]);
-    }
-
-    if (localStorage.getItem('filtro-prod')) {
-      filtroProdElement.val(localStorage.getItem('filtro-prod'));
-      updateFilterText(filtroProdElement[0]);
-    }
-  });
 </script>
 
 
