@@ -1,5 +1,4 @@
-
-    html, body {
+html, body {
         height: 100%;
         margin: 0;
     }
@@ -11,7 +10,7 @@
 
     main {
         font-size: 14px;
-        flex-grow: 1; /* o conteúdo principal ocupa
+        flex-grow: 1;
         padding: 20px;
     }
 
