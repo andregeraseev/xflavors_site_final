@@ -7,7 +7,8 @@ import mercadopago
 import json
 from tiny_erp.envia_pedido import enviar_pedido_para_tiny
 from pedidos.models import Pedido
-
+import logging
+logger = logging.getLogger('pedidos')
 
 # @csrf_exempt
 # @require_POST
@@ -84,6 +85,7 @@ def mercado_pago_webhook(request):
         if result['status'] == 200:
             payment = result['response']
             print('payment', payment)
+            logger.info(f"Referencias MercadoPago: {payment}")
 
             # Obtenha a external_reference da resposta
             external_reference = payment.get("external_reference")

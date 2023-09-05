@@ -36,6 +36,10 @@ def enviar_pedido_para_tiny(pedido):
     forma_frete = "SEDEX CONTRATO AG (03220)" if pedido.frete == "sedex" else "PAC CONTRATO AG (03298)"
     # print(forma_frete)
     observacao = pedido.observacoes
+
+    forma_de_pagamento = pedido.metodo_de_pagamento
+
+
     id_ecommerce = os.getenv('NUMERO_ECOMMERC_TINY')
 
     logger.info(f"Enviando pedido {id_pedido} para o Tiny")
@@ -90,6 +94,17 @@ def enviar_pedido_para_tiny(pedido):
 
 
     },
+
+      "parcelas": [
+          {
+              "parcela": {
+                  "dias": "1",
+                  "forma_pagamento": "forma_de_pagamento",
+              }
+          },
+
+
+      ],
       "marcadores": [
           {
               "marcador": {
