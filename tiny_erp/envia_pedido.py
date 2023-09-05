@@ -99,7 +99,7 @@ def enviar_pedido_para_tiny(pedido):
           {
               "parcela": {
                   "dias": "1",
-                  "forma_pagamento": "forma_de_pagamento",
+                  "forma_pagamento": forma_de_pagamento,
               }
           },
 
@@ -138,6 +138,7 @@ def enviar_pedido_para_tiny(pedido):
       "forma_envio": "c",
       "forma_frete": forma_frete,
       "id_ecommerce" : id_ecommerce,
+      "forma_pagamento": forma_de_pagamento
   }
 }
     # print(pedido_data)
