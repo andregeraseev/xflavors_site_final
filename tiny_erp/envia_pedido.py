@@ -39,7 +39,7 @@ def enviar_pedido_para_tiny(pedido):
     desconto = str(pedido.desconto)
     forma_de_pagamento = pedido.metodo_de_pagamento
     if forma_de_pagamento == "Pix":
-        forma_de_pagamento = "PIX"
+        forma_de_pagamento = "Pix - nubank"
 
 
     id_ecommerce = os.getenv('NUMERO_ECOMMERC_TINY')
