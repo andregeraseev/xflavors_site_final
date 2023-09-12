@@ -12,7 +12,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
-
+from django.contrib.auth.models import User
 
 from smtplib import SMTPException
 from django.shortcuts import render
@@ -476,3 +476,20 @@ def download_sales_data(request):
     response['Content-Disposition'] = 'attachment; filename="sales_data.csv"'
 
     return response
+
+@staff_member_required
+def pedidos_clientes(request, user_id):
+    user = User.objects.get(id=user_id)
+    pedidos = Pedido.objects.filter(user_id=user_id)
+    total = 0
+    desconto = 0
+    for pedido in pedidos:
+        total += pedido.total
+        if pedido.desconto:
+            desconto += pedido.desconto
+
+
+
+
+    context = {'user': user, 'pedidos': pedidos, 'desconto':desconto,'total':total }
+    return render(request, 'administracao/pedidos_clientes.html', context)
