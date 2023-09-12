@@ -3,7 +3,7 @@
 {% block content %}
 
 
-    <div id="wrapper">
+    <div class="card" id="wrapper">
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
                 <div class="container-fluid">
@@ -11,19 +11,22 @@
                         <h3 class="text-dark mb-0">Pedidos</h3>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="col-md-8 col-xl-8 mb-4">
                             <div class="card shadow py-2">
                                 <div class="card-header">
-                                    <h1>{{user.username}}</h1>
+                                    <h4>{{user.username}}</h4>
                                 </div>
                                 <div class="card-body">
-                                    <p>{{user.email}}</p>
-                                    <p>{{user.whatsapp}}</p>
-                                    <p>{{user.cliente.cpf}}</p>
+                                    <p>Email: {{user.email}}</p>
+                                    <p><span ><a href="https://api.whatsapp.com/send?phone=55{{ user.cliente.celular }}&text=Olá, {{ pedido.user.username }}! Andre da Xflavors aqui!"
+                       target="_blank">
+                        <i class="fab fa-whatsapp fa-lg"></i>
+                    </a></span>{{user.cliente.celular}}</p>
+                                    <p>CPF: {{user.cliente.cpf}}</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="col-md-4 col-xl-4 mb-4">
                             <div class="card shadow  py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
@@ -49,7 +52,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-7 col-xl-8">
+                        <div class="col-lg-12 col-xl-112">
                             <div class="card shadow mb-4">
                                 <div class="col">
                                     <div class="table-responsive">
@@ -58,19 +61,46 @@
                                                 <tr>
                                                     <th>Pedido</th>
                                                     <th>Status</th>
-                                                    <th>Total</th>
+                                                    <th>Valor</th>
                                                     <th>Frete</th>
                                                     <th>Data</th>
+                                                    <th>APIS</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                             {%for pedido in pedidos%}
                                                 <tr>
-                                                    <td>#{{pedido.id}}</td>
+                                                    <td><a class="link-no-style text-black mx-2" href="{% url 'administracao:pedido_detail' pedido.id %}">#{{pedido.id}}</a></td>
                                                     <td>{{pedido.status}}</td>
-                                                    <td>{{pedido.total}}</td>
+                                                    <td style="font-size: 10px;">Subtotal: R${{pedido.subtotal}}<br>
+                                                                                 Frete: R${{pedido.valor_frete}}<br>
+                                                                                 Desconto: R${{pedido.desconto}}<br>
+                                                                                 Total: R${{pedido.total}}</td>
                                                     <td>{{pedido.frete}}</td>
                                                     <td>{{pedido.data_pedido}}</td>
+                                                    <td style="font-size: 12px;">ID tiny:{{ pedido.numero_pedido_tiny }}<br>
+                                                        ID_MP: {{ pedido.mercado_pago_id }}<br>
+                                                        {% if pedido.link_mercado_pago %}
+                    <div id="link-mercado-pago">
+                        <a href="#" onclick="copyToClipboard('{{ pedido.link_mercado_pago }}'); return false;">
+                            <img src="https://img.icons8.com/color/48/000000/link--v2.png"/></a>
+                    </div>
+                    <script>
+                            function copyToClipboard(text) {
+                              var input = document.createElement('input');
+                              input.setAttribute('value', text);
+                              document.body.appendChild(input);
+                              input.select();
+                              document.execCommand('copy');
+                              document.body.removeChild(input);
+                              alert('Link copiado para a área de transferência!');
+                            }
+
+                    </script>
+                    {% endif %}
+
+
+                                                    </td>
                                                 </tr>
                                             {%endfor%}
                                             </tbody>
