@@ -497,13 +497,22 @@ def pedidos_clientes(request, user_id):
 
 def reestoque(request):
     from django.db.models import Q
-    # Produtos que têm variações cujas matérias-primas têm estoque <= 10 ou produtos com estoque <= 5
+
+    # Use os valores padrão a menos que sejam fornecidos pelo usuário
+    product_stock_value = request.GET.get('product_stock')
+    variation_stock_value = request.GET.get('variation_stock')
+
+    product_stock_limit = int(product_stock_value) if product_stock_value else 5
+    variation_stock_limit = int(variation_stock_value) if variation_stock_value else 10
+
+    # Produtos que têm variações cujas matérias-primas têm estoque <= variation_stock_limit ou produtos com estoque <= product_stock_limit
     produtos = Produto.objects.filter(
-        Q(variation__materia_prima__stock__lte=10) |
-        (Q(variation__isnull=True) & Q(stock__lte=5))
+        Q(variation__materia_prima__stock__lte=variation_stock_limit) |
+        (Q(variation__isnull=True) & Q(stock__lte=product_stock_limit))
     ).distinct()
 
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
 
-    return render(request, 'administracao/reestoque.html', {'produtos': produtos, 'categories': categories, 'subcategories': subcategories})
+    return render(request, 'administracao/reestoque.html',
+                  {'produtos': produtos, 'categories': categories, 'subcategories': subcategories})
