@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+<h1>Produtos para Reestoque</h1>
+
+<!-- Filtros -->
+<div class="filters">
+    <select id="categoryFilter">
+        <option value="">Filtrar por Categoria</option>
+        {% for category in categories %}
+        <option value="{{ category.name }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+    <select id="subcategoryFilter">
+        <option value="">Filtrar por Subcategoria</option>
+        {% for subcategory in subcategories %}
+        <option value="{{ subcategory.name }}">{{ subcategory.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<table id="reestoqueTable" class="stripe">
+    <thead>
+        <tr>
+            <th>Nome do Produto</th>
+            <th>Estoque Atual</th>
+            <th>Matéria Prima (se aplicável)</th>
+            <th>Categoria</th>
+            <th>Subcategoria</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for produto in produtos %}
+        <tr>
+            <td>{{ produto.name }}</td>
+            <td>
+                {% if produto.variation_set.exists %}
+                {{ produto.variation_set.first.materia_prima.stock }}
+                {% else %}
+                {{ produto.stock }}
+                {% endif %}
+            </td>
+            <td>
+                {% if produto.variation_set.exists %}
+                {{ produto.variation_set.first.materia_prima.name }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            <td>{{ produto.category }}</td>
+            <td>{{ produto.subcategory }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+$(document).ready(function() {
+    var table = $('#reestoqueTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: ['print']
+    });
+
+    // Filtro de Categoria
+    $('#categoryFilter').on('change', function() {
+        table.columns(3).search(this.value).draw();
+    });
+
+    // Filtro de Subcategoria
+    $('#subcategoryFilter').on('change', function() {
+        table.columns(4).search(this.value).draw();
+    });
+});
+</script>
+
+
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+{% endblock %}

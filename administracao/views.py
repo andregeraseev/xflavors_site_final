@@ -13,7 +13,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.models import User
-
+from produtos.models import Produto, MateriaPrima, Variation, Subcategory
 from smtplib import SMTPException
 from django.shortcuts import render
 from django.core.mail import EmailMultiAlternatives
@@ -493,3 +493,17 @@ def pedidos_clientes(request, user_id):
 
     context = {'user': user, 'pedidos': pedidos, 'desconto':desconto,'total':total }
     return render(request, 'administracao/pedidos_clientes.html', context)
+
+
+def reestoque(request):
+    from django.db.models import Q
+    # Produtos que têm variações cujas matérias-primas têm estoque <= 10 ou produtos com estoque <= 5
+    produtos = Produto.objects.filter(
+        Q(variation__materia_prima__stock__lte=10) |
+        (Q(variation__isnull=True) & Q(stock__lte=5))
+    ).distinct()
+
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+
+    return render(request, 'administracao/reestoque.html', {'produtos': produtos, 'categories': categories, 'subcategories': subcategories})

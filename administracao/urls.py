@@ -4,7 +4,7 @@ from django.urls import path,include
 
 from administracao.views import dashboard_adm, atualizar_status, adicionar_rastreamento, producao, enviar_tiny, \
     pedido_detail, imprimir_selecionados, adicionar_observacao, enviar_email_em_massa_view, dashboard_financeiro, \
-    sales_chart, download_sales_data, pedidos_clientes
+    sales_chart, download_sales_data, pedidos_clientes, reestoque
 
 app_name = 'administracao'
 
@@ -19,6 +19,8 @@ path('pedido_detail/<int:pedido_id>', pedido_detail, name='pedido_detail'),
 path('imprimir_selecionados/', imprimir_selecionados, name='imprimir_selecionados'),
 path('dashboard_financeiro/', dashboard_financeiro, name='dashboard_financeiro'),
 path('pedidos_clientes/<int:user_id>', pedidos_clientes, name='pedidos_clientes'),
+path('reestoque', reestoque, name='reestoque'),
+
 # email
 path('enviar_email_em_massa/', enviar_email_em_massa_view, name='enviar_email_em_massa'),
 
