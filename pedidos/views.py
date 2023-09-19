@@ -24,6 +24,7 @@ from mercado_pago.mercado_livre import cria_preferencia
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+import re
 
 logger = logging.getLogger('pedidos')
 
@@ -363,6 +364,86 @@ def atualizar_endereco_entrega(request):
 
 
 
+# @login_required
+# def cotacao_frete_correios(request):
+#     """
+#     Obtém cotações de frete dos Correios para o endereço do cliente.
+#
+#     Com base nos itens no carrinho do cliente, esta função faz uma requisição
+#     aos Correios para obter cotações de frete para o endereço do cliente.
+#
+#     Parameters:
+#     - request: objeto HttpRequest contendo o CEP do endereço de entrega.
+#
+#     Returns:
+#     - JsonResponse com os resultados da cotação ou uma mensagem de erro.
+#     """
+#     # Esta função é chamada pelo script jQuery localizado em templates/pedidos/checkout.html.
+#     # Espera receber CEP como parametro POST e retorna um JSON contendo os resultados da cotação ou uma mensagem de erro
+#     logger.info('Usuário %s iniciando cotação de frete.', request.user)
+#
+#     user = request.user
+#     cart = Cart.get_or_create_cart(user)
+#     itens = cart.cartitem_set.all()
+#
+#
+#     # Calcula o peso dos itens do carrinho caso o peso for menor que 300 gramas o total peso fica igual a 300 gramas
+#     total_peso = 0
+#     try:
+#         for item in itens:
+#             peso = item.variation.peso if item.variation else item.product.peso
+#             total_peso += item.quantity * peso
+#         if total_peso < 0.3:
+#             total_peso = 0.3
+#     except:
+#         logger.warning(f"Problemas para calcular peso do carrinho {cart}, do usuario {user.username}")
+#         total_peso = 0.3
+#
+#     senha = os.getenv('senha_correios')
+#     codigo_empresa = os.getenv('usuario_correios')
+#     cep_origem = '12233400'
+#     cep_destino = request.POST.get('cep')
+#     if cep_destino == None:
+#         logger.error('Erro ao coletar cep do destinatario ')
+#         return JsonResponse({'error': 'Tivemos um erro com cep, verifique por gentileza'})
+#
+#     try:
+#         # Realiza a requisição para cotação no webservice dos Correios
+#         response = requests.post(
+#             f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?"
+#             f"nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem={cep_origem}&sCepDestino={cep_destino}"
+#             f"&nVlPeso={total_peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0"
+#             f"&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=03220,03298&StrRetorno=xml")
+#         if response.status_code == 200:
+#             tree = ET.ElementTree(ET.fromstring(response.content))
+#             servicos = tree.getroot().findall('.//cServico')
+#             results = []
+#             for servico in servicos:
+#                 code = servico.find('Codigo').text
+#                 if code == '0':
+#                     continue
+#                 preco = float(servico.find('Valor').text.replace(',', '.'))
+#                 days = int(servico.find('PrazoEntrega').text)
+#                 prazo_entrega = f"{days} {'dia útil' if days == 1 else 'dias úteis'}"
+#                 results.append({
+#                     'codigo': code,
+#                     'valor': preco,
+#                     'prazodeentrega': prazo_entrega
+#                 })
+#             logger.info(f'Usuário {request.user} finalizou cotação de frete. {results}')
+#             return JsonResponse({'results': results})
+#
+#         else:
+#             logger.error('Erro na resposta dos Correios para o usuário %s. Código de status: %s', request.user,
+#                          response.status_code)
+#             return JsonResponse({'error': 'Tivemos um erro ao cotar o frete. Por favor, recarregue o frete.'})
+#
+#     except Exception as e:
+#         logger.error('Erro ao cotar frete dos Correios para o usuário %s. Erro: %s', request.user, str(e))
+#         return JsonResponse({'error': 'Tivemos um erro ao cotar o frete. Por favor, recarregue o frete.'})
+
+
+
 @login_required
 def cotacao_frete_correios(request):
     """
@@ -377,14 +458,11 @@ def cotacao_frete_correios(request):
     Returns:
     - JsonResponse com os resultados da cotação ou uma mensagem de erro.
     """
-    # Esta função é chamada pelo script jQuery localizado em templates/pedidos/checkout.html.
-    # Espera receber CEP como parametro POST e retorna um JSON contendo os resultados da cotação ou uma mensagem de erro
     logger.info('Usuário %s iniciando cotação de frete.', request.user)
 
     user = request.user
     cart = Cart.get_or_create_cart(user)
     itens = cart.cartitem_set.all()
-
 
     # Calcula o peso dos itens do carrinho caso o peso for menor que 300 gramas o total peso fica igual a 300 gramas
     total_peso = 0
@@ -398,44 +476,58 @@ def cotacao_frete_correios(request):
         logger.warning(f"Problemas para calcular peso do carrinho {cart}, do usuario {user.username}")
         total_peso = 0.3
 
-    senha = os.getenv('senha_correios')
-    codigo_empresa = os.getenv('usuario_correios')
+    # Definindo as informações para a consulta
     cep_origem = '12233400'
     cep_destino = request.POST.get('cep')
-    if cep_destino == None:
+    if cep_destino is None:
         logger.error('Erro ao coletar cep do destinatario ')
         return JsonResponse({'error': 'Tivemos um erro com cep, verifique por gentileza'})
+    # Removendo qualquer caractere que não seja dígito
+    cep_destino = re.sub(r'\D', '', cep_destino)
+
+    # Aqui estamos definindo o token para autorização
+    Token_Api_Correios = os.getenv('Token_Api_Correios')
+    token = Token_Api_Correios
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json'
+    }
+
+    servicos = ["03220", "03298"]
+    results = []
 
     try:
-        # Realiza a requisição para cotação no webservice dos Correios
-        response = requests.post(
-            f"http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?"
-            f"nCdEmpresa={codigo_empresa}&sDsSenha={senha}&sCepOrigem={cep_origem}&sCepDestino={cep_destino}"
-            f"&nVlPeso={total_peso}&nCdFormato=1&nVlComprimento=20&nVlAltura=20&nVlLargura=20&nVlDiametro=0"
-            f"&sCdMaoPropria=n&nVlValorDeclarado=100&sCdAvisoRecebimento=0&nCdServico=03220,03298&StrRetorno=xml")
-        if response.status_code == 200:
-            tree = ET.ElementTree(ET.fromstring(response.content))
-            servicos = tree.getroot().findall('.//cServico')
-            results = []
-            for servico in servicos:
-                code = servico.find('Codigo').text
-                if code == '0':
-                    continue
-                preco = float(servico.find('Valor').text.replace(',', '.'))
-                days = int(servico.find('PrazoEntrega').text)
+        for servico in servicos:
+            # Obtendo o prazo de entrega
+            url_prazo = f"https://api.correios.com.br/prazo/v1/nacional/{servico}"
+            params = {
+                "cepOrigem": cep_origem,
+                "cepDestino": cep_destino,
+                "psObjeto": total_peso,
+                "tpObjeto": 2,
+                "comprimento": 20,
+                "largura": 20,
+                "altura": 20
+            }
+            response_prazo = requests.get(url_prazo, headers=headers, params=params)
+
+            # Obtendo o preço
+            url_preco = f"https://api.correios.com.br/preco/v1/nacional/{servico}"
+            response_preco = requests.get(url_preco, headers=headers, params=params)
+
+            if response_prazo.status_code == 200 and response_preco.status_code == 200:
+                data_prazo = response_prazo.json()
+                data_preco = response_preco.json()
+                days = int(data_prazo["prazoEntrega"])
                 prazo_entrega = f"{days} {'dia útil' if days == 1 else 'dias úteis'}"
                 results.append({
-                    'codigo': code,
-                    'valor': preco,
+                    'codigo': servico,
+                    'valor': data_preco["pcFinal"],
                     'prazodeentrega': prazo_entrega
                 })
-            logger.info(f'Usuário {request.user} finalizou cotação de frete. {results}')
-            return JsonResponse({'results': results})
 
-        else:
-            logger.error('Erro na resposta dos Correios para o usuário %s. Código de status: %s', request.user,
-                         response.status_code)
-            return JsonResponse({'error': 'Tivemos um erro ao cotar o frete. Por favor, recarregue o frete.'})
+        logger.info(f'Usuário {request.user} finalizou cotação de frete. {results}')
+        return JsonResponse({'results': results})
 
     except Exception as e:
         logger.error('Erro ao cotar frete dos Correios para o usuário %s. Erro: %s', request.user, str(e))
