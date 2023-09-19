@@ -498,8 +498,9 @@ def cotacao_frete_correios(request):
 
     try:
         for servico in servicos:
-            # Obtendo o prazo de entrega
-            url_prazo = f"https://api.correios.com.br/prazo/v1/nacional/{servico}"
+            base_url = f"https://api.correios.com.br"
+
+            # Parâmetros comuns para ambas as requisições
             params = {
                 "cepOrigem": cep_origem,
                 "cepDestino": cep_destino,
@@ -509,22 +510,37 @@ def cotacao_frete_correios(request):
                 "largura": 20,
                 "altura": 20
             }
+
+            # Obtendo o prazo de entrega
+            url_prazo = f"{base_url}/prazo/v1/nacional/{servico}"
             response_prazo = requests.get(url_prazo, headers=headers, params=params)
 
             # Obtendo o preço
-            url_preco = f"https://api.correios.com.br/preco/v1/nacional/{servico}"
+            url_preco = f"{base_url}/preco/v1/nacional/{servico}"
             response_preco = requests.get(url_preco, headers=headers, params=params)
 
-            if response_prazo.status_code == 200 and response_preco.status_code == 200:
-                data_prazo = response_prazo.json()
-                data_preco = response_preco.json()
-                days = int(data_prazo["prazoEntrega"])
-                prazo_entrega = f"{days} {'dia útil' if days == 1 else 'dias úteis'}"
-                results.append({
-                    'codigo': servico,
-                    'valor': data_preco["pcFinal"].replace(',', '.'),
-                    'prazodeentrega': prazo_entrega
-                })
+            # Se a resposta de qualquer uma das requisições não for bem-sucedida, registre e retorne o erro
+            if response_prazo.status_code != 200:
+                error_msg = response_prazo.json().get("msgs", "Erro desconhecido ao obter prazo.")
+                logger.error(f"Erro ao obter prazo para o serviço {servico}: {error_msg}")
+                return JsonResponse({'error': f'Tivemos um problema ao obter o prazo de entrega. {error_msg}'})
+
+            if response_preco.status_code != 200:
+                error_msg = response_preco.json().get("msgs", "Erro desconhecido ao obter preço.")
+                logger.error(f"Erro ao obter preço para o serviço {servico}: {error_msg}")
+                return JsonResponse({'error': f'Tivemos um problema ao obter o preço. {error_msg}'})
+
+            # Processando dados
+            data_prazo = response_prazo.json()
+            data_preco = response_preco.json()
+
+            days = int(data_prazo["prazoEntrega"])
+            prazo_entrega = f"{days} {'dia útil' if days == 1 else 'dias úteis'}"
+            results.append({
+                'codigo': servico,
+                'valor': data_preco["pcFinal"].replace(',', '.'),
+                'prazodeentrega': prazo_entrega
+            })
 
         logger.info(f'Usuário {request.user} finalizou cotação de frete. {results}')
         return JsonResponse({'results': results})
