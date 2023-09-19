@@ -522,7 +522,7 @@ def cotacao_frete_correios(request):
                 prazo_entrega = f"{days} {'dia útil' if days == 1 else 'dias úteis'}"
                 results.append({
                     'codigo': servico,
-                    'valor': data_preco["pcFinal"],
+                    'valor': data_preco["pcFinal"].replace(',', '.'),
                     'prazodeentrega': prazo_entrega
                 })
 
