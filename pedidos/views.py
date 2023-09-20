@@ -486,7 +486,7 @@ def cotacao_frete_correios(request):
     cep_destino = re.sub(r'\D', '', cep_destino)
 
     # Aqui estamos definindo o token para autorização
-    Token_Api_Correios = os.getenv('Token_Api_Correios')
+    Token_Api_Correios = 'eyJhbGciOiJSUzUxMiJ9.eyJhbWJpZW50ZSI6IlBST0RVQ0FPIiwiaWQiOiJwdW5rc3RlaW5wczEzIiwicGZsIjoiUEoiLCJjbnBqIjoiMTY3NTY2NDQwMDAxNDQiLCJjYXJ0YW8tcG9zdGFnZW0iOnsibnVtZXJvIjoiMDA2ODA2MDIxMSIsImNvbnRyYXRvIjoiOTkxMjMzNzUyNSIsImRyIjo3NCwiYXBpIjpbMjcsMzQsMzUsMzYsMzcsNDEsNzYsNzgsODAsODMsODcsOTMsNTY2LDU4N119LCJpcCI6IjU0LjIzMi43Mi4xNiw1NC4yMzIuNzIuMTYiLCJpYXQiOjE2OTUxODcwNTYsImlzcyI6InRva2VuLXNlcnZpY2UiLCJleHAiOjE2OTUyNzM0NTYsImp0aSI6IjYwZTA0Nzk2LWQwYzctNDM1OC1hOWJmLTAzNGJmODlkNDZjOSJ9.M0keeneXEaRlKaSLumKtxspGQSI6U3d0YaJs7ndo-eeWeWPm_HUY-gqGfg9_R3XUZK474s6pPdLvg-7u96xYKVPermvlY9MvJo_PsDcdFgC1RrSWlkS46-CvRyNnSgWGirA29_YiJgQfkXZHaTHY0hY2ZaqDB2UKkTYN32XNlthGmNo3J1KmlSp0q3yS0FzR2oFjaNAukjv3MYRgVXMipPDQ_tQxTtZNNFZqeJxvnI8JyXWfb2o7cvt2wsJpnfpkDLPLykcjyC4IpANK1fW6l-7C9VsxO0fgb0hBqBYGTpsI9K6dRSJd1zXZtXdnPLK7e2zssr1AYUbln-TaYGoIJw'
     token = Token_Api_Correios
     headers = {
         'Authorization': f'Bearer {token}',
