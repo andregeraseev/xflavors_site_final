@@ -25,7 +25,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import re
-
+import base64
 logger = logging.getLogger('pedidos')
 
 
@@ -444,6 +444,37 @@ def atualizar_endereco_entrega(request):
 
 
 
+def obter_novo_token_correios_com_cartao():
+    url = "https://api.correios.com.br/token/v1/autentica/cartaopostagem"
+
+    # Seus dados de autenticação
+    # ATENÇÃO: Substitua 'SEU_USUARIO' e 'SUA_SENHA' pelos seus dados reais
+    usuario = "punksteinps13"
+    senha = "ZyryCIuGUzY5kROuBpHvDDzCQ56EMDperyvserwu"
+    credentials = base64.b64encode(f"{usuario}:{senha}".encode()).decode()
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Basic {credentials}'
+    }
+
+    # Dados do cartão de postagem
+    payload = {
+        "numero": "0068060211"  # Altere para o número do seu cartão se necessário
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()  # Verifica se a requisição foi bem-sucedida
+
+        data = response.json()
+        return data["token"]
+
+    except requests.RequestException as e:
+        # Log ou trate o erro conforme necessário
+        print(f"Erro ao obter novo token dos Correios: {e}")
+        return None
+
 @login_required
 def cotacao_frete_correios(request):
     """
@@ -486,7 +517,8 @@ def cotacao_frete_correios(request):
     cep_destino = re.sub(r'\D', '', cep_destino)
 
     # Aqui estamos definindo o token para autorização
-    Token_Api_Correios = 'eyJhbGciOiJSUzUxMiJ9.eyJhbWJpZW50ZSI6IlBST0RVQ0FPIiwiaWQiOiJwdW5rc3RlaW5wczEzIiwicGZsIjoiUEoiLCJjbnBqIjoiMTY3NTY2NDQwMDAxNDQiLCJjYXJ0YW8tcG9zdGFnZW0iOnsibnVtZXJvIjoiMDA2ODA2MDIxMSIsImNvbnRyYXRvIjoiOTkxMjMzNzUyNSIsImRyIjo3NCwiYXBpIjpbMjcsMzQsMzUsMzYsMzcsNDEsNzYsNzgsODAsODMsODcsOTMsNTY2LDU4N119LCJpcCI6IjU0LjIzMi43Mi4xNiw1NC4yMzIuNzIuMTYiLCJpYXQiOjE2OTUxODcwNTYsImlzcyI6InRva2VuLXNlcnZpY2UiLCJleHAiOjE2OTUyNzM0NTYsImp0aSI6IjYwZTA0Nzk2LWQwYzctNDM1OC1hOWJmLTAzNGJmODlkNDZjOSJ9.M0keeneXEaRlKaSLumKtxspGQSI6U3d0YaJs7ndo-eeWeWPm_HUY-gqGfg9_R3XUZK474s6pPdLvg-7u96xYKVPermvlY9MvJo_PsDcdFgC1RrSWlkS46-CvRyNnSgWGirA29_YiJgQfkXZHaTHY0hY2ZaqDB2UKkTYN32XNlthGmNo3J1KmlSp0q3yS0FzR2oFjaNAukjv3MYRgVXMipPDQ_tQxTtZNNFZqeJxvnI8JyXWfb2o7cvt2wsJpnfpkDLPLykcjyC4IpANK1fW6l-7C9VsxO0fgb0hBqBYGTpsI9K6dRSJd1zXZtXdnPLK7e2zssr1AYUbln-TaYGoIJw'
+    Token_Api_Correios = obter_novo_token_correios_com_cartao()
+    print(Token_Api_Correios)
     token = Token_Api_Correios
     headers = {
         'Authorization': f'Bearer {token}',
