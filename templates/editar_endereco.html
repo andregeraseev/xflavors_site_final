@@ -44,7 +44,7 @@
 $(document).ready(function() {
   $("#cep").blur(function() {
     var cep = $(this).val().replace(/\D/g, "");
-
+    $('#loading').show();
     if (cep != "") {
       var validacep = /^[0-9]{8}$/;
 
@@ -65,6 +65,7 @@ $(document).ready(function() {
               $("#estado").val(dados.uf);
               $("#cidade").val(dados.localidade);
               $(".error-message").text("");
+              $('#loading').hide();
             } else {
               $("#cep").val("");
               $("#rua").val("");
@@ -72,6 +73,7 @@ $(document).ready(function() {
               $("#estado").val("");
               $("#cidade").val("");
               $(".error-message").text("CEP não encontrado.").css("color", "red");
+              $('#loading').hide();
             }
           }
         });
@@ -82,6 +84,7 @@ $(document).ready(function() {
         $("#estado").val("");
         $("#cidade").val("");
         $(".error-message").text("Formato de CEP inválido.").css("color", "red");
+        $('#loading').hide();
       }
     } else {
       $("#rua").val("");
@@ -89,6 +92,7 @@ $(document).ready(function() {
       $("#estado").val("");
       $("#cidade").val("");
       $(".error-message").text("");
+      $('#loading').hide();
     }
   });
 });
