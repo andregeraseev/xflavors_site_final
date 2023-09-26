@@ -95,7 +95,7 @@ def produto_por_subcategoria(request, category_id, subcategory_id):
     produtos_sem_estoque = []
 
     for produto in produtos:
-        if produto.get_stock > 10:
+        if produto.get_stock > 9:
             produtos_com_estoque.append(produto)
         else:
             produtos_sem_estoque.append(produto)
