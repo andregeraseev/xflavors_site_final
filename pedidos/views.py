@@ -554,12 +554,18 @@ def cotacao_frete_correios(request):
             # Se a resposta de qualquer uma das requisições não for bem-sucedida, registre e retorne o erro
             if response_prazo.status_code != 200:
                 error_msg = response_prazo.json().get("msgs", "Erro desconhecido ao obter prazo.")
-                logger.error(f"Erro ao obter prazo para o serviço {servico}: {error_msg}")
-                return JsonResponse({'error': f'Tivemos um problema ao obter o prazo de entrega. {error_msg}'})
+                if error_msg == ['PRZ-101: O valor do(s) parâmetro(s) cepDestino é(são) inválido(s). ']:
+                    error_msg = "Por gentileza confira o CEP, o campo CEP precisa de ter 8 digitos numericos."
+
+                if error_msg == ['PRZ-101: O valor do(s) parâmetro(s) cepDestino é(são) inválido(s). ']:
+                    error_msg = "Por gentileza confira o CEP, o campo CEP precisa de ter 8 digitos numericos."
+                logger.error(
+                    f"Erro ao obter prazo para o serviço do usuario {request.user.username} {servico}: {error_msg}")
+                return JsonResponse({'error': f'Tivemos um problema ao obter o prazo de entrega: \n{error_msg}'})
 
             if response_preco.status_code != 200:
                 error_msg = response_preco.json().get("msgs", "Erro desconhecido ao obter preço.")
-                logger.error(f"Erro ao obter preço para o serviço {servico}: {error_msg}")
+                logger.error(f"Erro ao obter preço para o serviço {request.user.username}: {servico}: {error_msg}")
                 return JsonResponse({'error': f'Tivemos um problema ao obter o preço. {error_msg}'})
 
             # Processando dados

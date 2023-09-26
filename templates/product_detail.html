@@ -61,7 +61,7 @@
                                 <div class="d-flex align-items-center add-to-cart-form" style="margin-top: auto;">
                                     {% if product.variation_set.exists %}
                                     {% with materia_prima_stock=product.variation_set.first.materia_prima.stock %}
-                                    {% if materia_prima_stock > 10 %}
+                                    {% if materia_prima_stock > 9 %}
                                     <button type="submit" class="btn btn-danger btn-sm w-75 add-to-cart-button"
                                             data-product-id="{{ product.id }}" data-variation-id="">Adicionar
                                     </button>
@@ -318,7 +318,7 @@ $('.add-to-cart-button-2').click(function() {
 $(document).ready(function() {
   $(".avise-me-button").click(function() {
     let productId = $(this).data('product-id');
-    console.log("Product ID: ", productId);
+
     var url = "{% url 'avise:aviso_estoque' %}";
     var csrftoken = $("[name=csrfmiddlewaretoken]").val();
 
@@ -419,7 +419,8 @@ $(function() {
   // Seleciona todos os elementos com a classe "variation-select" e adiciona um listener a eles
   $('.variation-select').change(function() {
     let productId = $(this).data('product-id');
-    let quantity = $('#quantity').val();
+    let quantity = $(this).siblings('.quantity-input').val();
+
     let selectedVariationId = $('#variation').val();
     let selectedOption = $(this).find('option:selected');
     let originalPrice = selectedOption.data('original-price');
@@ -448,11 +449,9 @@ $(function() {
 $('.add-to-cart-button').click(function() {
   let productId = $(this).data('product-id');
   let variationId = $('#variation').val();
-  let quantity = $('#quantity').val();
+  let quantity = $(this).siblings('.quantity-input').val();
 
-  console.log('productId:', productId);
-  console.log('variationId:', variationId);
-  console.log('quantity:', quantity);
+
 
   // Envia uma requisição AJAX para adicionar o produto ao carrinho
   $.ajax({
