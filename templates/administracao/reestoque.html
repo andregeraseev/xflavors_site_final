@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_pagamento.html" %}
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
@@ -47,7 +47,7 @@ tr:nth-child(even) {
     }
 }
 </style>
-
+{% include 'administracao\partials\_navbar_admin.html' %}
 <h1>Produtos para Reestoque</h1>
 
 <!-- Limite de Estoque -->
