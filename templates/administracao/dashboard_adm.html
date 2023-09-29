@@ -94,7 +94,7 @@
 
                 <!-- Coluna de status -->
                 <td>
-                    {{ pedido.status }}
+                    <span id="pedido_status-{{pedido.id}}">{{ pedido.status }}</span>
 
 
                 </td>
@@ -389,12 +389,17 @@ $(document).ready(function() {
       success: function(data) {
       if (data.success) {
         alert(data.message);
+        // Atualiza os botões de acordo com a resposta do servidor
+      var span_pedido_status = document.getElementById(`pedido_status-${pedidoId}`);
+      span_pedido_status.innerText = 'Pago';
+      EnviarTiny(pedidoId);
+
         }
       else {
       alert(data.erro)
       };
         $('#loading').hide();
-        window.location.reload();
+
 
       },
       error: function(xhr, status, error) {

@@ -139,9 +139,9 @@ def enviar_tiny(request):
 
         except Exception as e:
             print('erro ao enviar',e)
-            return JsonResponse({'success': False, 'erro': str(e)})
+            return JsonResponse({'success': False, 'error': str(e)})
     else:
-        return JsonResponse({'success': False, 'erro': "Metodo não permetido"})
+        return JsonResponse({'success': False, 'error': "Metodo não permetido"})
 
 
 @staff_member_required
@@ -156,8 +156,8 @@ def atualizar_status(request):
 
         if pedido.status=='Pago':
             try:
-                enviar_pedido_para_tiny(pedido)
-                return JsonResponse({'success': True, 'message':'OK', "status": "OK",})
+                # enviar_pedido_para_tiny(pedido)
+                return JsonResponse({'success': True, 'message':f'Status do {pedido_id} foi alterado para {pedido.status} ', "status": "OK",})
             except Exception as e:
                 return JsonResponse({'success': False, 'erro': str(e)})
 
