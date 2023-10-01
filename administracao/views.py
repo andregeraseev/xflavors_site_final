@@ -74,17 +74,24 @@ def enviar_email_em_massa_view(request):
     return render(request, 'administracao/enviar_email_em_massa.html', {'form': form})
 
 
-from django.db import connection
+import time
 @staff_member_required
 def dashboard_adm(request):
     today = datetime.now().date()
     year = request.GET.get('year', today.year)
     month = request.GET.get('month', today.month)
 
-
+    # Registra o tempo atual antes da consulta
+    start_time = time.time()
 
     pedidos = Pedido.objects.filter()
 
+    # Registra o tempo atual após a consulta
+    end_time = time.time()
+
+    # Calcula a diferença para obter o tempo total da consulta
+    duration = end_time - start_time
+    print(f"Tempo da consulta: {duration} segundos")
 
     context = {
 
@@ -92,7 +99,7 @@ def dashboard_adm(request):
         'year': int(year),
         'month': int(month)
     }
-    print('CONECCOES',connection.queries)
+
     return render(request, 'administracao/dashboard_adm.html', context)
 
 @staff_member_required
