@@ -7,23 +7,21 @@
 
 
 <div class="container mt-4">
-    <div class="row">
-        <form method="post" action="{% url 'administracao:dashboard_adm' %}">
+    <div class="row justify-content-center"> <!-- Centraliza o conteúdo -->
+        <form method="post" action="{% url 'administracao:dashboard_adm' %}" class="col-md-8 text-center"> <!-- Adicionado 'col-md-8' para definir a largura do formulário -->
             {% csrf_token %}
-            <div class="col-md-4">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="start-datepicker" name="start_date" placeholder="Selecione a data inicial" aria-label="Data Inicial">
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="end-datepicker" name="end_date" placeholder="Selecione a data final" aria-label="Data Final">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Filtrar</button>
-                </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="start-datepicker" name="start_date" placeholder="Selecione a data inicial" aria-label="Data Inicial" style="flex: 1;" autocomplete="off"> <!-- 'flex: 1' garante que o campo ocupe igualmente o espaço disponível -->
+
+                <input type="text" class="form-control ml-2" id="end-datepicker" name="end_date" placeholder="Selecione a data final" aria-label="Data Final" style="flex: 1;" autocomplete="off"> <!-- 'flex: 1' garante que o campo ocupe igualmente o espaço disponível e 'ml-2' adiciona uma margem à esquerda -->
+
+                <button class="btn btn-outline-secondary ml-2" type="submit" id="button-addon2">Filtrar</button> <!-- 'ml-2' adiciona uma margem à esquerda -->
             </div>
         </form>
     </div>
 </div>
+
+
 
 
 <!-- Scripts necessários para o Datepicker -->
