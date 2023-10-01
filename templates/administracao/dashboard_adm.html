@@ -1,6 +1,6 @@
 <!-- templates/dashboard.html -->
 {% extends "base_pagamento.html" %}
-
+{% load static %}
 {% block content %}
 <div class="container-fluid">
 {% include 'administracao/partials/_navbar_admin.html' %}
@@ -302,9 +302,7 @@
 
 <!-- Adicione o evento de mudança de valor aos botões de opção de coluna -->
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
 
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 <script>
   function updateFilterText(filterElement) {
     const selectedOption = filterElement.options[filterElement.selectedIndex].text;
