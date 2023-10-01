@@ -5,6 +5,52 @@
 <div class="container-fluid">
 {% include 'administracao/partials/_navbar_admin.html' %}
 
+
+<div class="container mt-4">
+    <div class="row">
+        <form method="post" action="{% url 'administracao:dashboard_adm' %}">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="start-datepicker" name="start_date" placeholder="Selecione a data inicial" aria-label="Data Inicial">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="end-datepicker" name="end_date" placeholder="Selecione a data final" aria-label="Data Final">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Scripts necessários para o Datepicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#start-datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR',
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $('#end-datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR',
+        autoclose: true,
+        todayHighlight: true
+    });
+});
+</script>
+
+
+
 <div class="card">
     <div class="card-title"><h2>Pedidos</h2></div>
 
@@ -320,6 +366,7 @@ $(document).ready(function() {
 
     // Inicialize a DataTable com os filtros recuperados
     $("#tabela-pedidos").DataTable({
+
       "columnDefs": [
         { "searchable": true, "targets": [1, 2, 4] },
         { "searchable": false, "targets": [0, 5, 6, 7, 9] }

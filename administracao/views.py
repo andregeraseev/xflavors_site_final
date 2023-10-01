@@ -74,17 +74,33 @@ def enviar_email_em_massa_view(request):
     return render(request, 'administracao/enviar_email_em_massa.html', {'form': form})
 
 
+from datetime import timedelta
+
 import time
 @staff_member_required
 def dashboard_adm(request):
     today = datetime.now().date()
-    year = request.GET.get('year', today.year)
-    month = request.GET.get('month', today.month)
+
+    # Estabelece a data de início padrão para 30 dias atrás
+    start_date = today - timedelta(days=30)
+    end_date = today
+
+    # Se a solicitação for um POST, ajuste as datas de acordo
+    if request.method == 'POST':
+        start_date_str = request.POST.get('start_date')
+        end_date_str = request.POST.get('end_date')
+
+        try:
+            # Convertendo as strings de data para objetos date do Python
+            start_date = datetime.strptime(start_date_str, '%d/%m/%Y').date()
+            end_date = datetime.strptime(end_date_str, '%d/%m/%Y').date()
+        except ValueError:
+            pass  # A data fornecida é inválida; use o padrão
 
     # Registra o tempo atual antes da consulta
     start_time = time.time()
 
-    pedidos = Pedido.objects.filter()
+    pedidos = Pedido.objects.filter(data_pedido__range=(start_date, end_date)).select_related('user', 'user__cliente')
 
     # Registra o tempo atual após a consulta
     end_time = time.time()
@@ -94,13 +110,13 @@ def dashboard_adm(request):
     print(f"Tempo da consulta: {duration} segundos")
 
     context = {
-
         'pedidos': pedidos,
-        'year': int(year),
-        'month': int(month)
+        'year': start_date.year,
+        'month': start_date.month
     }
 
     return render(request, 'administracao/dashboard_adm.html', context)
+
 
 @staff_member_required
 def imprimir_selecionados(request):
