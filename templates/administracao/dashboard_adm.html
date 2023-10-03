@@ -29,23 +29,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
 
-<script>
-$(document).ready(function() {
-    $('#start-datepicker').datepicker({
-        format: 'dd/mm/yyyy',
-        language: 'pt-BR',
-        autoclose: true,
-        todayHighlight: true
-    });
 
-    $('#end-datepicker').datepicker({
-        format: 'dd/mm/yyyy',
-        language: 'pt-BR',
-        autoclose: true,
-        todayHighlight: true
-    });
-});
-</script>
 
 
 
@@ -200,6 +184,7 @@ $(document).ready(function() {
                         <a href="#" onclick="copyToClipboard('{{ pedido.link_mercado_pago }}'); return false;">
                             <img src="https://img.icons8.com/color/48/000000/link--v2.png"/></a>
                     </div>
+                    <!--Copiar link mercado Pago-->
                     <script>
                             function copyToClipboard(text) {
                               var input = document.createElement('input');
@@ -272,6 +257,7 @@ $(document).ready(function() {
     </form>
 </div>
 
+<!--Contador de cateres para observacao-->
 <script>
     (function() {
         const pedidoId = "{{ pedido.id }}";
@@ -344,79 +330,20 @@ $(document).ready(function() {
 </form>
 
 
-<!-- Adicione o evento de mudança de valor aos botões de opção de coluna -->
 
-
+<!--Filtro de texto para tabela-->
 <script>
   function updateFilterText(filterElement) {
     const selectedOption = filterElement.options[filterElement.selectedIndex].text;
     $(filterElement).parent().find('.filter-label').text(selectedOption);
   }
-
-
-$(document).ready(function() {
-    const filtroStatusElement = $("#filtro-status");
-    const filtroProdElement = $("#filtro-prod");
-
-    // Recupere os filtros do localStorage apenas uma vez
-    var filtro_status = localStorage.getItem('filtro-status') || '';
-    var filtro_prod = localStorage.getItem('filtro-prod') || '';
-
-    // Inicialize a DataTable com os filtros recuperados
-    $("#tabela-pedidos").DataTable({
-    deferRender: true,
-      "columnDefs": [
-        { "searchable": true, "targets": [1, 2, 4] },
-        { "searchable": false, "targets": [0, 5, 6, 7, 9] }
-      ],
-      "searchCols": [
-        null,
-        null,
-        null,
-        { "search": filtro_status },
-        null,
-        null,
-        null,
-        null,
-        { "search": filtro_prod },
-        null
-      ]
-    });
-
-    // Atualize os elementos de filtro com os valores recuperados
-    if (filtro_status) {
-      filtroStatusElement.val(filtro_status);
-      updateFilterText(filtroStatusElement[0]);
-    }
-
-    if (filtro_prod) {
-      filtroProdElement.val(filtro_prod);
-      updateFilterText(filtroProdElement[0]);
-    }
-
-    // Adicione os manipuladores de eventos
-    filtroStatusElement.on("change", function() {
-      var filtro_status = filtroStatusElement.val();
-      localStorage.setItem('filtro-status', filtro_status);
-      $("#tabela-pedidos").DataTable().column(3).search(filtro_status).draw();
-      updateFilterText(this);
-    });
-
-    filtroProdElement.on("change", function() {
-      var filtro_prod = filtroProdElement.val();
-      localStorage.setItem('filtro-prod', filtro_prod);
-      $("#tabela-pedidos").DataTable().column(8).search(filtro_prod).draw();
-      updateFilterText(this);
-    });
-});
-
 </script>
 
 
 
 
 
-
+<!--MARCAR COMO PAGO-->
 <script>
   function marcarComoPago(pedidoId) {
     $('#loading').show();
@@ -594,11 +521,81 @@ function salvarObservacao(pedidoId) {
 </script>
 
 
-
-
-
 <script>
 $(document).ready(function() {
+
+    // Datepicker
+    $('#start-datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR',
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $('#end-datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR',
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    // Filtros DataTable
+    const filtroStatusElement = $("#filtro-status");
+    const filtroProdElement = $("#filtro-prod");
+
+    // Recupere os filtros do localStorage apenas uma vez
+    var filtro_status = localStorage.getItem('filtro-status') || '';
+    var filtro_prod = localStorage.getItem('filtro-prod') || '';
+
+    // Inicialize a DataTable com os filtros recuperados
+    $("#tabela-pedidos").DataTable({
+    deferRender: true,
+      "columnDefs": [
+        { "searchable": true, "targets": [1, 2, 4] },
+        { "searchable": false, "targets": [0, 5, 6, 7, 9] }
+      ],
+      "searchCols": [
+        null,
+        null,
+        null,
+        { "search": filtro_status },
+        null,
+        null,
+        null,
+        null,
+        { "search": filtro_prod },
+        null
+      ]
+    });
+
+    // Atualize os elementos de filtro com os valores recuperados
+    if (filtro_status) {
+      filtroStatusElement.val(filtro_status);
+      updateFilterText(filtroStatusElement[0]);
+    }
+
+    if (filtro_prod) {
+      filtroProdElement.val(filtro_prod);
+      updateFilterText(filtroProdElement[0]);
+    }
+
+    // Adicione os manipuladores de eventos
+    filtroStatusElement.on("change", function() {
+      var filtro_status = filtroStatusElement.val();
+      localStorage.setItem('filtro-status', filtro_status);
+      $("#tabela-pedidos").DataTable().column(3).search(filtro_status).draw();
+      updateFilterText(this);
+    });
+
+    filtroProdElement.on("change", function() {
+      var filtro_prod = filtroProdElement.val();
+      localStorage.setItem('filtro-prod', filtro_prod);
+      $("#tabela-pedidos").DataTable().column(8).search(filtro_prod).draw();
+      updateFilterText(this);
+    });
+
+
+    // Imprimir Selecionados
     $('#imprimir-selecionados').click(function() {
         var ids = [];
         $('input[name="selecionar_pedido"]:checked').each(function() {
@@ -608,21 +605,14 @@ $(document).ready(function() {
         $('#imprimir-selecionados-form input[name="pedidos_id"]').val(JSON.stringify(ids));
         $('#imprimir-selecionados-form').submit();
     });
-});
-</script>
 
-<!--selecionar check box-->
-<script>
-$(document).ready(function() {
-  // Seleciona todos os checkboxes quando o novo checkbox for clicado
-  $('#selecionar-todos').click(function() {
+    // Selecionar todos os checkboxes
+    $('#selecionar-todos').click(function() {
     $('input[type=checkbox][name=selecionar_pedido]').prop('checked', $(this).prop('checked'));
   });
+
 });
 </script>
-
-
-
 
 {% endblock %}
 
