@@ -84,11 +84,14 @@ def dashboard_adm(request):
     # Estabelece a data de início padrão para 30 dias atrás
     start_date = today - timedelta(days=30)
     end_date = today
+    end_date_inclusive = end_date + timedelta(days=1)
 
     # Se a solicitação for um POST, ajuste as datas de acordo
     if request.method == 'POST':
         start_date_str = request.POST.get('start_date')
         end_date_str = request.POST.get('end_date')
+
+
 
         # Se ambas as datas não forem fornecidas, não use filtros de data
         if not (start_date_str and end_date_str):
@@ -98,15 +101,14 @@ def dashboard_adm(request):
             try:
                 # Convertendo as strings de data para objetos date do Python
                 start_date = datetime.strptime(start_date_str, '%d/%m/%Y').date()
-                end_date = datetime.strptime(end_date_str, '%d/%m/%Y').date()
+                end_date = datetime.strptime(end_date_str, '%d/%m/%Y').date()+ timedelta(days=1)
             except ValueError:
                 pass  # A data fornecida é inválida; use o padrão
 
     # Registra o tempo atual antes da consulta
     start_time = time.time()
-
     if start_date and end_date:
-        pedidos = Pedido.objects.filter(data_pedido__range=(start_date, end_date)).select_related('user',
+        pedidos = Pedido.objects.filter(data_pedido__range=(start_date, end_date_inclusive)).select_related('user',
                                                                                                   'user__cliente')
     else:
         pedidos = Pedido.objects.all().select_related('user', 'user__cliente')
@@ -125,6 +127,76 @@ def dashboard_adm(request):
     }
 
     return render(request, 'administracao/dashboard_adm.html', context)
+
+
+@staff_member_required
+def fetch_pedidos_data(request):
+    draw = int(request.GET.get('draw'))
+    start = int(request.GET.get('start'))
+    length = int(request.GET.get('length'))
+    search_value = request.GET.get('search[value]')
+
+    # Filtrar os dados com base no valor de pesquisa, se fornecido
+    if search_value:
+        pedidos = Pedido.objects.filter(user__username__icontains=search_value)
+    else:
+        pedidos = Pedido.objects.all()
+
+    total_pedidos = pedidos.count()
+
+    # Ordenação, paginação e busca podem ser adicionadas aqui
+    pedidos = pedidos[start:start + length]
+
+    data = []
+    for pedido in pedidos:
+        data.append([
+            # ID do pedido
+            str(pedido.id),
+
+            # Informações do usuário
+            str(pedido.user) if pedido.user else "",
+
+            # Status do pedido
+            pedido.status,
+
+            # Rastreamento (você pode querer ajustar este, dependendo de como o rastreamento é armazenado)
+            pedido.rastreamento if pedido.rastreamento else "N/A",
+
+            # Comprovante e detalhes do pagamento
+            pedido.comprovante.url if pedido.comprovante else "N/A",
+            pedido.mercado_pago_id if pedido.mercado_pago_id else "N/A",
+            pedido.link_mercado_pago if pedido.link_mercado_pago else "N/A",
+
+            # Detalhes financeiros
+            str(pedido.total),
+            str(pedido.subtotal),
+            str(pedido.valor_frete),
+
+            # ID Tiny
+            str(pedido.numero_pedido_tiny) if pedido.numero_pedido_tiny else "N/A",
+
+            # Informações de produção
+            "Sim" if pedido.producao else "Não",
+
+            # Observações internas
+            pedido.observacoes_internas if pedido.observacoes_internas else "",
+
+            # Data do pedido (você pode formatar isso conforme necessário)
+            str(pedido.data_pedido),
+
+            # Aqui você pode continuar adicionando outros campos conforme necessário.
+        ])
+
+    response = {
+
+        'draw': draw,
+        'recordsTotal': total_pedidos,
+        'recordsFiltered': total_pedidos,  # Isso pode ser diferente se você aplicar filtros adicionais
+        'data': data,
+    }
+
+    return JsonResponse(response)
+
 
 @staff_member_required
 def imprimir_selecionados(request):
