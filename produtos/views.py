@@ -301,7 +301,7 @@ def blackfriday(request):
     from django.db.models import Q
 
     # Filtra os produtos que têm preço promocional ativo
-    produto = Produto.objects.exclude(promocao_ativa=False).exclude(preco_promocional=None).exclude(preco_promocional__isnull=True)
+    produto = Produto.objects.exclude(promocao_ativa=False).exclude(preco_promocional=None).exclude(preco_promocional__isnull=True).exclude(preco_promocional=0)
 
     # Ordenação dos produtos
     ordenacao = request.GET.get('ordenacao')
