@@ -4,7 +4,8 @@ from django.contrib import admin
 from django.urls import path,include
 from clientes import views
 from frontend.views import termos, envio
-from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search, pagina_search, add_to_favorites, receitas, adicionar_kit_ao_carrinho, kit_detail
+from produtos.views import product_detail, produto_por_subcategoria, import_products_view, search, pagina_search, \
+    add_to_favorites, receitas, adicionar_kit_ao_carrinho, kit_detail, blackfriday
 from .views import index, error_view
 from cart.views import add_to_cart_carrocel#,verifica_qunatidade_carrinho_varivel
 from tiny_erp.webhook import tiny_webhook
@@ -113,6 +114,8 @@ urlpatterns = [
     path('adicionar_kit_ao_carrinho/', adicionar_kit_ao_carrinho, name='adicionar_kit_ao_carrinho'),
     path('receitas/<slug:slug>/', kit_detail, name='kit_detail'),
 
+# blackfriday
+    path('blackfriday/', blackfriday, name='blackfriday'),
 # logs
     path('view-logs/', view_logs, name='view-logs'),
 

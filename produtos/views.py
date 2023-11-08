@@ -297,6 +297,56 @@ def receitas(request):
     }
     return render(request, 'kits/kits.html', context)
 
+def blackfriday(request):
+    produto = Produto.objects.filter(preco_promocional__isnull=False, promocao_ativa=True)
+
+    # Ordenação dos produtos
+    ordenacao = request.GET.get('ordenacao')
+    if ordenacao == 'alfabetica':
+        # Ordena em ordem alfabética pelo nome
+        produtos = produto.order_by('name')
+    elif ordenacao == 'alfabetica_decrescente':
+        # Ordena em ordem alfabética pelo nome
+        produtos = produto.order_by('-name')
+    elif ordenacao == 'preco-crescente':
+        # Ordena em ordem crescente pelo preço
+        produtos = produto.order_by('price')
+    elif ordenacao == 'preco-decrescente':
+        # Ordena em ordem decrescente pelo preço
+        produtos = produto.order_by('-price')
+    elif ordenacao == 'mais-vendidos':
+        # Ordena pelo número de vendas dos produtos, do maior para o menor
+        produtos = produto.order_by('-num_vendas')
+    else:
+        # Ordenação padrão, caso nenhuma seja especificada
+        produtos = produto.order_by('subcategory')  # ou qualquer outro campo que faça sentido
+
+    # Paginação dos produtos
+    produtos_por_pagina = 20
+    paginator = Paginator(produtos, produtos_por_pagina)
+    pagina_numero = request.GET.get('pagina')
+    pagina = paginator.get_page(pagina_numero)
+
+    items = []
+
+    for produto in produtos:
+        if produto.variation_set.exists():
+            for variacao in produto.variation_set.all():
+                items.append({
+                    'product': variacao.produto_pai.name
+                })
+        # for variacao in produto.variacoes.all():
+        #     items.append({
+        #         'product': variacao.produto_pai.name
+        #     })
+    print(items)
+    context = {
+        'produtos': produtos,
+        'produto_items': items,
+        'pagina': pagina,
+    }
+    return render(request, 'produto_por_subcategoria.html', context)
+
 
 def adicionar_kit_ao_carrinho(request):
     user = request.user
