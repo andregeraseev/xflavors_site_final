@@ -298,7 +298,10 @@ def receitas(request):
     return render(request, 'kits/kits.html', context)
 
 def blackfriday(request):
-    produto = Produto.objects.filter(preco_promocional__isnull=False, promocao_ativa=True)
+    from django.db.models import Q
+
+    # Filtra os produtos que têm preço promocional ativo
+    produto = Produto.objects.exclude(promocao_ativa=False).exclude(preco_promocional=None).exclude(preco_promocional__isnull=True)
 
     # Ordenação dos produtos
     ordenacao = request.GET.get('ordenacao')
@@ -330,6 +333,7 @@ def blackfriday(request):
     items = []
 
     for produto in produtos:
+
         if produto.variation_set.exists():
             for variacao in produto.variation_set.all():
                 items.append({
