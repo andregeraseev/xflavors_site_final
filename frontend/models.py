@@ -16,7 +16,7 @@ class Banner(models.Model):
     active = models.BooleanField(default=False)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
-
+    link_url = models.URLField(max_length=500, blank=True, null=True) 
     def save(self, *args, **kwargs):
         """
         Sobrescreve o método save para criar o slug a partir do nome.

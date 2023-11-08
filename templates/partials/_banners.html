@@ -11,12 +11,13 @@
     {% if banner.is_active %}
     
       <div class="carousel-item {% if forloop.first %}active{% endif %}">
+         {% if banner.link_url %}
+        <a href="{{ banner.link_url }}" target="_blank">
+          <img src="{{ banner.image.url }}" class="d-block mx-auto w-100" alt="{{ banner.name }}" style="max-width: 1200px;">
+        </a>
+      {% else %}
         <img src="{{ banner.image.url }}" class="d-block mx-auto w-100" alt="{{ banner.name }}" style="max-width: 1200px;">
-
-<!--        <div class="carousel-caption d-none d-md-block">-->
-<!--          <h3>{{ banner.name }}</h3>-->
-<!--          <p>{{ banner.description }}</p>-->
-<!--        </div>-->
+      {% endif %}
       </div>
     {% endif %}
     {% endfor %}
