@@ -299,10 +299,27 @@ def receitas(request):
 
 def blackfriday(request):
     from django.db.models import Q
+    from django.db.models import Q
+    from django.core.paginator import Paginator
+    from .models import Produto, Variation  # Ajuste com o caminho correto do seu modelo
 
-    # Filtra os produtos que têm preço promocional ativo
-    produto = Produto.objects.exclude(promocao_ativa=False).exclude(preco_promocional=None).exclude(preco_promocional__isnull=True).exclude(preco_promocional=0)
+    # Filtra produtos com variações que têm pelo menos uma variação atendendo aos critérios
+    produtos_com_variacao = Produto.objects.filter(
+        variation__promocao_ativa=True,
+        variation__preco_promocional__isnull=False,
+        variation__preco_promocional__gt=0
+    ).distinct()
 
+    # Filtra produtos sem variações que atendem aos critérios
+    produtos_sem_variacao = Produto.objects.filter(
+        variation__isnull=True,
+        promocao_ativa=True,
+        preco_promocional__isnull=False,
+        preco_promocional__gt=0
+    ).distinct()
+
+    # Combina os dois conjuntos de produtos
+    produto = produtos_com_variacao | produtos_sem_variacao
     # Ordenação dos produtos
     ordenacao = request.GET.get('ordenacao')
     if ordenacao == 'alfabetica':
