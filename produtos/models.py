@@ -214,6 +214,9 @@ class Variation(models.Model):
                 f"Erro ao verificar o estoque da variação {self} com id{self.id} para o usuário {user}. Detalhes: {str(e)}")
             raise e
 
+    class Meta:
+        ordering = ['price']
+
 
 class Kit(models.Model):
     """
