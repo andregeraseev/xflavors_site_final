@@ -321,7 +321,18 @@ def blackfriday(request):
     # Combina os dois conjuntos de produtos
     produto = produtos_com_variacao | produtos_sem_variacao
     # Ordenação dos produtos
+
+    marcas = {produto.marca for produto in produto}
+    print('marca',marcas)
+
+    filtro = request.GET.get('marca')
+
+    if filtro and filtro != 'Todas':
+        produto = produto.filter(marca=filtro)
+
     ordenacao = request.GET.get('ordenacao')
+
+
     if ordenacao == 'alfabetica':
         # Ordena em ordem alfabética pelo nome
         produtos = produto.order_by('name')
@@ -360,11 +371,12 @@ def blackfriday(request):
         #     items.append({
         #         'product': variacao.produto_pai.name
         #     })
-    print(items)
+
     context = {
         'produtos': produtos,
         'produto_items': items,
         'pagina': pagina,
+        'marcas': marcas,
     }
     return render(request, 'produto_por_subcategoria.html', context)
 

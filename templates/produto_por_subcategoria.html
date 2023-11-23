@@ -4,8 +4,10 @@
 
 
 
+
 <!-- Adiciona um select para escolher a ordenação dos produtos -->
-<form action="" method="get" class="d-flex justify-content-end">
+<form action="" method="get" class="d-flex justify-content-end mb-4" style= "align-items: baseline">
+  <h6>Ordenar por:</h6>
   <div class="form-group">
     <label for="ordenacao-select" class="sr-only">Ordenar por:</label>
     <select class="form-control form-control-sm" id="ordenacao-select" name="ordenacao">
@@ -20,9 +22,27 @@
   <button type="submit" class="btn btn-sm btn-danger ml-2">Aplicar</button>
 </form>
 
+{% if marcas %}
+<!-- Adiciona um select filtrar -->
+
+<form action="" method="get" class="d-flex justify-content-end mb-4"  style= "align-items: baseline">
+  <h6>Filtrar por marca:</h6>
+  <div class="form-group">
+    <label for="ordenacao-select" class="sr-only">filtrar por marca</label>
+    <select class="form-control form-control-sm" id="filtro-select" name="marca">
+        <option value="Todas">Todas as marcas:  </option>
+          {% for marca in marcas %}
+        <option value="{{ marca }}">{{ marca }}</option>
+          {% endfor %}
+
+    </select>
+  </div>
+  <button type="submit" class="btn btn-sm btn-danger ml-2">Aplicar</button>
+</form>
+{% endif %}
 
 <div class="container">
-  <h1>{{ subcategory.name }}</h1>
+  <h1 class="text-center">{{ subcategory.name|default:"Black Friday" }}</h1>
   <div class="card-deck row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
     {% for product in pagina %}
                       {% include 'carrocel_partials/_carrocel_card.html' %}
